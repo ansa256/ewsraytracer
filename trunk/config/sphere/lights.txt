@@ -1,0 +1,6 @@
+environment {
+   numSamples        100
+   numLightSamples   1
+   radiance          5.0
+   color             [ 1.0 1.0 1.0 ]
+}

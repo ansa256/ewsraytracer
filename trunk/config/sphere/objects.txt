@@ -1,0 +1,12 @@
+sphere {
+   name   "sphere"
+   center [ 0.0 0.0 0.0 ]
+   radius 6.0
+   
+   material {
+      type  "matte"
+      ka 0.25
+      kd 1.0
+      color [ 1.0 1.0 1.0 ]
+   }
+}
