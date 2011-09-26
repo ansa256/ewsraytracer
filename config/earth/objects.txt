@@ -69,7 +69,8 @@ sphere {
    }
 } 
 
-stars {
+starBox {
    name     "stars"
-   count    10000
+   count    50000
+   halfSize 1000
 }
