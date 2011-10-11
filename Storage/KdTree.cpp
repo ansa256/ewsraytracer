@@ -1,12 +1,10 @@
 #include "KdTree.h"
 #include "Math/Maths.h"
+#include "Parser/Hash.h"
 #include <stack>
 #include <limits>
 
 typedef list<GeometryObject*>::iterator GeomIter;
-
-int MAX_DEPTH = 10;
-const int MAX_OBJS = 10;
 
 struct NodeS {
    KdNode* node;
@@ -45,7 +43,9 @@ bool KdNode::isLeaf() const {
 KdTree::KdTree() :
    Storage(),
    root(NULL),
-   edges(NULL)
+   edges(NULL),
+   maxDepth(0),
+   maxObjects(10)
 {
 }
 
@@ -53,7 +53,10 @@ KdTree::~KdTree() {
 }
 
 void KdTree::setup() {
-   MAX_DEPTH = int(8 + 1.3f * Log2Int(float(objs.size())));
+   if(maxDepth == 0) {
+      maxDepth = int(8 + 1.3f * Log2Int(float(objs.size())));
+   }
+
    edges = new BoundEdge[objs.size() * 2];
    root = buildTree(0, objs, bbox);
 }
@@ -121,8 +124,8 @@ void KdTree::findSplit(list<GeometryObject*>& objs, const BBox& bounds, int& axi
    }
 }
 
-KdNode* KdTree::buildTree(int depth, list<GeometryObject*> objs, const BBox& bounds) {
-   if(depth >= MAX_DEPTH || objs.size() < MAX_OBJS) {
+KdNode* KdTree::buildTree(unsigned depth, list<GeometryObject*> objs, const BBox& bounds) {
+   if(depth >= maxDepth || objs.size() < maxObjects) {
       // stop recursion
       return new KdNode(objs);
    }
@@ -154,6 +157,12 @@ KdNode* KdTree::buildTree(int depth, list<GeometryObject*> objs, const BBox& bou
 }
 
 void KdTree::setHash(Hash* hash) {
+   if(hash->contains("maxDepth")) {
+      maxDepth = hash->getInteger("maxDepth");
+   }
+   if(hash->contains("maxObjects")) {
+      maxObjects = hash->getInteger("maxObjects");
+   }
 }
 
 bool KdTree::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
@@ -254,27 +263,27 @@ bool KdTree::checkNode(const Ray& ray, KdNode* node, double& tmin, ShadeRecord& 
 bool KdTree::shadowHit(const Ray& ray, double& tmin) const {
    stack<NodeS> nodeStack;
    nodeStack.push(NodeS(root, 0, HUGE_VALUE));
-   
+
    double tHit = HUGE_VALUE;
-   
+
    while(!nodeStack.empty()) {
       KdNode* node = nodeStack.top().node;
       double min = nodeStack.top().min;
       double max = nodeStack.top().max;
       nodeStack.pop();
-      
+
       while(!node->isLeaf()) {
          double originAxis = ray.origin.get(node->axis);
          double directionAxis = ray.direction.get(node->axis);
          double tsplit = (node->split - originAxis) / directionAxis;
          KdNode *first = node->left, *second = node->right;
-         
+
          bool belowFirst = (originAxis < node->split) || (originAxis == node->split && directionAxis >= 0);
          if(!belowFirst) {
             first = node->right;
             second = node->left;
          }
-         
+
          if(tsplit > max || tsplit < 0) {
             node = first;
          }
@@ -298,7 +307,7 @@ bool KdTree::shadowHit(const Ray& ray, double& tmin) const {
 bool KdTree::checkNodeShadow(const Ray& ray, KdNode* node, double& tmin) const {
    bool hit = false;
    double tcheck = HUGE_VALUE;
-   
+
    for(GeomIter it = node->objs.begin(); it != node->objs.end(); it++) {
       if(!(*it)->ignoreShadow && (*it)->shadowHit(ray, tmin) && (tmin < tcheck)) {
          tcheck = tmin;

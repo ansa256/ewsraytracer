@@ -11,8 +11,6 @@ class GeometryObject;
 class Hash;
 class Storage;
 
-typedef map<string, GeometryObject*>::const_iterator GeometryIter;
-
 class GeometryManager {
 
 public:
@@ -21,19 +19,15 @@ public:
 
    void loadObjects(string fname);
 
-   GeometryIter begin() const { return objects.begin(); }
-   GeometryIter end() const { return objects.end(); }
-
    GeometryObject* createObject(string type, Hash* hash, bool addToList = true);
-   GeometryObject* removeObject(string name);
 
    Storage* getStorage() { return storage; }
+   void setStorageConfig(Hash* h);
 
 private:
    GeometryManager();
 
    static auto_ptr<GeometryManager> s_instance;
-   map<string, GeometryObject*> objects;
    Storage* storage;
 };
 

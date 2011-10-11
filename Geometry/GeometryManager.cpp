@@ -1,12 +1,3 @@
-/*
- *  GeometryManager.cpp
- *  RayTracer
- *
- *  Created by Eric Saari on 12/11/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include <fstream>
 #include "GeometryManager.h"
 #include "GeometryObject.h"
@@ -30,6 +21,9 @@
 #include "Mesh/GeoSphere.h"
 #include "Storage/Grid.h"
 #include "Storage/KdTree.h"
+#include "Storage/ObjectList.h"
+
+typedef map<string, GeometryObject*>::const_iterator GeometryIter;
 
 auto_ptr<GeometryManager> GeometryManager::s_instance;
 
@@ -40,16 +34,10 @@ GeometryManager& GeometryManager::instance() {
    return *s_instance;
 }
 
-GeometryManager::GeometryManager() : storage(new KdTree()) {
+GeometryManager::GeometryManager() : storage(new ObjectList()) {
 }
 
 GeometryManager::~GeometryManager() {
-   for(GeometryIter it = objects.begin(); it != objects.end(); ++it) {
-      if((*it).second->doDelete) {
-         delete (*it).second;
-      }
-   }
-   objects.clear();
    delete storage;
 }
 
@@ -137,16 +125,24 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addT
    obj->setHash(hash);
 
    if(addToList) {
-      objects[name] = obj;
       storage->addObject(obj);
    }
 
    return obj;
 }
 
-GeometryObject* GeometryManager::removeObject(string name) {
-   GeometryObject* obj = objects[name];
-   objects.erase(name);
-   storage->removeObject(obj);
-   return obj;
+void GeometryManager::setStorageConfig(Hash* h) {
+   string type = h->getString("type");
+
+   // Since storage is set up as an object list in the constructor
+   // we only need to delete it if the storage type changes
+   if(type == "grid") {
+      delete storage;
+      storage = new Grid();
+   }
+   else if(type == "kdtree") {
+      delete storage;
+      storage = new KdTree();
+   }
+   storage->setHash(h);
 }

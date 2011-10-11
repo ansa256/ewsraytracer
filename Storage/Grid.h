@@ -24,7 +24,7 @@ public:
 
    virtual void setup();
 
-   virtual void setHash(Hash* hash) {}
+   virtual void setHash(Hash* hash);
    virtual bool hit(const Ray& ray, double& tmin, ShadeRecord& sr) const;
    virtual bool shadowHit(const Ray& ray, double& tmin) const;
 
