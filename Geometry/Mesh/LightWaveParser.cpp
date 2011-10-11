@@ -130,7 +130,7 @@ int LightWaveParser::parsePolygons() {
          int i3 = readVariableIntBE(in, vsize);
          count += vsize;
 
-         addFace(new Face(i1, i2, i3));
+         addFace(i1, i2, i3);
       }
       else {
          printf("count = %d\n", pointCnt);
@@ -203,10 +203,10 @@ int LightWaveParser::skipChunk() {
 }
 
 bool LightWaveParser::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) const {
-   tmin = Mesh::hitFace(face, ray, sr);
-   if(tmin > 0.0) {
+//   tmin = Mesh::hitFace(face, ray, sr);
+//   if(tmin > 0.0) {
 //      currentMaterial = face->materialName;
-      return true;
-   }
+//      return true;
+//   }
    return false;
 }

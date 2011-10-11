@@ -58,7 +58,15 @@ void KdTree::setup() {
    }
 
    edges = new BoundEdge[objs.size() * 2];
+
+   Uint32 start = SDL_GetTicks();
+   fprintf(stdout, "starting build\n");
+   fflush(stdout);
    root = buildTree(0, objs, bbox);
+
+   Uint32 end = SDL_GetTicks();
+   fprintf(stdout, "Build time = %f seconds\n", (end - start) / 1000.0);
+   fflush(stdout);
 }
 
 void KdTree::findSplit(list<GeometryObject*>& objs, const BBox& bounds, int& axis, double& split) {
