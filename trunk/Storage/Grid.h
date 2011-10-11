@@ -4,8 +4,6 @@
 #include "Math/Ray.h"
 #include "Storage.h"
 
-typedef list<GeometryObject*>::const_iterator GeomIter;
-
 class GridVoxel {
 
 public:

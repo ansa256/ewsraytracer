@@ -1,8 +1,6 @@
 #include "ObjectList.h"
 #include "Math/Maths.h"
 
-typedef list<GeometryObject*>::const_iterator ListIter;
-
 bool ObjectList::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    bool hit = false;
    double tcheck = HUGE_VALUE;
@@ -11,7 +9,7 @@ bool ObjectList::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    Point3D hitPoint;
    shared_ptr<Material> mat;
 
-   for(ListIter it = objs.begin(); it != objs.end(); ++it) {
+   for(GeomIter it = objs.begin(); it != objs.end(); ++it) {
       if((*it)->hit(ray, tmin, sr) && (tmin < tcheck)) {
          hit = true;
          tcheck = tmin;
@@ -33,7 +31,7 @@ bool ObjectList::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
 }
 
 bool ObjectList::shadowHit(const Ray& ray, double& tmin) const {
-   for(ListIter it = objs.begin(); it != objs.end(); it++) {
+   for(GeomIter it = objs.begin(); it != objs.end(); it++) {
       if(!(*it)->ignoreShadow && (*it)->shadowHit(ray, tmin)) {
          return true;
       }

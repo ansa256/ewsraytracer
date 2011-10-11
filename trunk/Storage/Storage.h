@@ -2,12 +2,14 @@
 #define _STORAGE_H_
 
 #include "Geometry/GeometryObject.h"
-#include <list>
+#include <vector>
 
 using namespace std;
 
+typedef vector<GeometryObject*>::const_iterator GeomIter;
+
 class Storage : public GeometryObject {
-   
+
 public:
    Storage();
    virtual ~Storage() {}
@@ -15,9 +17,9 @@ public:
 
    void addObject(GeometryObject* obj);
    void removeObject(GeometryObject* obj);
-   
+
 protected:
-   list<GeometryObject*> objs;
+   vector<GeometryObject*> objs;
 };
 
 #endif
