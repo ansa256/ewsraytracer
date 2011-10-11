@@ -37,6 +37,8 @@ public:
    shared_ptr<Material> getMaterial() const { return material; }
    void setMaterial(shared_ptr<Material> m);
 
+   virtual bool isCompound() { return false; }
+
    static const double epsilon;
    bool doDelete;
    bool ignoreShadow;

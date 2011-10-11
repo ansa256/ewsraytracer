@@ -51,13 +51,7 @@ void MeditParser::readMesh(string fname) {
 void MeditParser::readTriangles(int count, ifstream& fp) {
    int idx, idx1, idx2, idx3;
    for (int i = 0; i < count; i++) {
-      fp >> idx1 >> idx2 >> idx3;
-      // Skip last number
-      fp >> idx;
-
-      idx1--;
-      idx2--;
-      idx3--;
-      addFace(new Face(idx1, idx2, idx3));
+      fp >> idx1 >> idx2 >> idx3 >> idx;
+      addFace(idx1-1, idx2-1, idx3-1);
    }
 }

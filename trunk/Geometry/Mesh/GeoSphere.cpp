@@ -21,13 +21,13 @@ void GeoSphere::setHash(Hash* hash) {
    // traingle height = side * sin(60)
    double ninety_degrees = 2.0 * sin(60 * DEG_TO_RAD) + 1.0;
    double rotate = 1.0 / ninety_degrees * -90.0 * DEG_TO_RAD;
-   
+
    // rotate_y = y * cos(rotate) - z * sin(rotate)
    // rotate_z = y * sin(rotate) + z * cos(rotate)
    // cache cos(rotate) and sin(rotate)
    double c_rotate = cos(rotate);
    double s_rotate = sin(rotate);
-   
+
    // Define the north pole
    createPoint(0, GOLDEN * c_rotate - s_rotate, GOLDEN * s_rotate + c_rotate); // (0, GOLDEN, 1)
 
@@ -37,18 +37,18 @@ void GeoSphere::setHash(Hash* hash) {
    createPoint(GOLDEN, c_rotate, s_rotate); // (GOLDEN, 1, 0)
    createPoint(0, GOLDEN * c_rotate + s_rotate, GOLDEN * s_rotate - c_rotate); // (0, GOLDEN, -1)
    createPoint(-GOLDEN, c_rotate, s_rotate); // (-GOLDEN, 1, 0)
-   
+
    // Row 3
    createPoint(-GOLDEN, -c_rotate, -s_rotate); // (-GOLDEN, -1, 0)
    createPoint(0, -GOLDEN * c_rotate - s_rotate, -GOLDEN * s_rotate + c_rotate); // (0, -GOLDEN, 1)
    createPoint(GOLDEN, -c_rotate, -s_rotate); // (GOLDEN, -1, 0)
    createPoint(1, GOLDEN * s_rotate, -GOLDEN * c_rotate); // (1, 0, -GOLDEN)
    createPoint(-1, GOLDEN * s_rotate, -GOLDEN * c_rotate); // (-1. 0. -GOLDEN)
-   
+
    // Define the south pole
    createPoint(0, -GOLDEN * c_rotate + s_rotate, -GOLDEN * s_rotate - c_rotate); // (0, -GOLDEN, -1)
-   
-   // North pole faces   
+
+   // North pole faces
    subdivide(0, 1, 2);
    subdivide(0, 2, 3);
    subdivide(0, 3, 4);
@@ -83,7 +83,7 @@ GeoSphere::~GeoSphere() {
 
 void GeoSphere::subdivide(int pidx1, int pidx2, int pidx3) {
    if(divs == 1) {
-      addFace(new Face(pidx1, pidx2, pidx3));
+      addFace(pidx1, pidx2, pidx3);
       return;
    }
 
@@ -94,7 +94,7 @@ void GeoSphere::subdivide(int pidx1, int pidx2, int pidx3) {
    for(int i = 0; i < divs+1; i++) {
       span[i] = new int[divs];
    }
-   
+
    int pidx = getPointCount();
 
    for(int i = 1; i < (divs - 1); i++) {
@@ -111,80 +111,53 @@ void GeoSphere::subdivide(int pidx1, int pidx2, int pidx3) {
          span[i][j] = pidx++;
       }
    }
-   
+
    // Top face
-   Face* f = new Face(pidx1, side12->at(1), side13->at(1));
-   addFace(f);
+   addFace(pidx1, side12->at(1), side13->at(1));
 
    if(divs == 2) {
-      f = new Face(side12->at(1), side12->at(2), side23->at(1));
-      addFace(f);
-   
-      f = new Face(side12->at(1), side23->at(1), side13->at(1));
-      addFace(f);
-   
-      f = new Face(side13->at(1), side23->at(1), side13->at(2));
-      addFace(f);
+      addFace(side12->at(1), side12->at(2), side23->at(1));
+      addFace(side12->at(1), side23->at(1), side13->at(1));
+      addFace(side13->at(1), side23->at(1), side13->at(2));
       return;
    }
-   
+
    // Row two faces
-   f = new Face(side12->at(1), side12->at(2), span[divs-2][1]);
-   addFace(f);
-   
-   f = new Face(side12->at(1), span[divs-2][1], side13->at(1));
-   addFace(f);
-   
-   f = new Face(side13->at(1), span[divs-2][1], side13->at(2));
-   addFace(f);
+   addFace(side12->at(1), side12->at(2), span[divs-2][1]);
+   addFace(side12->at(1), span[divs-2][1], side13->at(1));
+   addFace(side13->at(1), span[divs-2][1], side13->at(2));
 
    // Center faces
-   for(int i = 2; i < divs-1; i++) {      
-      f = new Face(side12->at(i), side12->at(i+1), span[divs-i-1][1]);
-      addFace(f);
-      
-      f = new Face(side12->at(i), span[divs-i-1][1], span[divs-i][1]);
-      addFace(f);
-      
+   for(int i = 2; i < divs-1; i++) {
+      addFace(side12->at(i), side12->at(i+1), span[divs-i-1][1]);
+      addFace(side12->at(i), span[divs-i-1][1], span[divs-i][1]);
+
       for(int j = 1; j < i; j++) {
-         f = new Face(span[divs-i][j], span[divs-i-1][j], span[divs-i-1][j+1]);
-         addFace(f);
+         addFace(span[divs-i][j], span[divs-i-1][j], span[divs-i-1][j+1]);
 
          if(j < i-1) {
-            f = new Face(span[divs-i][j], span[divs-i-1][j+1], span[divs-i][j+1]);
-            addFace(f);
+            addFace(span[divs-i][j], span[divs-i-1][j+1], span[divs-i][j+1]);
          }
       }
 
-      f = new Face(side13->at(i), span[divs-i][i-1], span[divs-i-1][i]);
-      addFace(f);
-      
-      f = new Face(side13->at(i), span[divs-i-1][i], side13->at(i+1));
-      addFace(f);
+      addFace(side13->at(i), span[divs-i][i-1], span[divs-i-1][i]);
+      addFace(side13->at(i), span[divs-i-1][i], side13->at(i+1));
    }
-   
-   // Bottom row faces
-   f = new Face(side12->at(divs-1), pidx2, side23->at(1));
-   addFace(f);
 
-   f = new Face(side12->at(divs-1), side23->at(1), span[1][1]);
-   addFace(f);
-   
+   // Bottom row faces
+   addFace(side12->at(divs-1), pidx2, side23->at(1));
+   addFace(side12->at(divs-1), side23->at(1), span[1][1]);
+
    for(int j = 2; j < divs; j++) {
-      f = new Face(span[1][j-1], side23->at(j-1), side23->at(j));
-      addFace(f);
-      
+      addFace(span[1][j-1], side23->at(j-1), side23->at(j));
+
       if(j < divs-1) {
-         f = new Face(span[1][j-1], side23->at(j), span[1][j]);         
-         addFace(f);
+         addFace(span[1][j-1], side23->at(j), span[1][j]);
       }
    }
-   
-   f = new Face(span[1][divs-2], side23->at(divs-1), side13->at(divs-1));
-   addFace(f);
-   
-   f = new Face(side13->at(divs-1), side23->at(divs-1), pidx3);
-   addFace(f);
+
+   addFace(span[1][divs-2], side23->at(divs-1), side13->at(divs-1));
+   addFace(side13->at(divs-1), side23->at(divs-1), pidx3);
 }
 
 vector<int>* GeoSphere::getEdgePoints(const Edge& e) {
@@ -205,11 +178,11 @@ vector<int>* GeoSphere::getEdgePoints(const Edge& e) {
          double x = p1->x + d * (p2->x - p1->x);
          double y = p1->y + d * (p2->y - p1->y);
          double z = p1->z + d * (p2->z - p1->z);
-         
+
          createPoint(x, y, z);
          points->push_back(pidx++);
       }
-      
+
       points->push_back(e.pidx2);
       edgeMap[e] = points;
    }
@@ -250,7 +223,7 @@ bool Edge::operator<(const Edge& e) const {
    else if(pidx1 > e.pidx1) {
       return false;
    }
-   
+
    if(pidx2 < e.pidx2) {
       return true;
    }
