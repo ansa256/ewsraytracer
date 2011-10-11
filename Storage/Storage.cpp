@@ -25,6 +25,6 @@ void Storage::removeObject(GeometryObject* obj) {
       }
    }
    else {
-      objs.remove(obj);
+//      objs.remove(obj);
    }
 }

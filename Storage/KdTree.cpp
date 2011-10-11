@@ -4,8 +4,6 @@
 #include <stack>
 #include <limits>
 
-typedef list<GeometryObject*>::iterator GeomIter;
-
 struct NodeS {
    KdNode* node;
    double min, max;
@@ -24,7 +22,7 @@ bool BoundEdge::operator< (const BoundEdge& e) const {
    return tsplit < e.tsplit;
 }
 
-KdNode::KdNode(list<GeometryObject*> _objs) : left(NULL), right(NULL), objs(_objs) {
+KdNode::KdNode(vector<GeometryObject*> _objs) : left(NULL), right(NULL), objs(_objs) {
 }
 
 KdNode::KdNode(KdNode* l, KdNode* r, int _axis, double _split) :
@@ -69,7 +67,7 @@ void KdTree::setup() {
    fflush(stdout);
 }
 
-void KdTree::findSplit(list<GeometryObject*>& objs, const BBox& bounds, int& axis, double& split) {
+void KdTree::findSplit(vector<GeometryObject*>& objs, const BBox& bounds, int& axis, double& split) {
    double invTotalSA = 1.0 / bounds.surfaceArea();
    double tsplit = numeric_limits<double>::infinity();
 
@@ -132,7 +130,7 @@ void KdTree::findSplit(list<GeometryObject*>& objs, const BBox& bounds, int& axi
    }
 }
 
-KdNode* KdTree::buildTree(unsigned depth, list<GeometryObject*> objs, const BBox& bounds) {
+KdNode* KdTree::buildTree(unsigned depth, vector<GeometryObject*> objs, const BBox& bounds) {
    if(depth >= maxDepth || objs.size() < maxObjects) {
       // stop recursion
       return new KdNode(objs);
@@ -151,7 +149,7 @@ KdNode* KdTree::buildTree(unsigned depth, list<GeometryObject*> objs, const BBox
    BBox right = bounds;
    right.setMin(axis, split);
 
-   list<GeometryObject*> lidxs, ridxs;
+   vector<GeometryObject*> lidxs, ridxs;
    for(GeomIter it = objs.begin(); it != objs.end(); ++it) {
       if(left.intersects((*it)->bbox)) {
          lidxs.push_back(*it);
