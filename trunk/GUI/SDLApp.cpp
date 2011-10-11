@@ -41,7 +41,7 @@ void SDLApp::loadConfiguration(int argc, char** argv) {
       config_file = argv[1];
    }
    std::ifstream fin(config_file, std::ios::in);
-   
+
    Tokenizer tok(&fin);
    Parser parser(&tok);
 
@@ -67,6 +67,10 @@ void SDLApp::loadConfiguration(int argc, char** argv) {
 
    if(h->contains("mesh")) {
       MeshManager::instance().loadMeshes(h->getString("mesh"));
+   }
+
+   if(h->contains("storage")) {
+      GeometryManager::instance().setStorageConfig(h->getValue("storage")->getHash());
    }
 
    LightManager::instance().loadLights(h->getString("lights"));

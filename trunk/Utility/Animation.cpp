@@ -66,11 +66,11 @@ void Animation::loadAnimation(Hash* hash) {
       loadCameraFrames(hash->getValue("frames")->getArray());
    }
    else {
-      GeometryObject* obj = GeometryManager::instance().removeObject(objName);
-      Instance* instance = new Instance(obj);
-      GeometryManager::instance().getStorage()->addObject(instance);
+//      GeometryObject* obj = GeometryManager::instance().removeObject(objName);
+//      Instance* instance = new Instance(obj);
+//      GeometryManager::instance().getStorage()->addObject(instance);
 
-      loadAnimationFrames(hash->getValue("frames")->getArray(), instance);
+//      loadAnimationFrames(hash->getValue("frames")->getArray(), instance);
    }
 
    frameCount = max(cameraFrames.size(), objFrames.size());

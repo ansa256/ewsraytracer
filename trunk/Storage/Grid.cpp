@@ -1,5 +1,6 @@
 #include "Grid.h"
 #include "Math/Maths.h"
+#include "Parser/Hash.h"
 
 typedef vector<GeometryObject*>::const_iterator CellIter;
 
@@ -37,8 +38,7 @@ void Grid::setup() {
 //   cleanup();
    double root = 3.0 * pow(objs.size(), 1.0 / 3.0);
    double voxelsPerUnit = root / bbox.maxExtent();
-//   int maxCells = int(8 + 1.3f * Log2Int(float(objs.size())));
-   printf("grid.maxCells = %d\n", maxCells);
+
    nx = (int) clamp(round(bbox.wx * voxelsPerUnit), 0, maxCells) + 1;
    ny = (int) clamp(round(bbox.wy * voxelsPerUnit), 0, maxCells) + 1;
    nz = (int) clamp(round(bbox.wz * voxelsPerUnit), 0, maxCells) + 1;
@@ -67,6 +67,12 @@ void Grid::setup() {
             }
          }
       }
+   }
+}
+
+void Grid::setHash(Hash* hash) {
+   if(hash->contains("maxCells")) {
+      maxCells = hash->getInteger("maxCells");
    }
 }
 
@@ -267,14 +273,10 @@ bool Grid::checkCell(const Ray& ray, GridVoxel* cell, double& tmin, ShadeRecord&
 bool Grid::checkCellShadow(const Ray& ray, GridVoxel* cell, double& tmin) const {
    if(cell == NULL) return false;
 
-   bool hit = false;
-   double tcheck = HUGE_VALUE;
-
    for(CellIter it = cell->objs.begin(); it != cell->objs.end(); it++) {
-      if(!(*it)->ignoreShadow && (*it)->shadowHit(ray, tmin) && tmin < tcheck) {
-         hit = true;
-         tcheck = tmin;
+      if(!(*it)->ignoreShadow && (*it)->shadowHit(ray, tmin)) {
+         return true;
       }
    }
-   return hit;
+   return false;
 }

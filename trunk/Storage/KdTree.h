@@ -39,13 +39,15 @@ public:
    virtual bool shadowHit(const Ray& ray, double& tmin) const;
 
 private:
-   KdNode* buildTree(int depth, list<GeometryObject*> objs, const BBox& bounds);
+   KdNode* buildTree(unsigned depth, list<GeometryObject*> objs, const BBox& bounds);
    bool checkNode(const Ray& ray, KdNode* node, double& tmin, ShadeRecord& sr) const;
    bool checkNodeShadow(const Ray& ray, KdNode* node, double& tmin) const;
    void findSplit(list<GeometryObject*>& objs, const BBox& bounds, int& axis, double& split);
 
    KdNode *root;
    BoundEdge* edges;
+   unsigned maxDepth;
+   unsigned maxObjects;
 };
 
 #endif // KDTREE_H
