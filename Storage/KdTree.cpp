@@ -22,13 +22,13 @@ bool BoundEdge::operator< (const BoundEdge& e) const {
    return tsplit < e.tsplit;
 }
 
-KdNode::KdNode(vector<GeometryObject*> _objs) : left(NULL), right(NULL), objs(_objs) {
+KdNode::KdNode(vector<int> _idxs) : left(NULL), right(NULL), idxs(_idxs) {
 }
 
 KdNode::KdNode(KdNode* l, KdNode* r, int _axis, double _split) :
    left(l),
    right(r),
-   objs(),
+   idxs(),
    axis(_axis),
    split(_split)
 {
@@ -43,7 +43,9 @@ KdTree::KdTree() :
    root(NULL),
    edges(NULL),
    maxDepth(0),
-   maxObjects(10)
+   maxObjects(10),
+   travCost(1),
+   isectCost(80)
 {
 }
 
@@ -58,16 +60,20 @@ void KdTree::setup() {
    edges = new BoundEdge[objs.size() * 2];
 
    Uint32 start = SDL_GetTicks();
-   fprintf(stdout, "starting build\n");
-   fflush(stdout);
-   root = buildTree(0, objs, bbox);
+
+   vector<int> idxs;
+   for(unsigned i = 0; i < objs.size(); i++) {
+      idxs.push_back(i);
+   }
+
+   root = buildTree(0, idxs, bbox);
 
    Uint32 end = SDL_GetTicks();
    fprintf(stdout, "Build time = %f seconds\n", (end - start) / 1000.0);
    fflush(stdout);
 }
 
-void KdTree::findSplit(vector<GeometryObject*>& objs, const BBox& bounds, int& axis, double& split) {
+void KdTree::findSplit(vector<int>& idxs, const BBox& bounds, int& axis, double& split) {
    double invTotalSA = 1.0 / bounds.surfaceArea();
    double tsplit = numeric_limits<double>::infinity();
 
@@ -79,17 +85,17 @@ void KdTree::findSplit(vector<GeometryObject*>& objs, const BBox& bounds, int& a
 
    while(!found && tries < 3) {
       int idx = 0;
-      for(GeomIter it = objs.begin(); it != objs.end(); ++it) {
-         edges[2 * idx].set((*it)->bbox.getMin(taxis), true);
-         edges[2 * idx + 1].set((*it)->bbox.getMax(taxis), false);
+      for(unsigned i = 0; i < idxs.size(); i++) {
+         edges[2 * idx].set(objs[idxs[i]]->bbox.getMin(taxis), true);
+         edges[2 * idx + 1].set(objs[idxs[i]]->bbox.getMax(taxis), false);
          idx++;
       }
-      sort(&edges[0], &edges[2 * objs.size()]);
+      sort(&edges[0], &edges[2 * idxs.size()]);
 
-      int nBelow = 0, nAbove = objs.size();
+      int nBelow = 0, nAbove = idxs.size();
       double bestCost = numeric_limits<double>::max();
 
-      for(unsigned i = 0; i < 2 * objs.size(); i++) {
+      for(unsigned i = 0; i < 2 * idxs.size(); i++) {
          if(edges[i].type == BoundEdge::END) nAbove--;
          double edget = edges[i].tsplit;
          if(edget > bounds.getMin(taxis) && edget < bounds.getMax(taxis)) {
@@ -108,12 +114,12 @@ void KdTree::findSplit(vector<GeometryObject*>& objs, const BBox& bounds, int& a
             double pAbove = aboveSA * invTotalSA;
             double eb = (nBelow == 0 || nAbove == 0) ? 0.2 : 1.0;
 
-            double cost = 1.0 + 80.0 * eb * (pBelow * nBelow + pAbove * nAbove);
+            double cost = travCost + isectCost * eb * (pBelow * nBelow + pAbove * nAbove);
 
             if(cost < bestCost) {
                bestCost = cost;
                tsplit = edget;
-               found = bestCost < (80.0 * objs.size());
+               found = bestCost < (80.0 * idxs.size());
             }
          }
          if(edges[i].type == BoundEdge::START) nBelow++;
@@ -130,18 +136,18 @@ void KdTree::findSplit(vector<GeometryObject*>& objs, const BBox& bounds, int& a
    }
 }
 
-KdNode* KdTree::buildTree(unsigned depth, vector<GeometryObject*> objs, const BBox& bounds) {
-   if(depth >= maxDepth || objs.size() < maxObjects) {
+KdNode* KdTree::buildTree(unsigned depth, vector<int> idxs, const BBox& bounds) {
+   if(depth >= maxDepth || idxs.size() < maxObjects) {
       // stop recursion
-      return new KdNode(objs);
+      return new KdNode(idxs);
    }
 
    int axis;
    double split;
-   findSplit(objs, bounds, axis, split);
+   findSplit(idxs, bounds, axis, split);
 
    if(axis == -1) {
-      return new KdNode(objs);
+      return new KdNode(idxs);
    }
 
    BBox left = bounds;
@@ -149,16 +155,16 @@ KdNode* KdTree::buildTree(unsigned depth, vector<GeometryObject*> objs, const BB
    BBox right = bounds;
    right.setMin(axis, split);
 
-   vector<GeometryObject*> lidxs, ridxs;
-   for(GeomIter it = objs.begin(); it != objs.end(); ++it) {
-      if(left.intersects((*it)->bbox)) {
-         lidxs.push_back(*it);
+   vector<int> lidxs, ridxs;
+
+   for(unsigned i = 0; i < idxs.size(); i++) {
+      if(left.intersects(objs[idxs[i]]->bbox)) {
+         lidxs.push_back(idxs[i]);
       }
-      if(right.intersects((*it)->bbox)) {
-         ridxs.push_back(*it);
+      if(right.intersects(objs[idxs[i]]->bbox)) {
+         ridxs.push_back(idxs[i]);
       }
    }
-
    return new KdNode(buildTree(depth+1, lidxs, left), buildTree(depth+1, ridxs, right), axis, split);
 }
 
@@ -168,6 +174,12 @@ void KdTree::setHash(Hash* hash) {
    }
    if(hash->contains("maxObjects")) {
       maxObjects = hash->getInteger("maxObjects");
+   }
+   if(hash->contains("travCost")) {
+      travCost = hash->getInteger("travCost");
+   }
+   if(hash->contains("isectCost")) {
+      isectCost = hash->getInteger("isectCost");
    }
 }
 
@@ -198,7 +210,7 @@ bool KdTree::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
          if(tsplit > max || tsplit < 0) {
             node = first;
          }
-         else if(tsplit <= min) {
+         else if(tsplit < min) {
             node = second;
          }
          else {
@@ -207,11 +219,13 @@ bool KdTree::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
             max = tsplit;
          }
       }
+
       if(checkNode(ray, node, tHit, sr) && (tHit < max)) {
          tmin = tHit;
          return true;
       }
    }
+
    return false;
 /*
 stack.push(root,sceneMin,sceneMax)
@@ -246,10 +260,10 @@ bool KdTree::checkNode(const Ray& ray, KdNode* node, double& tmin, ShadeRecord& 
    shared_ptr<Material> mat;
    double tcheck = HUGE_VALUE;
 
-   for(GeomIter it = node->objs.begin(); it != node->objs.end(); it++) {
-      if((*it)->hit(ray, tmin, sr) && (tmin < tcheck)) {
+   for(unsigned i = 0; i < node->idxs.size(); i++) {
+      if(objs[node->idxs[i]]->hit(ray, tmin, sr) && (tmin < tcheck)) {
          tcheck = tmin;
-         mat = (*it)->getMaterial();
+         mat = objs[node->idxs[i]]->getMaterial();
          localHitPoint = sr.localHitPoint;
          normal = sr.normal;
          hitPoint = ray(tmin);
@@ -314,8 +328,8 @@ bool KdTree::checkNodeShadow(const Ray& ray, KdNode* node, double& tmin) const {
    bool hit = false;
    double tcheck = HUGE_VALUE;
 
-   for(GeomIter it = node->objs.begin(); it != node->objs.end(); it++) {
-      if(!(*it)->ignoreShadow && (*it)->shadowHit(ray, tmin) && (tmin < tcheck)) {
+   for(unsigned i = 0; i < node->idxs.size(); i++) {
+      if(!objs[node->idxs[i]]->ignoreShadow && objs[node->idxs[i]]->shadowHit(ray, tmin) && (tmin < tcheck)) {
          tcheck = tmin;
          hit = true;
       }
