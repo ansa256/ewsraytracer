@@ -6,14 +6,14 @@
 typedef unsigned int uint32_t;
 
 struct KdNode {
-   KdNode(vector<GeometryObject*> _objs);
+   KdNode(vector<int> _idxs);
    KdNode(KdNode* l, KdNode* r, int _axis, double _split);
 
    bool isLeaf() const;
 
    KdNode* left;
    KdNode* right;
-   vector<GeometryObject*> objs;
+   vector<int> idxs;
    int axis;
    double split;
 };
@@ -39,15 +39,17 @@ public:
    virtual bool shadowHit(const Ray& ray, double& tmin) const;
 
 private:
-   KdNode* buildTree(unsigned depth, vector<GeometryObject*> objs, const BBox& bounds);
+   KdNode* buildTree(unsigned depth, vector<int> idxs, const BBox& bounds);
    bool checkNode(const Ray& ray, KdNode* node, double& tmin, ShadeRecord& sr) const;
    bool checkNodeShadow(const Ray& ray, KdNode* node, double& tmin) const;
-   void findSplit(vector<GeometryObject*>& objs, const BBox& bounds, int& axis, double& split);
+   void findSplit(vector<int>& idxs, const BBox& bounds, int& axis, double& split);
 
    KdNode *root;
    BoundEdge* edges;
    unsigned maxDepth;
    unsigned maxObjects;
+   unsigned travCost;
+   unsigned isectCost;
 };
 
 #endif // KDTREE_H
