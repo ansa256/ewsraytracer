@@ -2,20 +2,31 @@
 #define KDTREE_H
 
 #include "Storage.h"
+#include <boost/dynamic_bitset.hpp>
 
 typedef unsigned int uint32_t;
 
 struct KdNode {
-   KdNode(vector<int> _idxs);
-   KdNode(KdNode* l, KdNode* r, int _axis, double _split);
+   void initLeaf(uint32_t* _idxs, int np);
+   void initInterior(uint32_t axis, uint32_t ac, float s);
 
-   bool isLeaf() const;
+   float getSplit() const { return split; }
+   uint32_t nPrimitives() const { return nPrims >> 2; }
+   uint32_t getAxis() const { return flags & 3; }
+   bool isLeaf() const { return (flags & 3) == 3; }
+   uint32_t getAboveChild() const { return aboveChild >> 2; }
 
-   KdNode* left;
-   KdNode* right;
-   vector<int> idxs;
-   int axis;
-   double split;
+   union {
+      float split;      // interior
+      uint32_t* idxs;   // leaf
+   };
+
+private:
+   union {
+      uint32_t flags;
+      uint32_t nPrims;
+      uint32_t aboveChild;
+   };
 };
 
 struct BoundEdge {
@@ -39,13 +50,14 @@ public:
    virtual bool shadowHit(const Ray& ray, double& tmin) const;
 
 private:
-   KdNode* buildTree(unsigned depth, vector<int> idxs, const BBox& bounds);
-   bool checkNode(const Ray& ray, KdNode* node, double& tmin, ShadeRecord& sr) const;
-   bool checkNodeShadow(const Ray& ray, KdNode* node, double& tmin) const;
-   void findSplit(vector<int>& idxs, const BBox& bounds, int& axis, double& split);
+   void buildTree(int nodeNum, unsigned depth, uint32_t* idxs, int nPrimitives, const BBox& bounds, uint32_t* lidxs, uint32_t* ridxs);
+   bool checkNode(const Ray& ray, int node, double& tmin, ShadeRecord& sr, boost::dynamic_bitset<>& checked) const;
+   bool checkNodeShadow(const Ray& ray, int node, double& tmin) const;
+   void findSplit(uint32_t* idxs, int np, const BBox& bounds, int& axis, double& split);
 
-   KdNode *root;
+   KdNode *nodes;
    BoundEdge* edges;
+   int nAllocedNodes, nextFreeNode;
    unsigned maxDepth;
    unsigned maxObjects;
    unsigned travCost;
