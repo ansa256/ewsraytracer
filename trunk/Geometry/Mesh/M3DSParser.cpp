@@ -8,6 +8,9 @@
 #include "Storage/KdTree.h"
 #include "Storage/Grid.h"
 
+// Include this line to see output of unprocessed chunks
+//#define PRINT_UNPROCESSED
+
 MaterialProps::MaterialProps() :
    name(""),
    ambient(NULL),
@@ -80,13 +83,15 @@ void M3DSParser::processTopLevelChunk(int nBytes) {
          processSceneChunk(contentSize);
       }
       else {
+#ifdef PRINT_UNPROCESSED
          printf("processTopLevelChunk %X %d\n", chunkType, chunkSize);
+#endif
          skipBytes(contentSize);
       }
    }
 
    if (bytesRead != nBytes) {
-      cerr << "In processTopLevelChunk expected " << nBytes << " bytes but read " << bytesRead << '\n';
+      fprintf(stderr, "In processTopLevelChunk expected %d bytes but read %d\n", nBytes, bytesRead);
    }
 }
 
@@ -107,13 +112,15 @@ void M3DSParser::processSceneChunk(int nBytes) {
          processMaterialChunk(contentSize);
       }
       else {
+#ifdef PRINT_UNPROCESSED
          printf("processSceneChunk %X %d\n", chunkType, chunkSize);
+#endif
          skipBytes(contentSize);
       }
    }
 
    if (bytesRead != nBytes) {
-      cerr << "In processSceneChunk expected " << nBytes << " bytes but read " << bytesRead << '\n';
+      fprintf(stderr, "In processSceneChunk expected %d bytes but read %d\n", nBytes, bytesRead);
    }
 }
 
@@ -130,13 +137,15 @@ void M3DSParser::processModelChunk(int nBytes, string name) {
          processTriMeshChunk(contentSize, name);
       }
       else {
+#ifdef PRINT_UNPROCESSED
          printf("processModelChunk %X %d\n", chunkType, chunkSize);
+#endif
          skipBytes(contentSize);
       }
    }
 
    if(bytesRead != nBytes) {
-      cerr << "In processModelChunk expected " << nBytes << " bytes but read " << bytesRead << '\n';
+      fprintf(stderr, "In processModelChunk expected %d bytes but read %d\n", nBytes, bytesRead);
    }
 }
 
@@ -167,13 +176,15 @@ void M3DSParser::processTriMeshChunk(int nBytes, string name) {
          }
       }
       else {
+#ifdef PRINT_UNPROCESSED
          printf("processTriMeshChunk %X %d\n", chunkType, chunkSize);
+#endif
          skipBytes(contentSize);
       }
    }
 
    if(bytesRead != nBytes) {
-      cerr << "In processTriMeshChunk expected " << nBytes << " bytes but read " << bytesRead << '\n';
+      fprintf(stderr, "In processTriMeshChunk expected %d bytes but read %d\n", nBytes, bytesRead);
    }
    mesh->calculateNormals();
 
@@ -214,7 +225,9 @@ void M3DSParser::processMaterialChunk(int nBytes) {
       }
       else if (chunkType == M3DCHUNK_MATERIAL_SHADING) {
          short shade = readUshortLE(in);
+#ifdef PRINT_UNPROCESSED
          printf("SHADING = %d\n", shade);
+#endif
       }
       else if (chunkType == M3DCHUNK_MATERIAL_TEXMAP) {
          props.texMap = processTexmapChunk(contentSize);
@@ -224,7 +237,9 @@ void M3DSParser::processMaterialChunk(int nBytes) {
 //         processPercentageChunk(contentSize, p);
 //      }
       else {
+#ifdef PRINT_UNPROCESSED
          printf("processMaterialChunk %X %d\n", chunkType, chunkSize);
+#endif
          skipBytes(contentSize);
       }
    }
@@ -251,7 +266,7 @@ void M3DSParser::processMaterialChunk(int nBytes) {
    }
 
    if(bytesRead != nBytes) {
-      cerr << "In processMaterialChunk expected " << nBytes << " bytes but read " << bytesRead << '\n';
+      fprintf(stderr, "In processMaterialChunk expected %d bytes but read %d\n", nBytes, bytesRead);
    }
 }
 
@@ -290,13 +305,15 @@ Color* M3DSParser::processColorChunk(int nBytes) {
          readFloatColor(color);
       }
       else {
+#ifdef PRINT_UNPROCESSED
          printf("processColorChunk %X %d\n", chunkType, chunkSize);
+#endif
          skipBytes(contentSize);
       }
    }
 
    if(bytesRead != nBytes) {
-      cerr << "In processColorChunk expected " << nBytes << " bytes but read " << bytesRead << '\n';
+      fprintf(stderr, "In processColorChunk expected %d bytes but read %d\n", nBytes, bytesRead);
    }
 
    return color;
@@ -318,13 +335,15 @@ void M3DSParser::processPercentageChunk(int nBytes, float& percent) {
          percent = readFloatLE(in);
       }
       else {
+#ifdef PRINT_UNPROCESSED
          printf("processPercentageChunk %X %d\n", chunkType, chunkSize);
+#endif
          skipBytes(contentSize);
       }
    }
 
    if(bytesRead != nBytes) {
-      cerr << "In processPercentageChunk expected " << nBytes << " bytes but read " << bytesRead << '\n';
+      fprintf(stderr, "In processPercentageChunk expected %d bytes but read %d\n", nBytes, bytesRead);
    }
 }
 
@@ -342,7 +361,9 @@ string M3DSParser::processTexmapChunk(int nBytes) {
          texName = textureDir + readString(in);
       }
       else {
+#ifdef PRINT_UNPROCESSED
          printf("processTexmapChunk %X %d\n", chunkType, chunkSize);
+#endif
          skipBytes(contentSize);
       }
    }
@@ -428,7 +449,9 @@ void M3DSParser::processFaceArrayChunk(int nBytes, Mesh* mesh) {
          }
       }
       else {
+#ifdef PRINT_UNPROCESSED
          printf("processFaceArrayChunk %X %d\n", chunkType, chunkSize);
+#endif
          skipBytes(contentSize);
       }
    }
