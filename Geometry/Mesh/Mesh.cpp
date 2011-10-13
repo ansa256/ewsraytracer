@@ -56,9 +56,7 @@ bool Face::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
       return false;
    }
 
-   if(parent.smoothingGroups.size() == 0) {
-      sr.normal = normal;
-   } else if(smoothGroup == 0) {
+   if(smoothGroup == 0) {
       sr.normal = normal;
       sr.dpdu = dpdu;
       sr.dpdv = dpdv;

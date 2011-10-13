@@ -28,14 +28,8 @@ public:
    Vector3D normal;
    Vector3D dpdu;
    Vector3D dpdv;
-   int smoothGroup;
+   uint32_t smoothGroup;
    Mesh& parent;
-};
-
-struct Voxel {
-   ~Voxel() { faces.clear(); }
-   vector<Face*> faces;
-   void add(Face* f) { faces.push_back(f); }
 };
 
 class SmoothingGroup {
