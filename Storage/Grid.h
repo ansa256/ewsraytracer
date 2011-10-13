@@ -17,7 +17,7 @@ public:
 class Grid : public Storage {
 
 public:
-   Grid();
+   Grid(int max = 64);
    virtual ~Grid();
 
    virtual void setup();
