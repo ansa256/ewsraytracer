@@ -59,7 +59,6 @@ private:
    BoundEdge* edges;
    int nAllocedNodes, nextFreeNode;
    unsigned maxDepth;
-   unsigned maxObjects;
    unsigned travCost;
    unsigned isectCost;
 };
