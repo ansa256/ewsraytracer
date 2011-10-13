@@ -24,7 +24,7 @@ bool ObjectList::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
       sr.localHitPoint = localHitPoint;
       sr.hitPoint = hitPoint;
       sr.normal = normal;
-      sr.material = mat;
+      sr.material = material = mat;
    }
 
    return hit;
