@@ -5,6 +5,8 @@
 #include "Materials/Matte.h"
 #include "Materials/Phong.h"
 #include "Parser/Hash.h"
+#include "Storage/KdTree.h"
+#include "Storage/Grid.h"
 
 MaterialProps::MaterialProps() :
    name(""),
@@ -141,7 +143,6 @@ void M3DSParser::processModelChunk(int nBytes, string name) {
 void M3DSParser::processTriMeshChunk(int nBytes, string name) {
    int bytesRead = 0;
    Mesh* mesh = new Mesh();
-   mesh->name = name;
 
    while(bytesRead < nBytes) {
       uint16 chunkType = readUshortLE(in);
@@ -175,8 +176,10 @@ void M3DSParser::processTriMeshChunk(int nBytes, string name) {
       cerr << "In processTriMeshChunk expected " << nBytes << " bytes but read " << bytesRead << '\n';
    }
    mesh->calculateNormals();
-   mesh->setupCells();
 
+   Storage* storage = new KdTree();
+   storage->addObject(mesh);
+   storage->setup();
    meshs->addObject(mesh);
 }
 

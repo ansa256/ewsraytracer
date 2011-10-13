@@ -4,9 +4,6 @@
 #include "Materials/Matte.h"
 #include <assert.h>
 
-#define COUNTER 0
-#define CLOCKWISE 1
-
 typedef vector<Vector3D*>::const_iterator VectorIter;
 typedef map<unsigned int, SmoothingGroup*>::const_iterator SmoothingGroupIter;
 typedef map<int, Vector3D*>::const_iterator SGNormalIter;
@@ -67,28 +64,25 @@ bool Face::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
       sr.dpdv = dpdv;
    }
    else {
-      Vector3D n;
-      Vector3D dpdu;
-      Vector3D dpdv;
+      sr.normal.reset();
+      sr.dpdu.reset();
+      sr.dpdv.reset();
+
+      unsigned mask = 1;
       for(int i = 0; i < 32; i++) {
-         int mask = (int) pow(2, i);
          if(mask & smoothGroup) {
-            SmoothingGroup* g = parent.smoothingGroups.find(i)->second;
-            n += g->interpolateNormal(this, b1, b2);
-            dpdu += g->interpolateDPDU(this, b1, b2);
-            dpdv += g->interpolateDPDV(this, b1, b2);
+            SmoothingGroup* g = parent.smoothingGroups[i]; // .find(i)->second;
+            sr.normal += g->interpolateNormal(this, b1, b2);
+            sr.dpdu += g->interpolateDPDU(this, b1, b2);
+            sr.dpdv += g->interpolateDPDV(this, b1, b2);
          }
+         mask = mask << 1;
       }
-      n.normalize();
-      sr.normal = n;
 
-      dpdu.normalize();
-      sr.dpdu = dpdu;
-
-      dpdv.normalize();
-      sr.dpdv = dpdv;
+      sr.normal.normalize();
+      sr.dpdu.normalize();
+      sr.dpdv.normalize();
    }
-
 
    sr.localHitPoint = ray(t);
 
@@ -176,7 +170,6 @@ Vector3D SmoothingGroup::interpolateDPDV(const Face* face, const double beta, co
 
 Mesh::Mesh() : Compound(), numCells(0) {
    doDelete = false;
-   name = "";
 }
 
 Mesh::~Mesh() {
@@ -259,131 +252,6 @@ void Mesh::setHash(Hash* hash) {
    }
 }
 
-bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
-	// the following code includes modifications from Shirley and Morley (2003)
-   double tx_min = (bbox.x0 - ray.origin.x) / ray.direction.x;
-   double tx_max = (bbox.x1 - ray.origin.x) / ray.direction.x;
-   if(ray.direction.x < 0) swap(tx_min, tx_max);
-
-   double ty_min = (bbox.y0 - ray.origin.y) / ray.direction.y;
-   double ty_max = (bbox.y1 - ray.origin.y) / ray.direction.y;
-   if(ray.direction.y < 0) swap(ty_min, ty_max);
-
-   double tz_min = (bbox.z0 - ray.origin.z) / ray.direction.z;
-   double tz_max = (bbox.z1 - ray.origin.z) / ray.direction.z;
-   if(ray.direction.z < 0) swap(tz_min, tz_max);
-
-   double t0 = max(max(tx_min, ty_min), tz_min);
-   double t1 = min(min(tx_max, ty_max), tz_max);
-
-   if (t0 > t1) return(false);
-
-   const Point3D& p = bbox.contains(ray.origin) ? ray.origin : ray(t0);
-
-   int ix = (int) clamp((p.x - bbox.x0) * nx / (bbox.wx), 0, nx - 1);
-   int iy = (int) clamp((p.y - bbox.y0) * ny / (bbox.wy), 0, ny - 1);
-   int iz = (int) clamp((p.z - bbox.z0) * nz / (bbox.wz), 0, nz - 1);
-
-   // ray parameter increments per cell in the x, y, and z directions
-
-   double dtx = (tx_max - tx_min) / nx;
-   double dty = (ty_max - ty_min) / ny;
-   double dtz = (tz_max - tz_min) / nz;
-
-   int ix_step, iy_step, iz_step;
-   int ix_stop, iy_stop, iz_stop;
-
-   double tx_next = calculateNext(ray.direction.x, tx_min, ix, dtx, nx, ix_step, ix_stop);
-   double ty_next = calculateNext(ray.direction.y, ty_min, iy, dty, ny, iy_step, iy_stop);
-   double tz_next = calculateNext(ray.direction.z, tz_min, iz, dtz, nz, iz_step, iz_stop);
-
-   double t = 0;
-   // Traverse the grid
-   while(true) {
-      int idx = ix + nx * iy + nx * ny * iz;
-//      assert(idx < numCells);
-      Voxel* cell = voxels[idx];
-
-      if (tx_next < ty_next && tx_next < tz_next) {
-         t = tx_next;
-         if(checkCell(ray, cell, t, sr)) { tmin = t; return true; }
-
-         tx_next += dtx;
-         ix += ix_step;
-         if (ix == ix_stop) return false;
-      }
-      else if (ty_next < tz_next) {
-         t = ty_next;
-         if(checkCell(ray, cell, t, sr)) { tmin = t; return true; }
-
-         ty_next += dty;
-         iy += iy_step;
-         if (iy == iy_stop) return false;
-      }
-      else {
-         t = tz_next;
-         if(checkCell(ray, cell, t, sr)) { tmin = t; return true; }
-
-         tz_next += dtz;
-         iz += iz_step;
-         if (iz == iz_stop) return false;
-      }
-   }
-}
-
-bool Mesh::checkCell(const Ray& ray, Voxel* cell, double& tmin, ShadeRecord& sr) const {
-   if(cell == NULL) return false;
-
-   bool hit = false;
-
-   double t;
-   for(FaceIter it = cell->faces.begin(), end = cell->faces.end(); it != end; it++) {
-      if((*it)->hit(ray, t, sr) && t < tmin) {
-         tmin = t;
-         assert((*it)->getMaterial().get() != NULL);
-         material = (*it)->getMaterial();
-         hit = true;
-      }
-   }
-
-   return hit;
-}
-
-double Mesh::calculateNext(double rd, double min, double i, double dt, int n, int& step, int& stop) const {
-   double next;
-
-   if (fabs(rd) < epsilon) {
-      next = HUGE_VALUE;
-      step = -1;
-      stop = -1;
-   }
-   else if (rd > 0) {
-      next = min + (i + 1) * dt;
-      step = 1;
-      stop = n;
-   }
-   else {
-      next = min + (n - i) * dt;
-      step = -1;
-      stop = -1;
-   }
-
-   return next;
-}
-
-bool Mesh::shadowHit(const Ray& ray, double& tmin) const {
-   ShadeRecord sr;
-   return hit(ray, tmin, sr);
-}
-
-Vector3D Mesh::interpolateNormal(Face* face, const double beta, const double gamma) const {
-   Vector3D normal(*normals[face->vertIdxs[0]] * (1.0 - beta - gamma)
-                 + *normals[face->vertIdxs[1]] * beta
-                 + *normals[face->vertIdxs[2]] * gamma);
-   normal.normalize();
-   return normal;
-}
-
 void Mesh::computePartialDerivitives(Face* face) const {
    double uvs[3][2];
    getUVs(uvs, face);
@@ -427,48 +295,3 @@ void Mesh::getUVs(double uv[3][2], Face* face) const {
       }
    }
 }
-
-void Mesh::setupCells() {
-   double root = 3.0 * pow(faces.size(), 1.0 / 3.0);
-   double voxelsPerUnit = root / bbox.maxExtent();
-
-   nx = (int) clamp(round(bbox.wx * voxelsPerUnit), 0, 32) + 1;
-   ny = (int) clamp(round(bbox.wy * voxelsPerUnit), 0, 32) + 1;
-   nz = (int) clamp(round(bbox.wz * voxelsPerUnit), 0, 32) + 1;
-
-   numCells = nx * ny * nz;
-   voxels = new Voxel*[numCells];
-   memset(voxels, 0, sizeof(Voxel*) * numCells);
-
-   for(FaceIter it = faces.begin(), end = faces.end(); it != end; ++it) {
-      BBox fbox;
-      fbox.expand(*points[(*it)->vertIdxs[0]]);
-      fbox.expand(*points[(*it)->vertIdxs[1]]);
-      fbox.expand(*points[(*it)->vertIdxs[2]]);
-
-      int ixmin = (int) clamp((fbox.x0 - bbox.x0) * nx / bbox.wx, 0, nx - 1);
-      int iymin = (int) clamp((fbox.y0 - bbox.y0) * ny / bbox.wy, 0, ny - 1);
-      int izmin = (int) clamp((fbox.z0 - bbox.z0) * nz / bbox.wz, 0, nz - 1);
-      int ixmax = (int) clamp((fbox.x1 - bbox.x0) * nx / bbox.wx, 0, nx - 1);
-      int iymax = (int) clamp((fbox.y1 - bbox.y0) * ny / bbox.wy, 0, ny - 1);
-      int izmax = (int) clamp((fbox.z1 - bbox.z0) * nz / bbox.wz, 0, nz - 1);
-
-      // add the object to the cells
-      for(int iz = izmin; iz <= izmax; iz++) {
-         for(int iy = iymin; iy <= iymax; iy++) {
-            for(int ix = ixmin; ix <= ixmax; ix++) {
-               int index = ix + nx * iy + nx * ny * iz;
-               if(voxels[index] == NULL) {
-                  voxels[index] = new Voxel();
-               }
-               voxels[index]->add(*it);
-            }
-         }
-      }
-   }
-}
-
-void Mesh::setFaceMaterial(int idx, shared_ptr<Material> material) {
-   faces[idx]->setMaterial(material);
-}
-
