@@ -309,7 +309,7 @@ bool KdTree::checkNode(const Ray& ray, int node, double& tmin, ShadeRecord& sr, 
             hit = true;
          }
          else {
-//            checked[nodes[node].idxs[i]] = 1;
+            checked[nodes[node].idxs[i]] = 1;
          }
       }
    }
@@ -318,7 +318,7 @@ bool KdTree::checkNode(const Ray& ray, int node, double& tmin, ShadeRecord& sr, 
       sr.localHitPoint = localHitPoint;
       sr.hitPoint = hitPoint;
       sr.normal = normal;
-      sr.material = mat;
+      sr.material = material = mat;
    }
    return hit;
 }

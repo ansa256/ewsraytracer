@@ -15,7 +15,7 @@ void GridVoxel::add(GeometryObject* o) {
    objs.push_back(o);
 }
 
-Grid::Grid() : Storage(), numCells(0), voxels(NULL), nx(0), ny(0), nz(0), maxCells(64) {
+Grid::Grid(int max) : Storage(), numCells(0), voxels(NULL), nx(0), ny(0), nz(0), maxCells(max) {
 }
 
 Grid::~Grid() {
@@ -266,6 +266,7 @@ bool Grid::checkCell(const Ray& ray, GridVoxel* cell, double& tmin, ShadeRecord&
       sr.hitPoint = hitPoint;
       sr.normal = normal;
       sr.material = mat;
+      material = mat;
    }
    return hit;
 }
