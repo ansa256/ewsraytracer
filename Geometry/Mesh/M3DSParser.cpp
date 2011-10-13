@@ -22,7 +22,7 @@ MaterialProps::MaterialProps() :
 {
 }
 
-M3DSParser::M3DSParser() : scale(1.0), textureDir(""), meshs(NULL), reverse(false) {
+M3DSParser::M3DSParser() : scale(1.0), textureDir(""), storage(NULL), reverse(false) {
 }
 
 M3DSParser::~M3DSParser() {
@@ -50,7 +50,7 @@ bool M3DSParser::load(const string& filename) {
       return false;
    }
 
-   meshs = new Compound();
+   storage = new KdTree();
    uint16 chunkType = readUshortLE(in);
    if (chunkType != M3DCHUNK_MAGIC) {
       fprintf(stderr, "Read3DSFile: Wrong magic number in header\n");
@@ -67,6 +67,8 @@ bool M3DSParser::load(const string& filename) {
    processTopLevelChunk(contentSize);
 
    in.close();
+
+   storage->setup();
    return true;
 }
 
@@ -188,10 +190,7 @@ void M3DSParser::processTriMeshChunk(int nBytes, string name) {
    }
    mesh->calculateNormals();
 
-   Storage* storage = new KdTree();
    storage->addObject(mesh);
-   storage->setup();
-   meshs->addObject(mesh);
 }
 
 void M3DSParser::processMaterialChunk(int nBytes) {
@@ -282,7 +281,7 @@ void M3DSParser::setMaterialTextures(Material* material, const MaterialProps& pr
       inp.open(normalMap.c_str(), ifstream::in);
       if(!inp.fail()) {
          inp.close();
-         material->setNormalMap(normalMap);
+//         material->setNormalMap(normalMap);
       }
       inp.clear(ios::failbit);
    }
