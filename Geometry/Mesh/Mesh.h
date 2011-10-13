@@ -74,35 +74,25 @@ public:
 
    FaceIter facesBegin() const { return faces.begin(); }
    FaceIter facesEnd() const { return faces.end(); }
-   void setFaceMaterial(int idx, shared_ptr<Material> material);
+   void setFaceMaterial(int idx, shared_ptr<Material> material) { faces[idx]->setMaterial(material); }
    Point3D* getPointAt(int idx) const { return points[idx]; }
 
    void calculateNormals();
 
    virtual void setHash(Hash* hash);
-   virtual bool hit(const Ray& ray, double& tmin, ShadeRecord& sr) const;
-   virtual bool shadowHit(const Ray& ray, double& tmin) const;
 
-   void setupCells();
-   string name;
    map<unsigned int, SmoothingGroup*> smoothingGroups;
    vector<Point2D> textureCoords;
 
 protected:
-   Vector3D interpolateNormal(Face* face, const double beta, const double gamma) const;
    int getPointCount() const { return points.size(); }
 
    int numCells;
    vector<Point3D*> points;
    vector<Vector3D*> normals;
    vector<Face*> faces;
-   Voxel** voxels;
-
-   int nx, ny, nz;
 
 private:
-   double calculateNext(double rd, double min, double i, double dt, int n, int& step, int& stop) const;
-   bool checkCell(const Ray& ray, Voxel* cell, double& tmin, ShadeRecord& sr) const;
    void computePartialDerivitives(Face* face) const;
    void getUVs(double uv[3][2], Face* face) const;
 };

@@ -46,7 +46,6 @@ fprintf(stderr, "ID = %s\n", chunkID.c_str());
    in.close();
 
    calculateNormals();
-   setupCells();
 }
 
 int LightWaveParser::parseTags() {
