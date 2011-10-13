@@ -15,7 +15,6 @@ Color RayCast::traceRay(const Ray& ray, const int depth) {
    ShadeRecord sr;
 
    if(GeometryManager::instance().getStorage()->hit(ray, t, sr)) {
-      sr.tracer = this;
       sr.depth = depth;
       Color c = sr.material->shade(sr, ray);
 
