@@ -47,7 +47,6 @@ KdTree::KdTree() :
    nAllocedNodes(0),
    nextFreeNode(0),
    maxDepth(0),
-   maxObjects(10),
    travCost(1),
    isectCost(80)
 {
@@ -58,9 +57,6 @@ KdTree::~KdTree() {
 }
 
 void KdTree::setup() {
-   fprintf(stdout, "Start build\n");
-   fflush(stdout);
-
    if(maxDepth == 0) {
       maxDepth = int(8 + 1.3f * Log2Int(float(objs.size())));
    }
@@ -208,9 +204,6 @@ void KdTree::setHash(Hash* hash) {
    if(hash->contains("maxDepth")) {
       maxDepth = hash->getInteger("maxDepth");
    }
-   if(hash->contains("maxObjects")) {
-      maxObjects = hash->getInteger("maxObjects");
-   }
    if(hash->contains("travCost")) {
       travCost = hash->getInteger("travCost");
    }
@@ -237,8 +230,8 @@ bool KdTree::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
          double originAxis = ray.origin.get(nodes[node].getAxis());
          double directionAxis = ray.direction.get(nodes[node].getAxis());
          double tsplit = (nodes[node].getSplit() - originAxis) / directionAxis;
-         int first = node + 1, second = nodes[node].getAboveChild();
 
+         int first = node + 1, second = nodes[node].getAboveChild();
          bool belowFirst = (originAxis < nodes[node].getSplit()) || (originAxis == nodes[node].getSplit() && directionAxis >= 0);
          if(!belowFirst) {
             swap(first, second);
