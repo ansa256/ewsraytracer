@@ -106,20 +106,20 @@ void KdTree::findSplit(uint32_t* idxs, int np, const BBox& bounds, int& axis, do
       int nBelow = 0, nAbove = np;
       double bestCost = numeric_limits<double>::max();
 
+      int other0 = (taxis + 1) % 3;
+      int other1 = (taxis + 2) % 3;
+      double bw1 = bounds.width(other0) * bounds.width(other1);
+      double bw2 = bounds.width(other0) + bounds.width(other1);
+
+      double axisMin = bounds.getMin(taxis);
+      double axisMax = bounds.getMax(taxis);
+
       for(int i = 0; i < 2 * np; i++) {
          if(edges[i].type == BoundEdge::END) nAbove--;
          double edget = edges[i].tsplit;
-         if(edget > bounds.getMin(taxis) && edget < bounds.getMax(taxis)) {
-            int other0 = (taxis + 1) % 3;
-            int other1 = (taxis + 2) % 3;
-
-            double belowSA = 2 * (bounds.width(other0) * bounds.width(other1)) +
-                                 (edget - bounds.getMin(taxis)) *
-                                 (bounds.width(other0) + bounds.width(other1));
-
-            double aboveSA = 2 * (bounds.width(other0) * bounds.width(other1)) +
-                                 (bounds.getMax(taxis) - edget) *
-                                 (bounds.width(other0) + bounds.width(other1));
+         if(edget > axisMin && edget < axisMax) {
+            double belowSA = 2 * bw1 + (edget - axisMin) * bw2;
+            double aboveSA = 2 * bw1 + (axisMax - edget) * bw2;
 
             double pBelow = belowSA * invTotalSA;
             double pAbove = aboveSA * invTotalSA;
