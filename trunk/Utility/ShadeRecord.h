@@ -23,23 +23,20 @@ class ShadeRecord {
 
 public:
    ShadeRecord();
-   ~ShadeRecord();
 
    Vector3D normal;
    Point3D hitPoint;
    Point3D localHitPoint;
    shared_ptr<Material> material;
+
+   Vector3D dpdu, dpdv;
+   double tu, tv;
    int depth;
 
    // The following are used by area lights
    Point3D samplePoint;
    Vector3D lightNormal;
    Vector3D wi;
-   Tracer* tracer;
-
-   double tu, tv;
-
-   Vector3D dpdu, dpdv;
 };
 
 #endif

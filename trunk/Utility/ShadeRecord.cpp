@@ -1,12 +1,3 @@
-/*
- *  ShadeRecord.cpp
- *  RayTracer
- *
- *  Created by Eric Saari on 12/30/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include "ShadeRecord.h"
 
 ShadeRecord::ShadeRecord() :
@@ -14,18 +5,13 @@ ShadeRecord::ShadeRecord() :
    hitPoint(),
    localHitPoint(),
    material(),
+   dpdu(),
+   dpdv(),
+   tu(0),
+   tv(0),
    depth(0),
    samplePoint(),
    lightNormal(),
-   wi(),
-   tracer(NULL),
-   tu(0),
-   tv(0),
-   dpdu(),
-   dpdv()
+   wi()
 {
-}
-
-ShadeRecord::~ShadeRecord() {
-   tracer = NULL;
 }

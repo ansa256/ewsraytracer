@@ -25,7 +25,7 @@ Color Reflective::shade(ShadeRecord& sr, const Ray& ray) {
    Color fr = psBRDF->sample_f(sr, wo, wi);
    Ray reflectedRay(sr.hitPoint, wi);
 
-   L += fr * sr.tracer->traceRay(reflectedRay, sr.depth+1) * sr.normal.dot(wi);
+//   L += fr * sr.tracer->traceRay(reflectedRay, sr.depth+1) * sr.normal.dot(wi);
    return L;
 }
 
