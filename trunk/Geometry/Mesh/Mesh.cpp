@@ -31,7 +31,7 @@ Face::Face(Mesh& mesh, int idx1, int idx2, int idx3) : normal(), dpdu(), dpdv(),
       normal.normalize();
    }
 
-   setMaterial(shared_ptr<Material>(new Matte()));
+   setMaterial(new Matte());
 }
 
 bool Face::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
@@ -55,6 +55,12 @@ bool Face::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    if(t < epsilon) {
       return false;
    }
+
+   if(t > ray.maxt) {
+      return false;
+   }
+
+   ray.maxt = t;
 
    if(smoothGroup == 0) {
       sr.normal = normal;
@@ -83,6 +89,8 @@ bool Face::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    }
 
    sr.localHitPoint = ray(t);
+   sr.hitPoint = ray(t);
+   sr.material = material;
 
    if(parent.textureCoords.size() == 0) {
       sr.tu = sr.tv = 0.0;

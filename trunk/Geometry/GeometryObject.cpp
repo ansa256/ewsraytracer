@@ -38,25 +38,25 @@ void GeometryObject::setupMaterial(Hash* hash) {
    }
 
    if(type == "phong") {
-      material = shared_ptr<Material>(new Phong());
+      material = new Phong();
    }
    else if(type == "reflective") {
-      material = shared_ptr<Material>(new Reflective());
+      material = new Reflective();
    }
    else if(type == "atmosphere") {
-      material = shared_ptr<Material>(new Atmosphere());
+      material = new Atmosphere();
    }
    else if(type == "emissive") {
-      material = shared_ptr<Material>(new Emissive());
+      material = new Emissive();
    }
    else {
       // Matte is the default type
-      material = shared_ptr<Material>(new Matte());
+      material = new Matte();
    }
 
    material->setHash(hash);
 }
 
-void GeometryObject::setMaterial(shared_ptr<Material> m) {
+void GeometryObject::setMaterial(Material* m) {
    material = m;
 }

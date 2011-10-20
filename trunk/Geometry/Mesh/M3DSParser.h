@@ -62,7 +62,7 @@ private:
    Storage* storage;
    bool reverse;
    ifstream in;
-   map<string, shared_ptr<Material> > materials;
+   map<string, Material*> materials;
 };
 
 #endif

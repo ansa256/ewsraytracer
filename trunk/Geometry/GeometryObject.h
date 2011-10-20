@@ -15,13 +15,10 @@
 #include "Utility/ShadeRecord.h"
 #include "Math/Point3D.h"
 #include "BBox.h"
-#include <boost/shared_ptr.hpp>
 
 class Hash;
 class Material;
 class Texture;
-
-using namespace boost;
 
 class GeometryObject {
 
@@ -34,8 +31,8 @@ public:
    virtual bool shadowHit(const Ray& ray, double& tmin) const = 0;
 
    void setupMaterial(Hash* hash);
-   shared_ptr<Material> getMaterial() const { return material; }
-   void setMaterial(shared_ptr<Material> m);
+   Material* getMaterial() const { return material; }
+   void setMaterial(Material* m);
 
    virtual bool isCompound() { return false; }
 
@@ -45,7 +42,7 @@ public:
    BBox bbox;
 
 protected:
-   mutable shared_ptr<Material> material;
+   mutable Material* material;
    Texture* normalMap;
 };
 
