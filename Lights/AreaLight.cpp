@@ -49,19 +49,11 @@ void AreaLight::setHash(Hash* hash) {
 }
 
 bool AreaLight::inShadow(const Ray& ray, const ShadeRecord& sr) {
-   double t;
    double ts = (sr.samplePoint - ray.origin).dot(ray.direction);
 
-   if(GeometryManager::instance().getStorage()->shadowHit(ray, t) && (t < ts)) {
+   if(GeometryManager::instance().getStorage()->shadowHit(ray) && (ray.tHit < ts)) {
       return true;
    }
-/*
-   for(GeometryIter it = GeometryManager::instance().begin(); it != GeometryManager::instance().end(); it++) {
-      if((*it)->shadowHit(ray, t) && (t < ts)) {
-         return true;
-      }
-   }
-*/
    return false;
 }
 

@@ -95,7 +95,7 @@ bool Annulus::partCheck(const Point3D& hit) const {
    return true;
 }
 
-bool Annulus::shadowHit(const Ray& ray, double& tHit) const {
+bool Annulus::shadowHit(const Ray& ray) const {
    double t = (center - ray.origin).dot(normal) / ray.direction.dot(normal);
 
    if(t < epsilon) {
@@ -116,7 +116,7 @@ bool Annulus::shadowHit(const Ray& ray, double& tHit) const {
       float alpha = material->getAlpha(sr, ray);
 
       if(alpha > 0.2) {
-         tHit = t;
+         ray.tHit = t;
          return true;
       }
    }

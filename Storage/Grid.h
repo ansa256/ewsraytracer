@@ -24,7 +24,7 @@ public:
 
    virtual void setHash(Hash* hash);
    virtual bool hit(const Ray& ray, ShadeRecord& sr) const;
-   virtual bool shadowHit(const Ray& ray, double& tHit) const;
+   virtual bool shadowHit(const Ray& ray) const;
 
    void setMaxCells(int cells) { maxCells = cells; }
 
@@ -32,7 +32,7 @@ private:
    void cleanup();
    double calculateNext(double rd, double min, double i, double dt, int n, int& step, int& stop) const;
    bool checkCell(const Ray& ray, GridVoxel* cell, ShadeRecord& sr) const;
-   bool checkCellShadow(const Ray& ray, GridVoxel* cell, double& tHit) const;
+   bool checkCellShadow(const Ray& ray, GridVoxel* cell) const;
 
    int numCells;
    GridVoxel** voxels;

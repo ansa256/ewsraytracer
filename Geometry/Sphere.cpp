@@ -123,7 +123,7 @@ void Sphere::getNormalFromMap(ShadeRecord& sr) const {
    sr.normal = tangentMatrix * mapNormal;
 }
 
-bool Sphere::shadowHit(const Ray& ray, double& tHit) const {
+bool Sphere::shadowHit(const Ray& ray) const {
    if(!bbox.hit(ray)) return false;
 
    Vector3D temp(ray.origin - center);
@@ -146,7 +146,7 @@ bool Sphere::shadowHit(const Ray& ray, double& tHit) const {
       float alpha = material->getAlpha(sr, ray);
 
       if(alpha > 0.5) {
-         tHit = t;
+         ray.tHit = t;
          return true;
       }
    }
@@ -158,7 +158,7 @@ bool Sphere::shadowHit(const Ray& ray, double& tHit) const {
       float alpha = material->getAlpha(sr, ray);
 
       if(alpha > 0.5) {
-         tHit = t;
+         ray.tHit = t;
          return true;
       }
    }
@@ -236,13 +236,11 @@ Point3D Sphere::sample(const Point3D& hitPoint) const {
    double cosTheta = sqrt(max(0.0, 1.0 - sinTheta));
 
    Ray ray(hitPoint, Sampler::uniformSampleCone(sp->x, sp->y, cosTheta, wcx, wcy, wc));
-   double thit = 0;
-
-   if(!shadowHit(ray, thit)) {
-      thit = (center - hitPoint).dot(ray.direction.normalize());
+   if(!shadowHit(ray)) {
+      ray.tHit = (center - hitPoint).dot(ray.direction.normalize());
    }
 
-   return ray(thit);
+   return ray(ray.tHit);
 }
 
 Vector3D Sphere::getNormal(const Point3D& point) const {

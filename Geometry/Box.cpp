@@ -101,7 +101,7 @@ bool Box::hit(const Ray& ray, ShadeRecord& sr) const {
    return false;
 }
 
-bool Box::shadowHit(const Ray& ray, double& tHit) const {
+bool Box::shadowHit(const Ray& ray) const {
    double ox = ray.origin.x;     double oy = ray.origin.y;     double oz = ray.origin.z;
    double dx = ray.direction.x;  double dy = ray.direction.y;  double dz = ray.direction.z;
 
@@ -143,10 +143,10 @@ bool Box::shadowHit(const Ray& ray, double& tHit) const {
 
    if(t0 < t1 && t1 > epsilon) {
       if(t0 > epsilon) {
-         tHit = t0;
+         ray.tHit = t0;
       }
       else {
-         tHit = t1;
+         ray.tHit = t1;
       }
       return true;
    }

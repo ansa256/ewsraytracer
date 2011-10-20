@@ -120,7 +120,7 @@ bool Torus::hit(const Ray& ray, ShadeRecord& sr) const {
    return true;
 }
 
-bool Torus::shadowHit(const Ray& ray, double& tHit) const {
+bool Torus::shadowHit(const Ray& ray) const {
    if(!bbox.hit(ray)) {
       return false;
    }
@@ -168,7 +168,7 @@ bool Torus::shadowHit(const Ray& ray, double& tHit) const {
       return false;
    }
 
-   tHit = t;
+   ray.tHit = t;
    return true;
 }
 

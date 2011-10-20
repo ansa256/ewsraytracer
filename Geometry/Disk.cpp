@@ -54,7 +54,7 @@ bool Disk::hit(const Ray& ray, ShadeRecord& sr) const {
    return false;
 }
 
-bool Disk::shadowHit(const Ray& ray, double& tHit) const {
+bool Disk::shadowHit(const Ray& ray) const {
    float t = (center - ray.origin).dot(normal) / ray.direction.dot(normal);
 
    if(t < epsilon) {
@@ -63,7 +63,7 @@ bool Disk::shadowHit(const Ray& ray, double& tHit) const {
 
    Point3D p = ray.origin + ray.direction * t;
    if(center.distanceSquared(p) < radiusSquared) {
-      tHit = t;
+      ray.tHit = t;
       return true;
    }
    return false;

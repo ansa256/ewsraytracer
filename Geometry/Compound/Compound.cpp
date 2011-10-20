@@ -37,13 +37,13 @@ bool Compound::hit(const Ray& ray, ShadeRecord& sr) const {
    return false;
 }
 
-bool Compound::shadowHit(const Ray& ray, double& tHit) const {
+bool Compound::shadowHit(const Ray& ray) const {
    if(!bbox.hit(ray)) {
       return false;
    }
 
    for(CompoundIter it = objects.begin(); it != objects.end(); it++) {
-      if((*it)->shadowHit(ray, tHit)) {
+      if((*it)->shadowHit(ray)) {
          return true;
       }
    }
