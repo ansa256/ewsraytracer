@@ -17,11 +17,11 @@ class Box : public GeometryObject {
 public:
    Box();
    virtual ~Box() {}
-   
+
    virtual void setHash(Hash* hash);
-   virtual bool hit(const Ray& ray, double& tmin, ShadeRecord& sr) const;
-   virtual bool shadowHit(const Ray& ray, double& tmin) const;
-   
+   virtual bool hit(const Ray& ray, ShadeRecord& sr) const;
+   virtual bool shadowHit(const Ray& ray, double& tHit) const;
+
 private:
    void getNormal(Vector3D& n, const int face) const;
 

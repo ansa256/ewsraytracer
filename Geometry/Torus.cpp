@@ -37,7 +37,7 @@ void Torus::setHash(Hash* hash) {
    a = hash->getDouble("a");
    b = hash->getDouble("b");
    setupMaterial(hash->getValue("material")->getHash());
-   
+
    if(hash->contains("thetaRange")) {
       thetaRange = true;
       Array* a = hash->getValue("thetaRange")->getArray();
@@ -46,21 +46,21 @@ void Torus::setHash(Hash* hash) {
       maxTheta = a->at(1)->getDouble() * DEG_TO_RAD;
       cosThetaMax = cos(maxTheta);
    }
-   
+
    if(hash->contains("phiRange")) {
       phiRange = true;
       Array* a = hash->getValue("phiRange")->getArray();
       minPhi = a->at(0)->getDouble() * DEG_TO_RAD;
       maxPhi = a->at(1)->getDouble() * DEG_TO_RAD;
    }
-   
+
    bbox.x0 = bbox.z0 = -a - b;
    bbox.y0 = -b;
    bbox.x1 = bbox.z1 = a + b;
    bbox.y1 = b;
 }
 
-bool Torus::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
+bool Torus::hit(const Ray& ray, ShadeRecord& sr) const {
    if(!bbox.hit(ray)) {
       return false;
    }
@@ -72,28 +72,28 @@ bool Torus::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    double e = ox * ox + oy * oy + oz * oz - a * a + b * b;
    double f = ox * dx + oy * dy + oz * dz;
    double fourSizeSquared = 4.0 * a * a;
-   
+
    double coeffs[5];
    double roots[4];
-   
+
    // Define the coefficients
    coeffs[0] = e * e - fourSizeSquared * (b * b - oy * oy);
    coeffs[1] = 4.0 * f * e + 2.0 * fourSizeSquared * oy * dy;
    coeffs[2] = 2.0 * sum_d_sqrd * e + 4.0 * f * f + fourSizeSquared * dy * dy;
    coeffs[3] = 4.0 * sum_d_sqrd * f;
    coeffs[4] = sum_d_sqrd * sum_d_sqrd;
-   
+
    // Find the roots
    int numRoots = SolveQuartic(coeffs, roots);
-   
+
    if(numRoots == 0) {
       // Ray misses torus
       return false;
    }
-   
+
    bool intersected = false;
    double t = 10.0e10;
-   
+
    // Find smallest root > epsilon if any
    for(int j = 0; j < numRoots; j++) {
       if(roots[j] > epsilon && partCheck(ray, roots[j])) {
@@ -103,15 +103,16 @@ bool Torus::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
          }
       }
    }
-   
-   if(!intersected) {
+
+   if(!intersected || t > ray.tHit) {
       return false;
    }
-   
-   tmin = t;
-   sr.localHitPoint = ray.origin + ray.direction * t;
+
+   ray.tHit = t;
+   sr.localHitPoint = sr.hitPoint = ray(t);
+   sr.material = material;
    computeNormal(sr.normal, sr.localHitPoint);
-   
+
    if((-ray.direction).dot(sr.normal) < 0.0) {
       sr.normal *= -1;
    }
@@ -119,7 +120,7 @@ bool Torus::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    return true;
 }
 
-bool Torus::shadowHit(const Ray& ray, double& tmin) const {
+bool Torus::shadowHit(const Ray& ray, double& tHit) const {
    if(!bbox.hit(ray)) {
       return false;
    }
@@ -167,7 +168,7 @@ bool Torus::shadowHit(const Ray& ray, double& tmin) const {
       return false;
    }
 
-   tmin = t;
+   tHit = t;
    return true;
 }
 
@@ -183,7 +184,7 @@ bool Torus::partCheck(const Ray& ray, double t) const {
    if(!thetaRange && !phiRange) {
       return true;
    }
-   
+
    Point3D hit = ray.origin + ray.direction * t;
 
    if(thetaRange) {
@@ -191,7 +192,7 @@ bool Torus::partCheck(const Ray& ray, double t) const {
          return false;
       }
    }
-   
+
    if(phiRange) {
       double phi = atan2(hit.x, hit.z);
       if(phi < 0.0) {

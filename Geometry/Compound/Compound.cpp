@@ -24,57 +24,26 @@ void Compound::addObject(GeometryObject* obj) {
    bbox.expand(obj->bbox);
 }
 
-bool Compound::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
+bool Compound::hit(const Ray& ray, ShadeRecord& sr) const {
    if(!bbox.hit(ray)) {
       return false;
    }
 
-   double t = 0;
-   tmin = 1.7 * pow(10.0, 308.0);
-   bool hit = false;
-   Vector3D normal;
-   Point3D localHitPoint;
-   Material* mat;
-   double tu, tv;
-   Vector3D dpdu;
-   Vector3D dpdv;
-
    for(CompoundIter it = objects.begin(); it != objects.end(); it++) {
-      if((*it)->hit(ray, t, sr) && (t < tmin)) {
-         hit = true;
-         tmin = t;
-         normal = sr.normal;
-         localHitPoint = sr.localHitPoint;
-         mat = (*it)->getMaterial();
-         tu = sr.tu;
-         tv = sr.tv;
-         dpdu = sr.dpdu;
-         dpdv = sr.dpdv;
+      if((*it)->hit(ray, sr)) {
+         return true;
       }
    }
-
-   if(hit) {
-      sr.normal = normal;
-      sr.localHitPoint = localHitPoint;
-      sr.tu = tu;
-      sr.tv = tv;
-      sr.dpdu = dpdu;
-      sr.dpdv = dpdv;
-      material = mat;
-   }
-
-   return hit;
+   return false;
 }
 
-bool Compound::shadowHit(const Ray& ray, double& tmin) const {
+bool Compound::shadowHit(const Ray& ray, double& tHit) const {
    if(!bbox.hit(ray)) {
       return false;
    }
 
-   tmin = 1.7 * pow(10.0, 308.0);
-
    for(CompoundIter it = objects.begin(); it != objects.end(); it++) {
-      if((*it)->shadowHit(ray, tmin)) {
+      if((*it)->shadowHit(ray, tHit)) {
          return true;
       }
    }

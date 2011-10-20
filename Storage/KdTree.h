@@ -30,11 +30,12 @@ private:
 };
 
 struct BoundEdge {
-   void set(float t, bool s) { tsplit = t; type = s ? START : END; }
+   void set(float t, bool s, int n) { tsplit = t; type = s ? START : END; pnum = n; }
    bool operator< (const BoundEdge& e) const;
 
    float tsplit;
    enum { START, END } type;
+   int pnum;
 };
 
 class KdTree : public Storage {
@@ -46,14 +47,14 @@ public:
    virtual void setup();
 
    virtual void setHash(Hash* hash);
-   virtual bool hit(const Ray& ray, double& tmin, ShadeRecord& sr) const;
-   virtual bool shadowHit(const Ray& ray, double& tmin) const;
+   virtual bool hit(const Ray& ray, ShadeRecord& sr) const;
+   virtual bool shadowHit(const Ray& ray, double& tHit) const;
 
 private:
    void buildTree(int nodeNum, unsigned depth, uint32_t* idxs, int nPrimitives, const BBox& bounds, uint32_t* lidxs, uint32_t* ridxs);
-   bool checkNode(const Ray& ray, int node, double& tmin, ShadeRecord& sr, boost::dynamic_bitset<>& checked) const;
-   bool checkNodeShadow(const Ray& ray, int node, double& tmin) const;
-   void findSplit(uint32_t* idxs, int np, const BBox& bounds, int& axis, double& split);
+   bool checkNode(const Ray& ray, int node, ShadeRecord& sr, boost::dynamic_bitset<>& checked) const;
+   bool checkNodeShadow(const Ray& ray, int node, double& tHit) const;
+   void findSplit(uint32_t* idxs, int np, const BBox& bounds, int& axis, double& split, int& offset);
 
    KdNode *nodes;
    BoundEdge* edges;

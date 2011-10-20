@@ -15,8 +15,8 @@ public:
    virtual ~Compound();
 
    virtual void setHash(Hash* hash);
-   virtual bool hit(const Ray& ray, double& tmin, ShadeRecord& sr) const;
-   virtual bool shadowHit(const Ray& ray, double& tmin) const;
+   virtual bool hit(const Ray& ray, ShadeRecord& sr) const;
+   virtual bool shadowHit(const Ray& ray, double& tHit) const;
    void addObject(GeometryObject* obj);
 
    virtual bool isCompound() { return true; }

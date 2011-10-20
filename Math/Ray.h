@@ -15,12 +15,12 @@
 #include "Math/Matrix.h"
 
 class Ray {
-   
+
 public:
    Ray();
    Ray(const Point3D& o, const Vector3D& d);
    Ray(const Ray& ray);
-   
+
    Point3D operator()(double t) const { return origin + direction * t; }
    /**
     * Calculates a matrix that can be used to convert a normal from model spsace to eye space.
@@ -29,6 +29,7 @@ public:
 
    Point3D origin;
    Vector3D direction;
+   mutable double tHit;
 };
 
 #endif

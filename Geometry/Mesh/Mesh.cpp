@@ -34,7 +34,7 @@ Face::Face(Mesh& mesh, int idx1, int idx2, int idx3) : normal(), dpdu(), dpdv(),
    setMaterial(new Matte());
 }
 
-bool Face::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
+bool Face::hit(const Ray& ray, ShadeRecord& sr) const {
    const Vector3D& s1 = ray.direction.cross(p1p3);
    double div = s1.dot(p1p2);
    if(div < epsilon) {
@@ -56,11 +56,11 @@ bool Face::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
       return false;
    }
 
-   if(t > ray.maxt) {
+   if(t > ray.tHit) {
       return false;
    }
 
-   ray.maxt = t;
+   ray.tHit = t;
 
    if(smoothGroup == 0) {
       sr.normal = normal;
@@ -102,13 +102,33 @@ bool Face::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
       sr.tv = 1.0 - normalize(sr.tv);
    }
 
-   tmin = t;
    return true;
 }
 
-bool Face::shadowHit(const Ray& ray, double& tmin) const {
-   ShadeRecord sr;
-   return hit(ray, tmin, sr);
+bool Face::shadowHit(const Ray& ray, double& tHit) const {
+   const Vector3D& s1 = ray.direction.cross(p1p3);
+   double div = s1.dot(p1p2);
+   if(div < epsilon) {
+      return false;
+   }
+   float invDiv = 1.0 / div;
+
+   const Vector3D& s = ray.origin - *parent.getPointAt(vertIdxs[0]);
+   const Vector3D& s2 = s.cross(p1p2);
+   double b1 = s1.dot(s) * invDiv;
+   double b2 = s2.dot(ray.direction) * invDiv;
+
+   if(b1 < epsilon || b2 < epsilon || (b1 + b2) > 1.0) {
+      return false;
+   }
+
+   double t = s2.dot(p1p3) * invDiv;
+   if(t < epsilon) {
+      return false;
+   }
+
+   tHit = t;
+   return true;
 }
 
 SmoothingGroup::~SmoothingGroup() {

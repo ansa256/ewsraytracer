@@ -10,7 +10,7 @@ void Box::setHash(Hash* hash) {
    setupMaterial(hash->getValue("material")->getHash());
 }
 
-bool Box::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
+bool Box::hit(const Ray& ray, ShadeRecord& sr) const {
    double ox = ray.origin.x;     double oy = ray.origin.y;     double oz = ray.origin.z;
    double dx = ray.direction.x;  double dy = ray.direction.y;  double dz = ray.direction.z;
 
@@ -49,7 +49,7 @@ bool Box::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
 
    int faceIn, faceOut;
    double t0, t1;
-   
+
    // Find largest entering t
    if(txMin > tyMin) {
       t0 = txMin;
@@ -63,7 +63,7 @@ bool Box::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
       t0 = tzMin;
       faceIn = (c >= 0.0) ? 2 : 5;
    }
-   
+
    // Find smallest exiting t
    if(txMax < tyMax) {
       t1 = txMax;
@@ -80,21 +80,28 @@ bool Box::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
 
    if(t0 < t1 && t1 > epsilon) {
       if(t0 > epsilon) {
-         tmin = t0;
+         if(t0 > ray.tHit) {
+            return false;
+         }
+         ray.tHit = t0;
          getNormal(sr.normal, faceIn);
       }
       else {
-         tmin = t1;
+         if(t1 > ray.tHit) {
+            return false;
+         }
+         ray.tHit = t1;
          getNormal(sr.normal, faceOut);
       }
-      
-      sr.localHitPoint = ray.origin + ray.direction * tmin;
+
+      sr.localHitPoint = sr.hitPoint = ray(ray.tHit);
+      sr.material = material;
       return true;
    }
    return false;
 }
 
-bool Box::shadowHit(const Ray& ray, double& tmin) const {
+bool Box::shadowHit(const Ray& ray, double& tHit) const {
    double ox = ray.origin.x;     double oy = ray.origin.y;     double oz = ray.origin.z;
    double dx = ray.direction.x;  double dy = ray.direction.y;  double dz = ray.direction.z;
 
@@ -135,6 +142,12 @@ bool Box::shadowHit(const Ray& ray, double& tmin) const {
    double t1 = min(min(txMax, tyMax), tzMax);
 
    if(t0 < t1 && t1 > epsilon) {
+      if(t0 > epsilon) {
+         tHit = t0;
+      }
+      else {
+         tHit = t1;
+      }
       return true;
    }
    return false;

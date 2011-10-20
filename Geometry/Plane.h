@@ -16,12 +16,12 @@ class Hash;
  * </ul>
  */
 class Plane : public GeometryObject {
-   
+
 public:
    Plane();
 
-   virtual bool hit(const Ray& ray, double& tmin, ShadeRecord& sr) const;
-   virtual bool shadowHit(const Ray& ray, double& tmin) const;
+   virtual bool hit(const Ray& ray, ShadeRecord& sr) const;
+   virtual bool shadowHit(const Ray& ray, double& tHit) const;
    virtual void setHash(Hash* hash);
 
 private:

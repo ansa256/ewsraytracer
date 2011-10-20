@@ -84,7 +84,7 @@ void KdTree::setup() {
    delete[] ridxs;
 }
 
-void KdTree::findSplit(uint32_t* idxs, int np, const BBox& bounds, int& axis, double& split) {
+void KdTree::findSplit(uint32_t* idxs, int np, const BBox& bounds, int& axis, double& split, int& offset) {
    double invTotalSA = 1.0 / bounds.surfaceArea();
    double tsplit = numeric_limits<double>::infinity();
 
@@ -97,8 +97,8 @@ void KdTree::findSplit(uint32_t* idxs, int np, const BBox& bounds, int& axis, do
    while(!found && tries < 3) {
       int idx = 0;
       for(int i = 0; i < np; i++) {
-         edges[2 * idx].set(objs[idxs[i]]->bbox.getMin(taxis), true);
-         edges[2 * idx + 1].set(objs[idxs[i]]->bbox.getMax(taxis), false);
+         edges[2 * idx].set(objs[idxs[i]]->bbox.getMin(taxis), true, idxs[i]);
+         edges[2 * idx + 1].set(objs[idxs[i]]->bbox.getMax(taxis), false, idxs[i]);
          idx++;
       }
       sort(&edges[0], &edges[2 * np]);
@@ -131,6 +131,7 @@ void KdTree::findSplit(uint32_t* idxs, int np, const BBox& bounds, int& axis, do
                bestCost = cost;
                tsplit = edget;
                found = bestCost < (isectCost * np);
+               offset = i;
             }
          }
          if(edges[i].type == BoundEdge::START) nBelow++;
@@ -169,9 +170,9 @@ void KdTree::buildTree(int nodeNum, unsigned depth, uint32_t* idxs, int nPrimiti
       return;
    }
 
-   int axis;
-   double split;
-   findSplit(idxs, nPrimitives, bounds, axis, split);
+   int axis = 0, offset = 0;
+   double split = 0;
+   findSplit(idxs, nPrimitives, bounds, axis, split, offset);
 
    if(axis == -1) {
       nodes[nodeNum].initLeaf(idxs, nPrimitives);
@@ -184,13 +185,25 @@ void KdTree::buildTree(int nodeNum, unsigned depth, uint32_t* idxs, int nPrimiti
    right.setMin(axis, split);
 
    int n0 = 0, n1 = 0;
-
+/*
    for(int i = 0; i < nPrimitives; i++) {
       if(left.intersects(objs[idxs[i]]->bbox)) {
          lidxs[n0++] = idxs[i];
       }
       if(right.intersects(objs[idxs[i]]->bbox)) {
          ridxs[n1++] = idxs[i];
+      }
+   }
+*/
+
+   for(int i = 0; i < offset; i++) {
+      if(edges[i].type == BoundEdge::START) {
+         lidxs[n0++] = edges[i].pnum;
+      }
+   }
+   for(int i = offset+1; i < 2 * nPrimitives; i++) {
+      if(edges[i].type == BoundEdge::END) {
+         ridxs[n1++] = edges[i].pnum;
       }
    }
 
@@ -212,7 +225,7 @@ void KdTree::setHash(Hash* hash) {
    }
 }
 
-bool KdTree::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
+bool KdTree::hit(const Ray& ray, ShadeRecord& sr) const {
    boost::dynamic_bitset<> checked(objs.size());
 
    stack<NodeS> nodeStack;
@@ -250,8 +263,7 @@ bool KdTree::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
          }
       }
 
-      if(checkNode(ray, node, tHit, sr, checked) && (tHit < max)) {
-         tmin = tHit;
+      if(checkNode(ray, node, sr, checked)) {
          return true;
       }
    }
@@ -282,24 +294,12 @@ return tHitt
 */
 }
 
-bool KdTree::checkNode(const Ray& ray, int node, double& tmin, ShadeRecord& sr, boost::dynamic_bitset<>& checked) const {
-   bool hit = false;
-   Vector3D normal;
-   Point3D hitPoint;
-   Point3D localHitPoint;
-   shared_ptr<Material> mat;
-   double tcheck = HUGE_VALUE;
-
+bool KdTree::checkNode(const Ray& ray, int node, ShadeRecord& sr, boost::dynamic_bitset<>& checked) const {
    for(uint32_t i = 0; i < nodes[node].nPrimitives(); i++) {
       if(!checked[nodes[node].idxs[i]]) {
          GeometryObject* obj = objs[nodes[node].idxs[i]];
-         if(obj->hit(ray, tmin, sr) && (tmin < tcheck)) {
-            tcheck = tmin;
-            mat = obj->getMaterial();
-            localHitPoint = sr.localHitPoint;
-            normal = sr.normal;
-            hitPoint = ray(tmin);
-            hit = true;
+         if(obj->hit(ray, sr)) {
+            return true;
          }
          else {
             checked[nodes[node].idxs[i]] = 1;
@@ -307,20 +307,12 @@ bool KdTree::checkNode(const Ray& ray, int node, double& tmin, ShadeRecord& sr, 
       }
    }
 
-   if(hit) {
-      sr.localHitPoint = localHitPoint;
-      sr.hitPoint = hitPoint;
-      sr.normal = normal;
-      sr.material = material = mat;
-   }
-   return hit;
+   return false;
 }
 
-bool KdTree::shadowHit(const Ray& ray, double& tmin) const {
+bool KdTree::shadowHit(const Ray& ray, double& tHit) const {
    stack<NodeS> nodeStack;
    nodeStack.push(NodeS(0, 0, HUGE_VALUE));
-
-   double tHit = HUGE_VALUE;
 
    while(!nodeStack.empty()) {
       int node = nodeStack.top().node;
@@ -351,25 +343,20 @@ bool KdTree::shadowHit(const Ray& ray, double& tmin) const {
             max = tsplit;
          }
       }
-      if(checkNodeShadow(ray, node, tHit) && (tHit < max)) {
-         tmin = tHit;
+      if(checkNodeShadow(ray, node, tHit)) {
          return true;
       }
    }
    return false;
 }
 
-bool KdTree::checkNodeShadow(const Ray& ray, int node, double& tmin) const {
-   bool hit = false;
-   double tcheck = HUGE_VALUE;
-
+bool KdTree::checkNodeShadow(const Ray& ray, int node, double& tHit) const {
    for(uint32_t i = 0; i < nodes[node].nPrimitives(); i++) {
       GeometryObject* obj = objs[nodes[node].idxs[i]];
-      if(!obj->ignoreShadow && obj->shadowHit(ray, tmin) && (tmin < tcheck)) {
-         tcheck = tmin;
-         hit = true;
+      if(!obj->ignoreShadow && obj->shadowHit(ray, tHit)) {
+         return true;
       }
    }
 
-   return hit;
+   return false;
 }

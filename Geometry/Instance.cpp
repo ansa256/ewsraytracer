@@ -60,30 +60,26 @@ void Instance::setHash(Hash* hash) {
    computeBBox();
 }
 
-bool Instance::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
+bool Instance::hit(const Ray& ray, ShadeRecord& sr) const {
    Ray invRay;
    invRay.origin = invMatrix * ray.origin;
    invRay.direction = invMatrix * ray.direction;
 
-   if(object->hit(invRay, tmin, sr)) {
+   if(object->hit(invRay, sr)) {
       sr.normal = invMatrix.transformNormal(sr.normal);
       sr.normal.normalize();
-      sr.localHitPoint = ray.origin + ray.direction * tmin;
-
-      Instance* self = const_cast<Instance*>(this);
-      self->material = object->getMaterial();
-
+      material = object->getMaterial();
       return true;
    }
 
    return false;
 }
 
-bool Instance::shadowHit(const Ray& ray, double& tmin) const {
+bool Instance::shadowHit(const Ray& ray, double& tHit) const {
    Ray invRay;
    invRay.origin = invMatrix * ray.origin;
    invRay.direction = invMatrix * ray.direction;
-   return object->shadowHit(invRay, tmin);
+   return object->shadowHit(invRay, tHit);
 }
 
 void Instance::computeBBox() {

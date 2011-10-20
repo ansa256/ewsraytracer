@@ -27,8 +27,8 @@ public:
    virtual ~GeometryObject();
 
    virtual void setHash(Hash* hash) = 0;
-   virtual bool hit(const Ray& ray, double& tmin, ShadeRecord& sr) const = 0;
-   virtual bool shadowHit(const Ray& ray, double& tmin) const = 0;
+   virtual bool hit(const Ray& ray, ShadeRecord& sr) const = 0;
+   virtual bool shadowHit(const Ray& ray, double& tHit) const = 0;
 
    void setupMaterial(Hash* hash);
    Material* getMaterial() const { return material; }
