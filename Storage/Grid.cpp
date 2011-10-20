@@ -248,16 +248,31 @@ bool Grid::checkCell(const Ray& ray, GridVoxel* cell, double& tmin, ShadeRecord&
    Vector3D normal;
    Point3D hitPoint;
    Point3D localHitPoint;
-   shared_ptr<Material> mat;
+   Material* mat;
+   double tu = 0, tv = 0;
+   Vector3D dpdu;
+   Vector3D dpdv;
+
+   Point3D samplePoint;
+   Vector3D lightNormal;
+   Vector3D wi;
 
    for(CellIter it = cell->objs.begin(); it != cell->objs.end(); it++) {
       if((*it)->hit(ray, tmin, sr) && tmin < tcheck) {
-         mat = (*it)->getMaterial();
-         localHitPoint = sr.localHitPoint;
-         normal = sr.normal;
-         hitPoint = ray(tmin);
          hit = true;
          tcheck = tmin;
+         mat = (*it)->getMaterial();
+         localHitPoint = sr.localHitPoint;
+         hitPoint = ray(tmin);
+         normal = sr.normal;
+         dpdu = sr.dpdu;
+         dpdv = sr.dpdv;
+         tu = sr.tu;
+         tv = sr.tv;
+
+         samplePoint = sr.samplePoint;
+         lightNormal = sr.lightNormal;
+         wi = sr.wi;
       }
    }
 
@@ -265,8 +280,16 @@ bool Grid::checkCell(const Ray& ray, GridVoxel* cell, double& tmin, ShadeRecord&
       sr.localHitPoint = localHitPoint;
       sr.hitPoint = hitPoint;
       sr.normal = normal;
-      sr.material = mat;
-      material = mat;
+      sr.material = material = mat;
+      sr.tu = tu;
+      sr.tv = tv;
+      sr.dpdu = dpdu;
+      sr.dpdv = dpdv;
+
+      sr.samplePoint = samplePoint;
+      sr.lightNormal = lightNormal;
+      sr.wi = wi;
+
    }
    return hit;
 }

@@ -43,7 +43,7 @@ void StarBox::createBoxSide(string name, const Point3D& origin, const Vector3D& 
    ImageTexture* texture = new ImageTexture();
    texture->setSurface(surface);
 
-   shared_ptr<Emissive> em(new Emissive());
+   Emissive* em = new Emissive();
    em->setTexture(texture);
 
    Rectangle* rect = new Rectangle(origin, a, b);

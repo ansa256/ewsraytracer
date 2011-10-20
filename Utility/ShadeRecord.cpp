@@ -4,7 +4,7 @@ ShadeRecord::ShadeRecord() :
    normal(),
    hitPoint(),
    localHitPoint(),
-   material(),
+   material(NULL),
    dpdu(),
    dpdv(),
    tu(0),

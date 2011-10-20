@@ -68,7 +68,7 @@ public:
 
    FaceIter facesBegin() const { return faces.begin(); }
    FaceIter facesEnd() const { return faces.end(); }
-   void setFaceMaterial(int idx, shared_ptr<Material> material) { faces[idx]->setMaterial(material); }
+   void setFaceMaterial(int idx, Material* material) { faces[idx]->setMaterial(material); }
    Point3D* getPointAt(int idx) const { return points[idx]; }
 
    void calculateNormals();
