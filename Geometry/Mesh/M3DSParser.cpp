@@ -7,6 +7,7 @@
 #include "Parser/Hash.h"
 #include "Storage/KdTree.h"
 #include "Storage/Grid.h"
+#include "Storage/ObjectList.h"
 
 // Include this line to see output of unprocessed chunks
 //#define PRINT_UNPROCESSED
@@ -41,6 +42,24 @@ void M3DSParser::setHash(Hash* h) {
    if(h->contains("reverse")) {
       reverse = true;
    }
+   if(h->contains("storage")) {
+      Hash* s = h->getValue("storage")->getHash();
+      string type = s->getString("type");
+
+      if(type == "grid") {
+         storage = new Grid();
+      }
+      else if(type == "kdtree") {
+         storage = new KdTree();
+      }
+      else {
+         storage = new ObjectList();
+      }
+      storage->setHash(s);
+   }
+   else {
+      storage = new KdTree();
+   }
 }
 
 bool M3DSParser::load(const string& filename) {
@@ -50,7 +69,6 @@ bool M3DSParser::load(const string& filename) {
       return false;
    }
 
-   storage = new KdTree();
    uint16 chunkType = readUshortLE(in);
    if (chunkType != M3DCHUNK_MAGIC) {
       fprintf(stderr, "Read3DSFile: Wrong magic number in header\n");
@@ -189,7 +207,7 @@ void M3DSParser::processTriMeshChunk(int nBytes, string name) {
       fprintf(stderr, "In processTriMeshChunk expected %d bytes but read %d\n", nBytes, bytesRead);
    }
    mesh->calculateNormals();
-
+//if(name == "Hull" || name == "WingL")
    storage->addObject(mesh);
 }
 
@@ -251,17 +269,14 @@ void M3DSParser::processMaterialChunk(int nBytes) {
       material->setSpecularHighlight(props.specHighlight);
       material->setSpecularPercent(props.highlightPercent);
       setMaterialTextures(material, props);
-      materials[props.name] = shared_ptr<Material>(material);
+      materials[props.name] = material;
    }
    else {
       Matte* material = new Matte();
       material->setAmbientColor(props.ambient);
       material->setDiffuseColor(props.diffuse);
-
-      if(props.texMap.length() > 0) {
-         material->setTexture(props.texMap);
-      }
-      materials[props.name] = shared_ptr<Material>(material);
+      setMaterialTextures(material, props);
+      materials[props.name] = material;
    }
 
    if(bytesRead != nBytes) {
