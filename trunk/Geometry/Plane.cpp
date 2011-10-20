@@ -20,11 +20,11 @@ bool Plane::hit(const Ray& ray, ShadeRecord& sr) const {
    return false;
 }
 
-bool Plane::shadowHit(const Ray& ray, double& tHit) const {
+bool Plane::shadowHit(const Ray& ray) const {
    double t = (point - ray.origin).dot(normal) / (ray.direction.dot(normal));
 
    if(t > epsilon) {
-      tHit = t;
+      ray.tHit = t;
       return true;
    }
    return false;

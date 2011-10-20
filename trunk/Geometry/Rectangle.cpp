@@ -81,7 +81,7 @@ bool Rectangle::hit(const Ray& ray, ShadeRecord& sr) const {
    return true;
 }
 
-bool Rectangle::shadowHit(const Ray& ray, double& tHit) const {
+bool Rectangle::shadowHit(const Ray& ray) const {
    if(ignoreShadow) {
       return false;
    }
@@ -104,7 +104,7 @@ bool Rectangle::shadowHit(const Ray& ray, double& tHit) const {
       return false;
    }
 
-   tHit = t;
+   ray.tHit = t;
    return true;
 }
 

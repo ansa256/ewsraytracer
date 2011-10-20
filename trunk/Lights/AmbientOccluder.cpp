@@ -30,25 +30,16 @@ void AmbientOccluder::setHash(Hash* hash) {
    ls = hash->getDouble("radiance");
    color.set(hash->getValue("color")->getArray());
    minColor.set(hash->getValue("minColor")->getArray());
-   
+
    int numSamples = hash->getInteger("numSamples");
    sampler = new MultiJittered(numSamples);
    sampler->mapSamplesToHemisphere(1);
 }
 
 bool AmbientOccluder::inShadow(const Ray& ray, const ShadeRecord& sr) {
-   double t;
-   
-   if(GeometryManager::instance().getStorage()->shadowHit(ray, t)) {
+   if(GeometryManager::instance().getStorage()->shadowHit(ray)) {
       return true;
    }
-/*
-   for(GeometryIter it = GeometryManager::instance().begin(); it != GeometryManager::instance().end(); it++) {
-      if((*it)->shadowHit(ray, t)) {
-         return true;
-      }
-   }
-*/
    return false;
 }
 
@@ -57,13 +48,13 @@ Color AmbientOccluder::L(const ShadeRecord& sr) {
    v = w.cross(0.0072, 1.0, 0.0034);
    v.normalize();
    u = v.cross(w);
-   
+
    Ray shadowRay;
    shadowRay.origin = sr.hitPoint;
-   
+
    Point3D* sp = sampler->sampleHemisphere();
    shadowRay.direction = u * sp->x + v * sp->y + w * sp->z;
-   
+
    if(inShadow(shadowRay, sr)) {
       return minColor * color * ls;
    }

@@ -20,7 +20,7 @@ public:
 
    virtual void setHash(Hash* hash);
    virtual bool hit(const Ray& ray, ShadeRecord& sr) const;
-   virtual bool shadowHit(const Ray& ray, double& tHit) const;
+   virtual bool shadowHit(const Ray& ray) const;
 
 private:
    void getNormal(Vector3D& n, const int face) const;

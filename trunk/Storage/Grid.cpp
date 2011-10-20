@@ -146,7 +146,7 @@ bool Grid::hit(const Ray& ray, ShadeRecord& sr) const {
    }
 }
 
-bool Grid::shadowHit(const Ray& ray, double& tHit) const {
+bool Grid::shadowHit(const Ray& ray) const {
    double tx_min = (bbox.x0 - ray.origin.x) / ray.direction.x;
    double tx_max = (bbox.x1 - ray.origin.x) / ray.direction.x;
    if(ray.direction.x < 0) swap(tx_min, tx_max);
@@ -191,21 +191,21 @@ bool Grid::shadowHit(const Ray& ray, double& tHit) const {
       GridVoxel* cell = voxels[ix + nx * iy + nx * ny * iz];
 
       if (tx_next < ty_next && tx_next < tz_next) {
-         if(checkCellShadow(ray, cell, tHit)) return true;
+         if(checkCellShadow(ray, cell)) return true;
 
          tx_next += dtx;
          ix += ix_step;
          if (ix == ix_stop) return false;
       }
       else if (ty_next < tz_next) {
-         if(checkCellShadow(ray, cell, tHit)) return true;
+         if(checkCellShadow(ray, cell)) return true;
 
          ty_next += dty;
          iy += iy_step;
          if (iy == iy_stop) return false;
       }
       else {
-         if(checkCellShadow(ray, cell, tHit)) return true;
+         if(checkCellShadow(ray, cell)) return true;
 
          tz_next += dtz;
          iz += iz_step;
@@ -248,11 +248,11 @@ bool Grid::checkCell(const Ray& ray, GridVoxel* cell, ShadeRecord& sr) const {
    return false;
 }
 
-bool Grid::checkCellShadow(const Ray& ray, GridVoxel* cell, double& tHit) const {
+bool Grid::checkCellShadow(const Ray& ray, GridVoxel* cell) const {
    if(cell == NULL) return false;
 
    for(CellIter it = cell->objs.begin(); it != cell->objs.end(); it++) {
-      if(!(*it)->ignoreShadow && (*it)->shadowHit(ray, tHit)) {
+      if(!(*it)->ignoreShadow && (*it)->shadowHit(ray)) {
          return true;
       }
    }

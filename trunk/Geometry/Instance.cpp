@@ -75,11 +75,11 @@ bool Instance::hit(const Ray& ray, ShadeRecord& sr) const {
    return false;
 }
 
-bool Instance::shadowHit(const Ray& ray, double& tHit) const {
+bool Instance::shadowHit(const Ray& ray) const {
    Ray invRay;
    invRay.origin = invMatrix * ray.origin;
    invRay.direction = invMatrix * ray.direction;
-   return object->shadowHit(invRay, tHit);
+   return object->shadowHit(invRay);
 }
 
 void Instance::computeBBox() {

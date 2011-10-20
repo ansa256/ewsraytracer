@@ -11,9 +11,9 @@ bool ObjectList::hit(const Ray& ray, ShadeRecord& sr) const {
    return false;
 }
 
-bool ObjectList::shadowHit(const Ray& ray, double& tHit) const {
+bool ObjectList::shadowHit(const Ray& ray) const {
    for(GeomIter it = objs.begin(); it != objs.end(); it++) {
-      if(!(*it)->ignoreShadow && (*it)->shadowHit(ray, tHit)) {
+      if(!(*it)->ignoreShadow && (*it)->shadowHit(ray)) {
          return true;
       }
    }

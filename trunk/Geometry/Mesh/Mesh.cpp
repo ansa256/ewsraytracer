@@ -105,7 +105,7 @@ bool Face::hit(const Ray& ray, ShadeRecord& sr) const {
    return true;
 }
 
-bool Face::shadowHit(const Ray& ray, double& tHit) const {
+bool Face::shadowHit(const Ray& ray) const {
    const Vector3D& s1 = ray.direction.cross(p1p3);
    double div = s1.dot(p1p2);
    if(div < epsilon) {
@@ -127,7 +127,7 @@ bool Face::shadowHit(const Ray& ray, double& tHit) const {
       return false;
    }
 
-   tHit = t;
+   ray.tHit = t;
    return true;
 }
 
