@@ -46,15 +46,15 @@ void Rectangle::setup() {
    lengthBSquared = b.length() * b.length();
 
    inverseArea = 1.0 / (a.length() * b.length());
-   
+
    bbox.expand(origin);
    bbox.expand(origin + a);
-   bbox.expand(origin + b);   
+   bbox.expand(origin + b);
 }
 
-bool Rectangle::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
+bool Rectangle::hit(const Ray& ray, ShadeRecord& sr) const {
    double t = (origin - ray.origin).dot(normal) / ray.direction.dot(normal);
-   if(t <= epsilon) {
+   if(t <= epsilon || t > ray.tHit) {
       return false;
    }
 
@@ -71,16 +71,17 @@ bool Rectangle::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
       return false;
    }
 
-   tmin = t;
+   ray.tHit = t;
    sr.normal = normal;
-   sr.localHitPoint = p;
+   sr.localHitPoint = sr.hitPoint = p;
+   sr.material = material;
    sr.tu = ddota / lengthASquared;
    sr.tv = ddotb / lengthBSquared;
 
    return true;
 }
 
-bool Rectangle::shadowHit(const Ray& ray, double& tmin) const {
+bool Rectangle::shadowHit(const Ray& ray, double& tHit) const {
    if(ignoreShadow) {
       return false;
    }
@@ -103,8 +104,7 @@ bool Rectangle::shadowHit(const Ray& ray, double& tmin) const {
       return false;
    }
 
-   tmin = t;
-
+   tHit = t;
    return true;
 }
 

@@ -36,24 +36,25 @@ void Disk::setHash(Hash* hash) {
    setupMaterial(hash->getValue("material")->getHash());
 }
 
-bool Disk::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
+bool Disk::hit(const Ray& ray, ShadeRecord& sr) const {
    float t = (center - ray.origin).dot(normal) / ray.direction.dot(normal);
 
-   if(t < epsilon) {
+   if(t < epsilon || t > ray.tHit) {
       return false;
    }
 
-   Point3D p = ray.origin + ray.direction * t;
+   Point3D p = ray(t);
    if(center.distanceSquared(p) < radiusSquared) {
-      tmin = t;
+      ray.tHit = t;
       sr.normal = normal;
-      sr.localHitPoint = p;
+      sr.localHitPoint = sr.hitPoint = p;
+      sr.material = material;
       return true;
    }
    return false;
 }
 
-bool Disk::shadowHit(const Ray& ray, double& tmin) const {
+bool Disk::shadowHit(const Ray& ray, double& tHit) const {
    float t = (center - ray.origin).dot(normal) / ray.direction.dot(normal);
 
    if(t < epsilon) {
@@ -62,7 +63,7 @@ bool Disk::shadowHit(const Ray& ray, double& tmin) const {
 
    Point3D p = ray.origin + ray.direction * t;
    if(center.distanceSquared(p) < radiusSquared) {
-      tmin = t;
+      tHit = t;
       return true;
    }
    return false;

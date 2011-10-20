@@ -43,7 +43,7 @@ void Annulus::setHash(Hash* hash) {
 
    radius = hash->getDouble("outerRadius");
    outerSquared = radius * radius;
-   
+
    if(hash->contains("angleRange")) {
       angleRange = true;
       Array* a = hash->getValue("angleRange")->getArray();
@@ -54,25 +54,26 @@ void Annulus::setHash(Hash* hash) {
    setupMaterial(hash->getValue("material")->getHash());
 }
 
-bool Annulus::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
+bool Annulus::hit(const Ray& ray, ShadeRecord& sr) const {
    double t = (center - ray.origin).dot(normal) / ray.direction.dot(normal);
-   
-   if(t < epsilon) {
+
+   if(t < epsilon || t > ray.tHit) {
       return false;
    }
-   
+
    // Calculate the hit point
    Point3D p = ray(t);
    // Calculate distance from object center to hit point
    double dist = center.distanceSquared(p);
-   
+
    // If distance is between outer and inner radius, it hits the annulus
    if(innerSquared <= dist && dist < outerSquared && partCheck(p)) {
-      tmin = t;
       sr.normal = normal;
-      sr.localHitPoint = p;
+      sr.localHitPoint = sr.hitPoint = p;
       sr.tu = (dist-innerSquared) / (outerSquared-innerSquared);
       sr.tv = 0;
+      sr.material = material;
+      ray.tHit = t;
       return true;
    }
    return false;
@@ -94,7 +95,7 @@ bool Annulus::partCheck(const Point3D& hit) const {
    return true;
 }
 
-bool Annulus::shadowHit(const Ray& ray, double& tmin) const {
+bool Annulus::shadowHit(const Ray& ray, double& tHit) const {
    double t = (center - ray.origin).dot(normal) / ray.direction.dot(normal);
 
    if(t < epsilon) {
@@ -115,7 +116,7 @@ bool Annulus::shadowHit(const Ray& ray, double& tmin) const {
       float alpha = material->getAlpha(sr, ray);
 
       if(alpha > 0.2) {
-         tmin = t;
+         tHit = t;
          return true;
       }
    }

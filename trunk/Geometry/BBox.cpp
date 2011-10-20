@@ -1,5 +1,6 @@
 #include "BBox.h"
 #include "GeometryObject.h"
+#include <assert.h>
 
 BBox::BBox() : x0(1e6), y0(1e6), z0(1e6), x1(-1e6), y1(-1e6), z1(-1e6) {
 }

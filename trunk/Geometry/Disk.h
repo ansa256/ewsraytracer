@@ -18,8 +18,8 @@ public:
    virtual ~Disk();
 
    virtual void setHash(Hash* hash);
-   virtual bool hit(const Ray& ray, double& tmin, ShadeRecord& sr) const;
-   virtual bool shadowHit(const Ray& ray, double& tmin) const;
+   virtual bool hit(const Ray& ray, ShadeRecord& sr) const;
+   virtual bool shadowHit(const Ray& ray, double& tHit) const;
 
    virtual Point3D sample(const Point3D& hitPoint) const;
    virtual Vector3D getNormal(const Point3D& point) const;

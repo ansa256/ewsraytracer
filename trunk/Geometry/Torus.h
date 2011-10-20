@@ -17,12 +17,12 @@ public:
    virtual ~Torus() {}
 
    virtual void setHash(Hash* hash);
-   virtual bool hit(const Ray& ray, double& tmin, ShadeRecord& sr) const;
-   virtual bool shadowHit(const Ray& ray, double& tmin) const;
-   
+   virtual bool hit(const Ray& ray, ShadeRecord& sr) const;
+   virtual bool shadowHit(const Ray& ray, double& tHit) const;
+
    void setThetaRange(double min, double max);
    void setPhiRange(double min, double max);
-   
+
 private:
    void computeNormal(Vector3D& n, const Point3D& p) const;
    bool partCheck(const Ray& ray, double t) const;

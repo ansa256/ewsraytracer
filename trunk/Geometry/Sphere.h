@@ -22,8 +22,8 @@ public:
    Sphere(const Point3D& c, double r);
    virtual ~Sphere();
 
-   virtual bool hit(const Ray& ray, double& tmin, ShadeRecord& sr) const;
-   virtual bool shadowHit(const Ray& ray, double& tmin) const;
+   virtual bool hit(const Ray& ray, ShadeRecord& sr) const;
+   virtual bool shadowHit(const Ray& ray, double& tHit) const;
    virtual void setHash(Hash* hash);
 
    virtual Point3D sample(const Point3D& hitPoint) const;
