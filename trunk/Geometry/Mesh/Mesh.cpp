@@ -52,11 +52,7 @@ bool Face::hit(const Ray& ray, ShadeRecord& sr) const {
    }
 
    double t = s2.dot(p1p3) * invDiv;
-   if(t < epsilon) {
-      return false;
-   }
-
-   if(t > ray.tHit) {
+   if(t < epsilon || t > ray.tHit) {
       return false;
    }
 

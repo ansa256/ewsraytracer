@@ -293,11 +293,12 @@ return tHitt
 }
 
 bool KdTree::checkNode(const Ray& ray, int node, ShadeRecord& sr, boost::dynamic_bitset<>& checked) const {
+   bool hit = false;
    for(uint32_t i = 0; i < nodes[node].nPrimitives(); i++) {
       if(!checked[nodes[node].idxs[i]]) {
          GeometryObject* obj = objs[nodes[node].idxs[i]];
          if(obj->hit(ray, sr)) {
-            return true;
+            hit = true;
          }
          else {
             checked[nodes[node].idxs[i]] = 1;
@@ -305,7 +306,7 @@ bool KdTree::checkNode(const Ray& ray, int node, ShadeRecord& sr, boost::dynamic
       }
    }
 
-   return false;
+   return hit;
 }
 
 bool KdTree::shadowHit(const Ray& ray) const {

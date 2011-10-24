@@ -240,12 +240,13 @@ double Grid::calculateNext(double rd, double min, double i, double dt, int n, in
 bool Grid::checkCell(const Ray& ray, GridVoxel* cell, ShadeRecord& sr) const {
    if(cell == NULL) return false;
 
+   bool hit = false;
    for(CellIter it = cell->objs.begin(); it != cell->objs.end(); it++) {
       if((*it)->hit(ray, sr)) {
-         return true;
+         hit = true;
       }
    }
-   return false;
+   return hit;
 }
 
 bool Grid::checkCellShadow(const Ray& ray, GridVoxel* cell) const {
