@@ -207,7 +207,7 @@ void M3DSParser::processTriMeshChunk(int nBytes, string name) {
       fprintf(stderr, "In processTriMeshChunk expected %d bytes but read %d\n", nBytes, bytesRead);
    }
    mesh->calculateNormals();
-//if(name == "Hull" || name == "WingL")
+
    storage->addObject(mesh);
 }
 
@@ -296,7 +296,7 @@ void M3DSParser::setMaterialTextures(Material* material, const MaterialProps& pr
       inp.open(normalMap.c_str(), ifstream::in);
       if(!inp.fail()) {
          inp.close();
-//         material->setNormalMap(normalMap);
+         material->setNormalMap(normalMap);
       }
       inp.clear(ios::failbit);
    }
