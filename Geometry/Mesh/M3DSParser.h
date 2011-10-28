@@ -61,6 +61,7 @@ private:
    string textureDir;
    Storage* storage;
    bool reverse;
+   bool applyNormalMap;
    ifstream in;
    map<string, Material*> materials;
 };

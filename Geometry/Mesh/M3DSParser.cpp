@@ -23,7 +23,7 @@ MaterialProps::MaterialProps() :
 {
 }
 
-M3DSParser::M3DSParser() : scale(1.0), textureDir(""), storage(NULL), reverse(false) {
+M3DSParser::M3DSParser() : scale(1.0), textureDir(""), storage(NULL), reverse(false), applyNormalMap(false) {
 }
 
 M3DSParser::~M3DSParser() {
@@ -59,6 +59,12 @@ void M3DSParser::setHash(Hash* h) {
    }
    else {
       storage = new KdTree();
+   }
+   if(h->contains("applyNormalMap")) {
+      string s = h->getString("applyNormalMap");
+      if(s == "true") {
+         applyNormalMap = true;
+      }
    }
 }
 
@@ -288,17 +294,19 @@ void M3DSParser::setMaterialTextures(Material* material, const MaterialProps& pr
    if(props.texMap.length() > 0) {
       material->setTexture(props.texMap);
 
-      // Generate nornal map file name
-      string normalMap = props.texMap.substr(0, props.texMap.length() - 4) + "Normal.bmp";
+      if(applyNormalMap) {
+         // Generate nornal map file name
+         string normalMap = props.texMap.substr(0, props.texMap.length() - 4) + "Normal.bmp";
 
-      // Check if normal map file exists
-      ifstream inp;
-      inp.open(normalMap.c_str(), ifstream::in);
-      if(!inp.fail()) {
-         inp.close();
-         material->setNormalMap(normalMap);
+         // Check if normal map file exists
+         ifstream inp;
+         inp.open(normalMap.c_str(), ifstream::in);
+         if(!inp.fail()) {
+            inp.close();
+            material->setNormalMap(normalMap);
+         }
+         inp.clear(ios::failbit);
       }
-      inp.clear(ios::failbit);
    }
 }
 
