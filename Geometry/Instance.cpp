@@ -68,7 +68,8 @@ bool Instance::hit(const Ray& ray, ShadeRecord& sr) const {
    if(object->hit(invRay, sr)) {
       sr.normal = invMatrix.transformNormal(sr.normal);
       sr.normal.normalize();
-      material = object->getMaterial();
+      ray.tHit = invRay.tHit;
+      sr.hitPoint = ray(ray.tHit);
       return true;
    }
 
