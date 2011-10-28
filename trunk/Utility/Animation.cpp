@@ -122,7 +122,7 @@ void Animation::play() {
       GeometryManager::instance().getStorage()->setup();
       printf("Frame %d\t", i);
       camera->render();
-      sprintf(fname, "%s/image%d.png", outputDir.c_str(), i);
+      sprintf(fname, "%s/image%05d.png", outputDir.c_str(), i);
       saveImage(surface, fname);
    }
 

@@ -185,16 +185,6 @@ void KdTree::buildTree(int nodeNum, unsigned depth, uint32_t* idxs, int nPrimiti
    right.setMin(axis, split);
 
    int n0 = 0, n1 = 0;
-/*
-   for(int i = 0; i < nPrimitives; i++) {
-      if(left.intersects(objs[idxs[i]]->bbox)) {
-         lidxs[n0++] = idxs[i];
-      }
-      if(right.intersects(objs[idxs[i]]->bbox)) {
-         ridxs[n1++] = idxs[i];
-      }
-   }
-*/
 
    for(int i = 0; i < offset; i++) {
       if(edges[i].type == BoundEdge::START) {
