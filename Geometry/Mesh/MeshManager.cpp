@@ -5,6 +5,7 @@
 #include "MeditParser.h"
 #include "LightWaveParser.h"
 #include "M3DSParser.h"
+#include "WavefrontParser.h"
 
 auto_ptr<MeshManager> MeshManager::s_instance;
 
@@ -58,6 +59,12 @@ void MeshManager::loadMesh(string type, Hash* hash) {
    }
    else if(type == "m3ds") {
       M3DSParser parser;
+      parser.setHash(hash);
+      parser.load(filename);
+      objects[objName] = parser.getMesh();
+   }
+   else if(type == "wavefront") {
+      WavefrontParser parser;
       parser.setHash(hash);
       parser.load(filename);
       objects[objName] = parser.getMesh();

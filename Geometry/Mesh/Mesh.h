@@ -13,6 +13,12 @@ using namespace std;
 
 class Mesh;
 
+enum FaceType {
+   DEFAULT,
+   M3D,
+   WAVEFRONT
+};
+
 class Face : public GeometryObject {
 
 public:
@@ -21,6 +27,7 @@ public:
    virtual void setHash(Hash* hash) {}
    virtual bool hit(const Ray& ray, ShadeRecord& sr) const;
    virtual bool shadowHit(const Ray& ray) const;
+   virtual void setNormal(ShadeRecord& sr, double b1, double b2) const;
 
    int vertIdxs[3];
    Vector3D p1p2;
@@ -30,6 +37,27 @@ public:
    Vector3D dpdv;
    uint32_t smoothGroup;
    Mesh& parent;
+};
+
+class M3DFace : public Face {
+
+public:
+   M3DFace(Mesh& mesh, int idx1, int idx2, int idx3);
+   virtual void setNormal(ShadeRecord& sr, double b1, double b2) const;
+};
+
+class WavefrontFace : public Face {
+
+public:
+   WavefrontFace(Mesh& mesh, int idx1, int idx2, int idx3);
+
+   virtual void setNormal(ShadeRecord& sr, double b1, double b2) const;
+   void setNormalIdxs(int idx1, int idx2, int idx3);
+   void setTextureIdxs(int idx1, int idx2, int idx3);
+
+private:
+   int normalIdxs[3];
+   int textureIdxs[3];
 };
 
 class SmoothingGroup {
@@ -61,7 +89,10 @@ public:
    int addPoint(Point3D* p);
 
    void facesReserve(int size) { faces.reserve(size); }
-   void addFace(int v1, int v2, int v3);
+   Face* addFace(int v1, int v2, int v3, FaceType type = DEFAULT);
+
+   void addNormal(Vector3D* normal) { normals.push_back(normal); }
+   Vector3D* getNormalAt(int idx) const { return normals[idx]; }
 
    void textureCoordsReserve(int size) { textureCoords.reserve(size); }
    void addTextureCoord(float u, float v) { textureCoords.push_back(Point2D(u, v)); }

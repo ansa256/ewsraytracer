@@ -58,31 +58,7 @@ bool Face::hit(const Ray& ray, ShadeRecord& sr) const {
 
    ray.tHit = t;
 
-   if(smoothGroup == 0) {
-      sr.normal = normal;
-      sr.dpdu = dpdu;
-      sr.dpdv = dpdv;
-   }
-   else {
-      sr.normal.reset();
-      sr.dpdu.reset();
-      sr.dpdv.reset();
-
-      unsigned mask = 1;
-      for(int i = 0; i < 32; i++) {
-         if(mask & smoothGroup) {
-            SmoothingGroup* g = parent.smoothingGroups[i]; // .find(i)->second;
-            sr.normal += g->interpolateNormal(this, b1, b2);
-            sr.dpdu += g->interpolateDPDU(this, b1, b2);
-            sr.dpdv += g->interpolateDPDV(this, b1, b2);
-         }
-         mask = mask << 1;
-      }
-
-      sr.normal.normalize();
-      sr.dpdu.normalize();
-      sr.dpdv.normalize();
-   }
+   setNormal(sr, b1, b2);
 
    sr.localHitPoint = ray(t);
    sr.hitPoint = ray(t);
@@ -125,6 +101,63 @@ bool Face::shadowHit(const Ray& ray) const {
 
    ray.tHit = t;
    return true;
+}
+
+void Face::setNormal(ShadeRecord& sr, double b1, double b2) const {
+   sr.normal = normal;
+   sr.dpdu = dpdu;
+   sr.dpdv = dpdv;
+}
+
+M3DFace::M3DFace(Mesh& mesh, int idx1, int idx2, int idx3) : Face(mesh, idx1, idx2, idx3) {}
+
+void M3DFace::setNormal(ShadeRecord& sr, double b1, double b2) const {
+   if(smoothGroup == 0) {
+      sr.normal = normal;
+      sr.dpdu = dpdu;
+      sr.dpdv = dpdv;
+   }
+   else {
+      sr.normal.reset();
+      sr.dpdu.reset();
+      sr.dpdv.reset();
+
+      unsigned mask = 1;
+      for(int i = 0; i < 32; i++) {
+         if(mask & smoothGroup) {
+            SmoothingGroup* g = parent.smoothingGroups[i]; // .find(i)->second;
+            sr.normal += g->interpolateNormal(this, b1, b2);
+            sr.dpdu += g->interpolateDPDU(this, b1, b2);
+            sr.dpdv += g->interpolateDPDV(this, b1, b2);
+         }
+         mask = mask << 1;
+      }
+
+      sr.normal.normalize();
+      sr.dpdu.normalize();
+      sr.dpdv.normalize();
+   }
+}
+
+WavefrontFace::WavefrontFace(Mesh& mesh, int idx1, int idx2, int idx3) : Face(mesh, idx1, idx2, idx3) {}
+
+void WavefrontFace::setNormal(ShadeRecord& sr, double b1, double b2) const {
+   sr.normal = *parent.getNormalAt(normalIdxs[0]) * (1.0 - b1 - b2)
+                 + *parent.getNormalAt(normalIdxs[1]) * b1
+                 + *parent.getNormalAt(normalIdxs[2]) * b2;
+   sr.normal.normalize();
+}
+
+void WavefrontFace::setNormalIdxs(int idx1, int idx2, int idx3) {
+   normalIdxs[0] = idx1;
+   normalIdxs[1] = idx2;
+   normalIdxs[2] = idx3;
+}
+
+void WavefrontFace::setTextureIdxs(int idx1, int idx2, int idx3) {
+   textureIdxs[0] = idx1;
+   textureIdxs[1] = idx2;
+   textureIdxs[2] = idx3;
 }
 
 SmoothingGroup::~SmoothingGroup() {
@@ -217,10 +250,22 @@ int Mesh::addPoint(Point3D* p) {
    return points.size() - 1;
 }
 
-void Mesh::addFace(int v1, int v2, int v3) {
-   Face* f = new Face(*this, v1, v2, v3);
+Face* Mesh::addFace(int v1, int v2, int v3, FaceType type) {
+   Face *f;
+   switch(type) {
+      case M3D:
+         f = new M3DFace(*this, v1, v2, v3);
+         break;
+      case WAVEFRONT:
+         f = new WavefrontFace(*this, v1, v2, v3);
+         break;
+      default:
+         f = new Face(*this, v1, v2, v3);
+         break;
+   }
    computePartialDerivitives(f);
    faces.push_back(f);
+   return f;
 }
 
 void Mesh::calculateNormals() {
