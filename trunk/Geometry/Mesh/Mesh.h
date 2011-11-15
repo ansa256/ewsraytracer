@@ -93,6 +93,7 @@ public:
 
    void addNormal(Vector3D* normal) { normals.push_back(normal); }
    Vector3D* getNormalAt(int idx) const { return normals[idx]; }
+   unsigned getNormalCount() const { return normals.size(); }
 
    void textureCoordsReserve(int size) { textureCoords.reserve(size); }
    void addTextureCoord(float u, float v) { textureCoords.push_back(Point2D(u, v)); }

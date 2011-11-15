@@ -1,0 +1,8 @@
+wavefront {
+   name     "podbay"
+   filename "resources/PodBay/PodBay.obj"
+   
+   storage {
+      type  "grid"
+   }
+}
