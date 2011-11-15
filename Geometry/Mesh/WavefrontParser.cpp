@@ -62,19 +62,28 @@ bool WavefrontParser::load(const string& filename) {
       stringstream strstr(line);
 
       if(line[0] == 'o') {
+         vertexOffset += vertexCount;
+         vertexCount = 0;
+         normalOffset += normalCount;
+         normalCount = 0;
+
          if(mesh != NULL) {
-            vertexOffset += vertexCount;
-            vertexCount = 0;
-            normalOffset += normalCount;
-            normalCount = 0;
             storage->addObject(mesh);
          }
-         mesh = new Mesh();
+
+//         if(line == "o LW_Door") {
+            mesh = new Mesh();
+//         }
+//         else {
+//            mesh = NULL;
+//         }
       }
       else if(line[0] == 'v' && line[1] == ' ') {
-         float x, y, z;
-         strstr >> s >> x >> y >> z;
-         mesh->addPoint(new Point3D(x, y, z));
+         if(mesh != NULL) {
+            float x, y, z;
+            strstr >> s >> x >> y >> z;
+            mesh->addPoint(new Point3D(x, y, z));
+         }
          vertexCount++;
       }
       else if(line[0] == 'v' && line[1] == 't') {
@@ -83,13 +92,19 @@ bool WavefrontParser::load(const string& filename) {
 //         mesh->addTextureCoord(u, v);
       }
       else if(line[0] == 'v' && line[1] == 'n') {
-         float x, y, z;
-         strstr >> s >> x >> y >> z;
-         mesh->addNormal(new Vector3D(x, y, z));
+         if(mesh != NULL) {
+            float x, y, z;
+            strstr >> s >> x >> y >> z;
+            Vector3D* normal = new Vector3D(x, y, z);
+            normal->normalize();
+            mesh->addNormal(normal);
+         }
          normalCount++;
       }
       else if(line[0] == 'f') {
-         handleFace(line, mesh, vertexOffset, normalOffset);
+         if(mesh != NULL) {
+            handleFace(line, mesh, vertexOffset, normalOffset);
+         }
       }
 
       done = line.empty();
@@ -107,9 +122,13 @@ void WavefrontParser::handleFace(string line, Mesh* mesh, int vertexOffset, int 
    vector<int> vertex2 = vertexSplit(verticies[2]);
 
    for(unsigned i = 3; i < verticies.size(); i++) {
-      vector<int> vertex = vertexSplit(verticies[i]);
-      WavefrontFace* face = (WavefrontFace*) mesh->addFace(vertex1[0] - vertexOffset - 1, vertex2[0] - vertexOffset - 1, vertex[0] - vertexOffset - 1, WAVEFRONT);
-      face->setNormalIdxs(vertex1[2] - normalOffset - 1, vertex2[2] - normalOffset - 1, vertex[2] - normalOffset - 1);
+      vector<int> vertex3 = vertexSplit(verticies[i]);
+
+      WavefrontFace* face = (WavefrontFace*) mesh->addFace(vertex1[0] - vertexOffset - 1, vertex2[0] - vertexOffset - 1, vertex3[0] - vertexOffset - 1, WAVEFRONT);
+      if(vertex1.size() == 3) {
+         face->setNormalIdxs(vertex1[2] - normalOffset - 1, vertex2[2] - normalOffset - 1, vertex3[2] - normalOffset - 1);
+      }
+      vertex2 = vertex3;
 //      face->setTextureIdxs(vertex1[1] - 1, vertex2[1] - 1, vertex[1] - 1);
    }
 }

@@ -139,13 +139,22 @@ void M3DFace::setNormal(ShadeRecord& sr, double b1, double b2) const {
    }
 }
 
-WavefrontFace::WavefrontFace(Mesh& mesh, int idx1, int idx2, int idx3) : Face(mesh, idx1, idx2, idx3) {}
+WavefrontFace::WavefrontFace(Mesh& mesh, int idx1, int idx2, int idx3) : Face(mesh, idx1, idx2, idx3) {
+   material->setColor(1, 1, 1);
+   material->setDiffuse(0.8);
+}
 
 void WavefrontFace::setNormal(ShadeRecord& sr, double b1, double b2) const {
-   sr.normal = *parent.getNormalAt(normalIdxs[0]) * (1.0 - b1 - b2)
-                 + *parent.getNormalAt(normalIdxs[1]) * b1
-                 + *parent.getNormalAt(normalIdxs[2]) * b2;
-   sr.normal.normalize();
+/*   if(parent.getNormalCount() == 0) {
+      sr.normal.set(1, 0, 0);
+   }
+   else {
+      sr.normal = *parent.getNormalAt(normalIdxs[0]) * (1.0 - b1 - b2)
+                    + *parent.getNormalAt(normalIdxs[1]) * b1
+                    + *parent.getNormalAt(normalIdxs[2]) * b2;
+      sr.normal.normalize();
+   }*/
+   sr.normal = normal;
 }
 
 void WavefrontFace::setNormalIdxs(int idx1, int idx2, int idx3) {
