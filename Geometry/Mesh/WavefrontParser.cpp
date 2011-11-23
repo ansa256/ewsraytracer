@@ -7,7 +7,7 @@
 #include "Materials/Phong.h"
 #include <sstream>
 
-WavefrontParser::WavefrontParser() : scale(1.0), textureDir(""), storage(NULL), materials(), useMaterials(false)
+WavefrontParser::WavefrontParser() : scale(1.0), textureDir(""), storage(NULL), materials(), includes(), excludes(), useMaterials(false)
 {
 }
 
@@ -43,6 +43,22 @@ void WavefrontParser::setHash(Hash* h) {
 
    if(h->contains("materials")) {
       loadMaterials(h->getString("materials"));
+   }
+
+   if(h->contains("includes")) {
+      stringstream strstr(h->getString("includes"));
+      string s;
+      while (getline(strstr, s, ',')) {
+         includes.push_back(s);
+      }
+   }
+
+   if(h->contains("excludes")) {
+      stringstream strstr(h->getString("excludes"));
+      string s;
+      while (getline(strstr, s, ',')) {
+         excludes.push_back(s);
+      }
    }
 }
 
@@ -83,8 +99,15 @@ bool WavefrontParser::load(const string& filename) {
             }
             matName = "";
             storage->addObject(mesh);
+            mesh = NULL;
          }
-         mesh = new Mesh();
+
+         string name = line.substr(2);
+         if(includes.empty() || find(includes.begin(), includes.end(), name) != includes.end()) {
+            if(find(excludes.begin(), excludes.end(), name) == excludes.end()) {
+               mesh = new Mesh();
+            }
+         }
       }
       else if(line[0] == 'v' && line[1] == ' ') {
          if(mesh != NULL) {
@@ -122,6 +145,13 @@ bool WavefrontParser::load(const string& filename) {
       }
 
       done = line.empty();
+   }
+
+   if(mesh != NULL) {
+      if(useMaterials && !matName.empty()) {
+         mesh->setMaterial(materials[matName]);
+      }
+      storage->addObject(mesh);
    }
 
    in.close();
