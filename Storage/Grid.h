@@ -10,8 +10,8 @@ public:
    GridVoxel();
    ~GridVoxel();
 
-   void add(GeometryObject* o);
-   vector<GeometryObject*> objs;
+   void add(int idx);
+   vector<int> objs;
 };
 
 class Grid : public Storage {
