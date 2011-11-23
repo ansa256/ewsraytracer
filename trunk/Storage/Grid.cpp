@@ -2,7 +2,7 @@
 #include "Math/Maths.h"
 #include "Parser/Hash.h"
 
-typedef vector<GeometryObject*>::const_iterator CellIter;
+typedef vector<int>::const_iterator CellIter;
 
 GridVoxel::GridVoxel() : objs() {
 }
@@ -11,8 +11,8 @@ GridVoxel::~GridVoxel() {
    objs.clear();
 }
 
-void GridVoxel::add(GeometryObject* o) {
-   objs.push_back(o);
+void GridVoxel::add(int idx) {
+   objs.push_back(idx);
 }
 
 Grid::Grid(int max) : Storage(), numCells(0), voxels(NULL), nx(0), ny(0), nz(0), maxCells(max) {
@@ -47,6 +47,7 @@ void Grid::setup() {
    voxels = new GridVoxel*[numCells];
    memset(voxels, 0, sizeof(GridVoxel*) * numCells);
 
+   int idx = 0;
    for(GeomIter it = objs.begin(); it != objs.end(); it++) {
       int ixmin = (int) clamp(((*it)->bbox.x0 - bbox.x0) * nx / bbox.wx, 0, nx - 1);
       int iymin = (int) clamp(((*it)->bbox.y0 - bbox.y0) * ny / bbox.wy, 0, ny - 1);
@@ -63,10 +64,11 @@ void Grid::setup() {
                if(voxels[index] == NULL) {
                   voxels[index] = new GridVoxel();
                }
-               voxels[index]->add(*it);
+               voxels[index]->add(idx);
             }
          }
       }
+      idx++;
    }
 }
 
@@ -119,26 +121,21 @@ bool Grid::hit(const Ray& ray, ShadeRecord& sr) const {
    double tz_next = calculateNext(ray.direction.z, tz_min, iz, dtz, nz, iz_step, iz_stop);
 
    // Traverse the grid
-   while(true) {
+   for(;;) {
       GridVoxel* cell = voxels[ix + nx * iy + nx * ny * iz];
+      if(checkCell(ray, cell, sr)) return true;
 
       if (tx_next < ty_next && tx_next < tz_next) {
-         if(checkCell(ray, cell, sr)) return true;
-
          tx_next += dtx;
          ix += ix_step;
          if (ix == ix_stop) return false;
       }
       else if (ty_next < tz_next) {
-         if(checkCell(ray, cell, sr)) return true;
-
          ty_next += dty;
          iy += iy_step;
          if (iy == iy_stop) return false;
       }
       else {
-         if(checkCell(ray, cell, sr)) return true;
-
          tz_next += dtz;
          iz += iz_step;
          if (iz == iz_stop) return false;
@@ -187,26 +184,21 @@ bool Grid::shadowHit(const Ray& ray) const {
    double tz_next = calculateNext(ray.direction.z, tz_min, iz, dtz, nz, iz_step, iz_stop);
 
    // Traverse the grid
-   while(true) {
+   for(;;) {
       GridVoxel* cell = voxels[ix + nx * iy + nx * ny * iz];
+      if(checkCellShadow(ray, cell)) return true;
 
       if (tx_next < ty_next && tx_next < tz_next) {
-         if(checkCellShadow(ray, cell)) return true;
-
          tx_next += dtx;
          ix += ix_step;
          if (ix == ix_stop) return false;
       }
       else if (ty_next < tz_next) {
-         if(checkCellShadow(ray, cell)) return true;
-
          ty_next += dty;
          iy += iy_step;
          if (iy == iy_stop) return false;
       }
       else {
-         if(checkCellShadow(ray, cell)) return true;
-
          tz_next += dtz;
          iz += iz_step;
          if (iz == iz_stop) return false;
@@ -241,8 +233,9 @@ bool Grid::checkCell(const Ray& ray, GridVoxel* cell, ShadeRecord& sr) const {
    if(cell == NULL) return false;
 
    bool hit = false;
-   for(CellIter it = cell->objs.begin(); it != cell->objs.end(); it++) {
-      if((*it)->hit(ray, sr)) {
+   for(CellIter it = cell->objs.begin(); it != cell->objs.end(); ++it) {
+      GeometryObject* obj = objs[*it];
+      if(obj->hit(ray, sr)) {
          hit = true;
       }
    }
@@ -252,8 +245,9 @@ bool Grid::checkCell(const Ray& ray, GridVoxel* cell, ShadeRecord& sr) const {
 bool Grid::checkCellShadow(const Ray& ray, GridVoxel* cell) const {
    if(cell == NULL) return false;
 
-   for(CellIter it = cell->objs.begin(); it != cell->objs.end(); it++) {
-      if(!(*it)->ignoreShadow && (*it)->shadowHit(ray)) {
+   for(CellIter it = cell->objs.begin(); it != cell->objs.end(); ++it) {
+      GeometryObject* obj = objs[*it];
+      if(!obj->ignoreShadow && obj->shadowHit(ray)) {
          return true;
       }
    }
