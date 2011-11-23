@@ -35,6 +35,7 @@ private:
    string textureDir;
    Storage* storage;
    map<string, Material*> materials;
+   vector<string> includes, excludes;
    bool useMaterials;
 };
 
