@@ -5,10 +5,12 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <map>
 #include "Storage/Storage.h"
 
 class Hash;
 class Mesh;
+class Material;
 
 using namespace std;
 
@@ -23,15 +25,17 @@ public:
    GeometryObject* getMesh() { return storage; }
 
 private:
-   void getNextLine(string& line);
-   void handleFace(string line, Mesh* mesh, int vertexOffset, int normalOffset);
+   void getNextLine(ifstream& in, string& line);
+   void handleFace(string line, Mesh* mesh, int vertexOffset, int normalOffset, int textureOffset);
    vector<string> faceSplit(string str) const;
    vector<int> vertexSplit(string str) const;
+   void loadMaterials(string fname);
 
    double scale;
    string textureDir;
    Storage* storage;
-   ifstream in;
+   map<string, Material*> materials;
+   bool useMaterials;
 };
 
 #endif // WAVEFRONTPARSER_H

@@ -64,15 +64,7 @@ bool Face::hit(const Ray& ray, ShadeRecord& sr) const {
    sr.hitPoint = ray(t);
    sr.material = material;
 
-   if(parent.textureCoords.size() == 0) {
-      sr.tu = sr.tv = 0.0;
-   } else {
-      double b0 = 1.0 - b1 - b2;
-      sr.tu = b0 * parent.textureCoords[vertIdxs[0]].x + b1 * parent.textureCoords[vertIdxs[1]].x + b2 * parent.textureCoords[vertIdxs[2]].x;
-      sr.tv = b0 * parent.textureCoords[vertIdxs[0]].y + b1 * parent.textureCoords[vertIdxs[1]].y + b2 * parent.textureCoords[vertIdxs[2]].y;
-      sr.tu = normalize(sr.tu);
-      sr.tv = 1.0 - normalize(sr.tv);
-   }
+   setTextureCoords(sr, b1, b2);
 
    return true;
 }
@@ -109,6 +101,10 @@ void Face::setNormal(ShadeRecord& sr, double b1, double b2) const {
    sr.dpdv = dpdv;
 }
 
+void Face::setTextureCoords(ShadeRecord& sr, double b1, double b2) const {
+   sr.tu = sr.tv = 0;
+}
+
 M3DFace::M3DFace(Mesh& mesh, int idx1, int idx2, int idx3) : Face(mesh, idx1, idx2, idx3) {}
 
 void M3DFace::setNormal(ShadeRecord& sr, double b1, double b2) const {
@@ -139,6 +135,18 @@ void M3DFace::setNormal(ShadeRecord& sr, double b1, double b2) const {
    }
 }
 
+void M3DFace::setTextureCoords(ShadeRecord& sr, double b1, double b2) const {
+   if(parent.textureCoords.size() == 0) {
+      sr.tu = sr.tv = 0.0;
+   } else {
+      double b0 = 1.0 - b1 - b2;
+      sr.tu = b0 * parent.textureCoords[vertIdxs[0]].x + b1 * parent.textureCoords[vertIdxs[1]].x + b2 * parent.textureCoords[vertIdxs[2]].x;
+      sr.tv = b0 * parent.textureCoords[vertIdxs[0]].y + b1 * parent.textureCoords[vertIdxs[1]].y + b2 * parent.textureCoords[vertIdxs[2]].y;
+      sr.tu = normalize(sr.tu);
+      sr.tv = 1.0 - normalize(sr.tv);
+   }
+}
+
 WavefrontFace::WavefrontFace(Mesh& mesh, int idx1, int idx2, int idx3) : Face(mesh, idx1, idx2, idx3) {
    material->setColor(1, 1, 1);
    material->setDiffuse(0.8);
@@ -155,6 +163,14 @@ void WavefrontFace::setNormal(ShadeRecord& sr, double b1, double b2) const {
       sr.normal.normalize();
    }*/
    sr.normal = normal;
+}
+
+void WavefrontFace::setTextureCoords(ShadeRecord& sr, double b1, double b2) const {
+   double b0 = 1.0 - b1 - b2;
+   sr.tu = b0 * parent.textureCoords[textureIdxs[0]].x + b1 * parent.textureCoords[textureIdxs[1]].x + b2 * parent.textureCoords[textureIdxs[2]].x;
+   sr.tv = b0 * parent.textureCoords[textureIdxs[0]].y + b1 * parent.textureCoords[textureIdxs[1]].y + b2 * parent.textureCoords[textureIdxs[2]].y;
+   sr.tu = normalize(sr.tu);
+   sr.tv = 1.0 - normalize(sr.tv);
 }
 
 void WavefrontFace::setNormalIdxs(int idx1, int idx2, int idx3) {
@@ -264,6 +280,7 @@ Face* Mesh::addFace(int v1, int v2, int v3, FaceType type) {
    switch(type) {
       case M3D:
          f = new M3DFace(*this, v1, v2, v3);
+         computePartialDerivitives(f);
          break;
       case WAVEFRONT:
          f = new WavefrontFace(*this, v1, v2, v3);
@@ -272,7 +289,6 @@ Face* Mesh::addFace(int v1, int v2, int v3, FaceType type) {
          f = new Face(*this, v1, v2, v3);
          break;
    }
-   computePartialDerivitives(f);
    faces.push_back(f);
    return f;
 }
@@ -325,6 +341,12 @@ void Mesh::setHash(Hash* hash) {
       }
 
       calculateNormals();
+   }
+}
+
+void Mesh::setMaterial(Material* m) {
+   for(FaceIter it = faces.begin(); it != faces.end(); ++it) {
+      (*it)->setMaterial(m);
    }
 }
 
