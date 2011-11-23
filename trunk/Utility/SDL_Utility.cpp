@@ -1,18 +1,17 @@
 #include "SDL_Utility.h"
 
 void setPixel(SDL_Surface* s, int x, int y, const Color& color) {
-   int bpp = s->format->BytesPerPixel;
-   /* Here p is the address to the pixel we want to set */
-   Uint8 *p = (Uint8 *)s->pixels + y * s->pitch + x * bpp;
-   Uint32 pixel = SDL_MapRGBA(s->format, color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-   *(Uint32 *)p = pixel;
+   setPixel(s, x, y, SDL_MapRGBA(s->format, color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
 }
 
 void setPixel(SDL_Surface* s, int x, int y, Uint8 r, Uint8 g, Uint8 b) {
+   setPixel(s, x, y, SDL_MapRGBA(s->format, r, g, b, 255));
+}
+
+void setPixel(SDL_Surface* s, int x, int y, Uint32 pixel) {
    int bpp = s->format->BytesPerPixel;
    /* Here p is the address to the pixel we want to set */
    Uint8 *p = (Uint8 *)s->pixels + y * s->pitch + x * bpp;
-   Uint32 pixel = SDL_MapRGBA(s->format, r, g, b, 255);
    *(Uint32 *)p = pixel;
 }
 
@@ -39,6 +38,10 @@ Uint32 get_pixel(SDL_Surface *surface, int x, int y) {
 }
 
 SDL_Surface* createSurface(const SDL_Rect& rect) {
+   return createSurface(rect.w, rect.h);
+}
+
+SDL_Surface* createSurface(int w, int h) {
    SDL_Surface *surface;
    Uint32 rmask, gmask, bmask, amask;
 
@@ -56,7 +59,7 @@ SDL_Surface* createSurface(const SDL_Rect& rect) {
    amask = 0xff000000;
 #endif
 
-   surface = SDL_CreateRGBSurface(SDL_HWSURFACE, rect.w, rect.h, 32, rmask, gmask, bmask, amask);
+   surface = SDL_CreateRGBSurface(SDL_HWSURFACE, w, h, 32, rmask, gmask, bmask, amask);
    if(surface == NULL) {
       fprintf(stderr, "CreateRGBSurface failed: %s\n", SDL_GetError());
       exit(1);

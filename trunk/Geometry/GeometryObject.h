@@ -32,7 +32,7 @@ public:
 
    void setupMaterial(Hash* hash);
    Material* getMaterial() const { return material; }
-   void setMaterial(Material* m);
+   virtual void setMaterial(Material* m);
 
    virtual bool isCompound() { return false; }
 

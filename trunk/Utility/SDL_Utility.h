@@ -7,10 +7,12 @@
 
 void setPixel(SDL_Surface* s, int x, int y, const Color& color);
 void setPixel(SDL_Surface* s, int x, int y, Uint8 r, Uint8 g, Uint8 b);
+void setPixel(SDL_Surface* s, int x, int y, Uint32 p);
 
 Uint32 get_pixel(SDL_Surface *surface, int x, int y);
 
 SDL_Surface* createSurface(const SDL_Rect& rect);
+SDL_Surface* createSurface(int w, int h);
 
 void user_error_fn(png_structp ctx, png_const_charp str);
 void user_warning_fn(png_structp ctx, png_const_charp str);

@@ -4,9 +4,10 @@
 #include "Storage/Grid.h"
 #include "Storage/ObjectList.h"
 #include "Mesh.h"
+#include "Materials/Phong.h"
 #include <sstream>
 
-WavefrontParser::WavefrontParser() : scale(1.0), textureDir(""), storage(NULL)
+WavefrontParser::WavefrontParser() : scale(1.0), textureDir(""), storage(NULL), materials(), useMaterials(false)
 {
 }
 
@@ -39,26 +40,33 @@ void WavefrontParser::setHash(Hash* h) {
    else {
       storage = new KdTree();
    }
+
+   if(h->contains("materials")) {
+      loadMaterials(h->getString("materials"));
+   }
 }
 
 bool WavefrontParser::load(const string& filename) {
-   in.open(filename.c_str(), ios::in | ios::binary);
+   ifstream in(filename.c_str(), ios::in | ios::binary);
    if (!in.good()) {
       fprintf(stderr, "Read3DSFile: Error opening %s\n", filename.c_str());
       return false;
    }
 
    string line;
+   string matName = "";
    bool done = false;
    Mesh* mesh = NULL;
    string s;
    int vertexOffset = 0;
    int normalOffset = 0;
+   int textureOffset = 0;
    int vertexCount = 0;
    int normalCount = 0;
+   int textureCount = 0;
 
    while(!done) {
-      getNextLine(line);
+      getNextLine(in, line);
       stringstream strstr(line);
 
       if(line[0] == 'o') {
@@ -66,17 +74,17 @@ bool WavefrontParser::load(const string& filename) {
          vertexCount = 0;
          normalOffset += normalCount;
          normalCount = 0;
+         textureOffset += textureCount;
+         textureCount = 0;
 
          if(mesh != NULL) {
+            if(useMaterials && !matName.empty()) {
+               mesh->setMaterial(materials[matName]);
+            }
+            matName = "";
             storage->addObject(mesh);
          }
-
-//         if(line == "o LW_Door") {
-            mesh = new Mesh();
-//         }
-//         else {
-//            mesh = NULL;
-//         }
+         mesh = new Mesh();
       }
       else if(line[0] == 'v' && line[1] == ' ') {
          if(mesh != NULL) {
@@ -87,9 +95,12 @@ bool WavefrontParser::load(const string& filename) {
          vertexCount++;
       }
       else if(line[0] == 'v' && line[1] == 't') {
-         float u, v;
-         strstr >> s >> u >> v;
-//         mesh->addTextureCoord(u, v);
+         if(mesh != NULL) {
+            float u, v;
+            strstr >> s >> u >> v;
+            mesh->addTextureCoord(u, v);
+         }
+         textureCount++;
       }
       else if(line[0] == 'v' && line[1] == 'n') {
          if(mesh != NULL) {
@@ -103,8 +114,11 @@ bool WavefrontParser::load(const string& filename) {
       }
       else if(line[0] == 'f') {
          if(mesh != NULL) {
-            handleFace(line, mesh, vertexOffset, normalOffset);
+            handleFace(line, mesh, vertexOffset, normalOffset, textureOffset);
          }
+      }
+      else if(strncmp(line.c_str(), "usemtl", 6) == 0) {
+         matName = line.substr(7);
       }
 
       done = line.empty();
@@ -116,7 +130,7 @@ bool WavefrontParser::load(const string& filename) {
    return true;
 }
 
-void WavefrontParser::handleFace(string line, Mesh* mesh, int vertexOffset, int normalOffset) {
+void WavefrontParser::handleFace(string line, Mesh* mesh, int vertexOffset, int normalOffset, int textureOffset) {
    vector<string> verticies = faceSplit(line);
    vector<int> vertex1 = vertexSplit(verticies[1]);
    vector<int> vertex2 = vertexSplit(verticies[2]);
@@ -125,15 +139,17 @@ void WavefrontParser::handleFace(string line, Mesh* mesh, int vertexOffset, int 
       vector<int> vertex3 = vertexSplit(verticies[i]);
 
       WavefrontFace* face = (WavefrontFace*) mesh->addFace(vertex1[0] - vertexOffset - 1, vertex2[0] - vertexOffset - 1, vertex3[0] - vertexOffset - 1, WAVEFRONT);
+      if(vertex1.size() > 1) {
+         face->setTextureIdxs(vertex1[1] - textureOffset - 1, vertex2[1] - textureOffset - 1, vertex3[1] - textureOffset - 1);
+      }
       if(vertex1.size() == 3) {
          face->setNormalIdxs(vertex1[2] - normalOffset - 1, vertex2[2] - normalOffset - 1, vertex3[2] - normalOffset - 1);
       }
       vertex2 = vertex3;
-//      face->setTextureIdxs(vertex1[1] - 1, vertex2[1] - 1, vertex[1] - 1);
    }
 }
 
-void WavefrontParser::getNextLine(string& line) {
+void WavefrontParser::getNextLine(ifstream& in, string& line) {
    for (;;) {
       getline(in, line);
 
@@ -169,4 +185,46 @@ vector<int> WavefrontParser::vertexSplit(string str) const {
       results.push_back(atoi(s.c_str()));
    }
    return results;
+}
+
+void WavefrontParser::loadMaterials(string fname) {
+   ifstream in(fname.c_str(), ios::in | ios::binary);
+   if (!in.good()) {
+      fprintf(stderr, "Read3DSFile: Error opening %s\n", fname.c_str());
+      return;
+   }
+
+   string line;
+   string s;
+   bool done = false;
+   Phong* material = NULL;
+
+   while(!done) {
+      getNextLine(in, line);
+      stringstream strstr(line);
+
+      if(strncmp(line.c_str(), "newmtl", 6) == 0) {
+         material = new Phong();
+         string name = line.substr(7);
+         materials[name] = material;
+      }
+      else if(strncmp(line.c_str(), "Kd", 2) == 0) {
+         float r, g, b;
+         strstr >> s >> r >> g >> b;
+         material->setDiffuseColor(new Color(r, g, b));
+      }
+      else if(strncmp(line.c_str(), "Ka", 2) == 0) {
+         float r, g, b;
+         strstr >> s >> r >> g >> b;
+         material->setAmbientColor(new Color(r, g, b));
+      }
+      else if(strncmp(line.c_str(), "map_Kd", 6) == 0) {
+         material->setTexture(textureDir + line.substr(7));
+      }
+
+      done = line.empty();
+   }
+
+   in.close();
+   useMaterials = true;
 }

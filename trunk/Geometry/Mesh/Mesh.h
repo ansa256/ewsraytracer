@@ -28,6 +28,7 @@ public:
    virtual bool hit(const Ray& ray, ShadeRecord& sr) const;
    virtual bool shadowHit(const Ray& ray) const;
    virtual void setNormal(ShadeRecord& sr, double b1, double b2) const;
+   virtual void setTextureCoords(ShadeRecord& sr, double b1, double b2) const;
 
    int vertIdxs[3];
    Vector3D p1p2;
@@ -44,6 +45,7 @@ class M3DFace : public Face {
 public:
    M3DFace(Mesh& mesh, int idx1, int idx2, int idx3);
    virtual void setNormal(ShadeRecord& sr, double b1, double b2) const;
+   virtual void setTextureCoords(ShadeRecord& sr, double b1, double b2) const;
 };
 
 class WavefrontFace : public Face {
@@ -52,6 +54,8 @@ public:
    WavefrontFace(Mesh& mesh, int idx1, int idx2, int idx3);
 
    virtual void setNormal(ShadeRecord& sr, double b1, double b2) const;
+   virtual void setTextureCoords(ShadeRecord& sr, double b1, double b2) const;
+
    void setNormalIdxs(int idx1, int idx2, int idx3);
    void setTextureIdxs(int idx1, int idx2, int idx3);
 
@@ -106,6 +110,7 @@ public:
    void calculateNormals();
 
    virtual void setHash(Hash* hash);
+   virtual void setMaterial(Material* m);
 
    map<unsigned int, SmoothingGroup*> smoothingGroups;
    vector<Point2D> textureCoords;
