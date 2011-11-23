@@ -31,7 +31,7 @@ void StarBox::createBoxSide(string name, const Point3D& origin, const Vector3D& 
    SDL_Surface* surface = createSurface(srect);
 
    Uint32 color = SDL_MapRGBA(surface->format, 0, 0, 0, 255);
-   SDL_FillRect(surface, &srect, color);
+   SDL_FillRect(surface, NULL, color);
 
    for(int i = 0; i < count; i++) {
       float x = (float) rand() / (float) RAND_MAX * (size - 1);
