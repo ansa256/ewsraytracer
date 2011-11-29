@@ -31,13 +31,11 @@ public:
 private:
    void cleanup();
    double calculateNext(double rd, double min, double i, double dt, int n, int& step, int& stop) const;
-   bool checkCell(const Ray& ray, GridVoxel* cell, ShadeRecord& sr) const;
-   bool checkCellShadow(const Ray& ray, GridVoxel* cell) const;
 
-   int numCells;
    GridVoxel** voxels;
    int nx, ny, nz;
    int maxCells;
+   int numCells;
 };
 
 #endif

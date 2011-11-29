@@ -15,7 +15,7 @@ void GridVoxel::add(int idx) {
    objs.push_back(idx);
 }
 
-Grid::Grid(int max) : Storage(), numCells(0), voxels(NULL), nx(0), ny(0), nz(0), maxCells(max) {
+Grid::Grid(int max) : Storage(), voxels(NULL), nx(0), ny(0), nz(0), maxCells(max), numCells(0) {
 }
 
 Grid::~Grid() {
@@ -123,19 +123,26 @@ bool Grid::hit(const Ray& ray, ShadeRecord& sr) const {
    // Traverse the grid
    for(;;) {
       GridVoxel* cell = voxels[ix + nx * iy + nx * ny * iz];
-      if(checkCell(ray, cell, sr)) return true;
+      if(cell != NULL) {
+         for(CellIter it = cell->objs.begin(); it != cell->objs.end(); ++it) {
+            objs[*it]->hit(ray, sr);
+         }
+      }
 
       if (tx_next < ty_next && tx_next < tz_next) {
+         if(ray.tHit < tx_next) return true;
          tx_next += dtx;
          ix += ix_step;
          if (ix == ix_stop) return false;
       }
       else if (ty_next < tz_next) {
+         if(ray.tHit < ty_next) return true;
          ty_next += dty;
          iy += iy_step;
          if (iy == iy_stop) return false;
       }
       else {
+         if(ray.tHit < tz_next) return true;
          tz_next += dtz;
          iz += iz_step;
          if (iz == iz_stop) return false;
@@ -186,7 +193,14 @@ bool Grid::shadowHit(const Ray& ray) const {
    // Traverse the grid
    for(;;) {
       GridVoxel* cell = voxels[ix + nx * iy + nx * ny * iz];
-      if(checkCellShadow(ray, cell)) return true;
+      if(cell != NULL) {
+         for(CellIter it = cell->objs.begin(); it != cell->objs.end(); ++it) {
+            GeometryObject* obj = objs[*it];
+            if(!obj->ignoreShadow && obj->shadowHit(ray)) {
+               return true;
+            }
+         }
+      }
 
       if (tx_next < ty_next && tx_next < tz_next) {
          tx_next += dtx;
@@ -227,29 +241,4 @@ double Grid::calculateNext(double rd, double min, double i, double dt, int n, in
    }
 
    return next;
-}
-
-bool Grid::checkCell(const Ray& ray, GridVoxel* cell, ShadeRecord& sr) const {
-   if(cell == NULL) return false;
-
-   bool hit = false;
-   for(CellIter it = cell->objs.begin(); it != cell->objs.end(); ++it) {
-      GeometryObject* obj = objs[*it];
-      if(obj->hit(ray, sr)) {
-         hit = true;
-      }
-   }
-   return hit;
-}
-
-bool Grid::checkCellShadow(const Ray& ray, GridVoxel* cell) const {
-   if(cell == NULL) return false;
-
-   for(CellIter it = cell->objs.begin(); it != cell->objs.end(); ++it) {
-      GeometryObject* obj = objs[*it];
-      if(!obj->ignoreShadow && obj->shadowHit(ray)) {
-         return true;
-      }
-   }
-   return false;
 }

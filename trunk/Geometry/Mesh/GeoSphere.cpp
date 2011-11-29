@@ -74,7 +74,7 @@ void GeoSphere::setHash(Hash* hash) {
    subdivide(9, 11, 10);
    subdivide(10, 11, 6);
 
-   Mesh::setHash(hash);
+   setupMaterial(hash->getValue("material")->getHash());
 //   printf("face count = %d\n", mesh->getFaceCount());
 }
 
