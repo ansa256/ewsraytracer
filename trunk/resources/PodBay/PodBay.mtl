@@ -1,0 +1,221 @@
+#  ==========================================================================
+#  Wavefront Material file
+#  Exported by Red-i Productions' "Riptide Pro"
+#  (a commercial plugin for Cinema 4D PC & Mac, R9.6 or later)
+#  
+#  Red-i Productions
+#  http://skinprops.com
+#  
+#  ==========================================================================
+
+newmtl WhiteSemiGloss1
+Ns 50.781250
+illum 2
+Kd 0.950000 0.950000 0.950000
+
+newmtl WhiteLight
+Ns 50.781250
+illum 2
+Ka 0.970000 0.970000 0.970000
+Kd 0.960784 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+
+newmtl WhiteGloss1
+Ns 50.781250
+illum 2
+Kd 1.000000 1.000000 1.000000
+
+newmtl BlackMatte
+illum 2
+Kd 0.176471 0.176471 0.176471
+
+newmtl Aluminum
+illum 2
+Kd 0.752941 0.752941 0.796078
+
+newmtl Glass
+Ns 50.781250
+d 0.410000
+Ni 1.000000
+illum 2
+Kd 1.000000 1.000000 1.000000
+
+newmtl DarkGrey
+illum 2
+Kd 0.274510 0.274510 0.274510
+
+newmtl RedLight
+Ns 50.781250
+illum 2
+Ka 0.520000 0.000000 0.000000
+Kd 0.400000 0.000000 0.070588
+Ks 0.400000 0.000000 0.070588
+
+newmtl LightBlueLight
+Ns 50.781250
+illum 2
+Ka 0.336471 0.338510 0.428235
+Kd 0.000000 0.000000 0.792157
+Ks 0.000000 0.000000 1.000000
+
+newmtl MediumGrey
+illum 2
+Kd 0.647059 0.647059 0.647059
+
+newmtl LightGrey
+illum 2
+Kd 0.800000 0.800000 0.800000
+
+newmtl Caution2
+Ns 50.781250
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd Caution_02.jpg
+
+newmtl Caution4
+Ns 50.781250
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd Caution_04.jpg
+
+newmtl Caution1
+Ns 50.781250
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd Caution_01.jpg
+
+newmtl RedSemiGloss
+Ns 50.781250
+illum 2
+Kd 0.400000 0.000000 0.070588
+Ks 0.400000 0.000000 0.070588
+
+newmtl LargeTankMonitors
+Ns 50.781250
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd Panel_01.jpg
+
+newmtl Caution3
+Ns 50.781250
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd Caution_03.jpg
+
+newmtl StorageLabel
+Ns 50.781250
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd StorageDoorLabel.jpg
+
+newmtl BlackSatin
+Ns 50.781250
+illum 2
+Kd 0.188235 0.188235 0.188235
+Ks 0.274510 0.274510 0.274510
+
+newmtl HALLDisplay1
+Ns 50.781250
+illum 2
+Ka 0.200000 0.200000 0.200000
+Kd 0.800000 0.800000 0.800000
+map_Kd Display_07.jpg
+
+newmtl HALDisplay2
+Ns 50.781250
+illum 2
+Ka 0.200000 0.200000 0.200000
+Kd 0.800000 0.800000 0.800000
+map_Kd Display_03.jpg
+
+newmtl BlackNearGloss
+Ns 50.781250
+illum 2
+Kd 0.160000 0.160000 0.160000
+Ks 0.274510 0.274510 0.274510
+
+newmtl HAL_Eye
+Ns 50.781250
+illum 2
+Ka 0.050000 0.050000 0.050000
+Kd 0.800000 0.800000 0.800000
+map_Kd HAL_Eye.jpg
+
+newmtl HALLabel
+Ns 50.781250
+illum 2
+Kd 1.000000 1.000000 1.000000
+map_Kd HAL_9000.jpg
+
+newmtl HALSpeaker
+Ns 50.781250
+illum 2
+Kd 1.000000 1.000000 1.000000
+map_Kd HAL_Speaker_Grille.jpg
+
+newmtl BluePlastic
+Ns 50.781250
+illum 2
+Kd 0.000000 0.250980 0.501961
+Ks 0.313726 0.650980 0.976471
+
+newmtl WhiteButOff
+Ns 50.781250
+illum 2
+Kd 0.705882 0.705882 0.705882
+Ks 0.705882 0.705882 0.705882
+
+newmtl RedButtonOn
+Ns 50.781250
+illum 2
+Kd 0.588235 0.098039 0.168627
+Ks 0.643137 0.105882 0.188235
+
+newmtl RedButtonOff
+Ns 50.781250
+illum 2
+Kd 0.366431 0.034353 0.088745
+Ks 0.643137 0.105882 0.188235
+
+newmtl BlueButtonOn
+Ns 50.781250
+illum 2
+Ka 0.000000 0.210000 0.426667
+Kd 0.000000 0.250980 0.501961
+Ks 0.000000 0.250980 0.501961
+
+newmtl BlueButtonOff
+Ns 50.781250
+illum 2
+Kd 0.000000 0.250980 0.501961
+Ks 0.000000 0.250980 0.501961
+
+newmtl BlueBar
+Ns 50.781250
+illum 2
+Kd 0.000000 0.250980 0.501961
+Ks 0.000000 0.250980 0.501961
+
+newmtl LightGreyPanel
+Ns 50.781250
+illum 2
+Kd 0.705882 0.705882 0.705882
+Ks 0.580392 0.580392 0.580392
+
+newmtl DarkGreyPanel
+Ns 50.781250
+illum 2
+Kd 0.470588 0.470588 0.470588
+Ks 1.000000 1.000000 1.000000
+
+newmtl RedPlastic
+Ns 50.781250
+illum 2
+Kd 0.709804 0.000000 0.000000
+Ks 1.000000 0.000000 0.070588
+
+newmtl YellowPlastic
+Ns 50.781250
+illum 2
+Kd 1.000000 1.000000 0.501961
+Ks 1.000000 1.000000 0.501961
