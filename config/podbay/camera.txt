@@ -1,8 +1,8 @@
 camera {
    type                 "pinhole"
-   numSamples           5
+   numSamples           1
    angle                49.0
-   eye                  [ 0.0 -30.0 90.0 ]
-   rotate               [ 0.0 0.0 0.0 ]
+   eye                  [ 0.0 -30.0 50.0 ]
+   rotate               [ 0.0 45.0 0.0 ]
    bgColor              [ 1.0 0.0 0.0 ]
 }

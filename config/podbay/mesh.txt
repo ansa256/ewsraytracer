@@ -1,6 +1,9 @@
 wavefront {
-   name     "podbay"
-   filename "resources/PodBay/PodBay.obj"
+   name        "podbay"
+   filename    "resources/PodBay/PodBay.obj"
+   textureDir  "resources/PodBay/Tex/"
+   materials   "resources/PodBay/PodBay.mtl"
+   includes    "Left_Wall,LW_Room"
    
    storage {
       type  "grid"
