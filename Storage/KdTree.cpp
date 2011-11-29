@@ -251,7 +251,15 @@ bool KdTree::hit(const Ray& ray, ShadeRecord& sr) const {
          }
       }
 
-      checkNode(ray, node, sr, checked);
+      // Check the node
+      for(uint32_t i = 0; i < nodes[node].nPrimitives(); i++) {
+         int idx = nodes[node].idxs[i];
+         if(!checked[idx]) {
+            objs[idx]->hit(ray, sr);
+            checked[idx] = 1;
+         }
+      }
+
       if(ray.tHit < max) {
          return true;
       }
@@ -281,16 +289,6 @@ while (not stack.empty()):
          return tHit //early exit
 return tHitt
 */
-}
-
-void KdTree::checkNode(const Ray& ray, int node, ShadeRecord& sr, boost::dynamic_bitset<>& checked) const {
-   for(uint32_t i = 0; i < nodes[node].nPrimitives(); i++) {
-      int idx = nodes[node].idxs[i];
-      if(!checked[idx]) {
-         objs[idx]->hit(ray, sr);
-         checked[idx] = 1;
-      }
-   }
 }
 
 bool KdTree::shadowHit(const Ray& ray) const {
@@ -326,20 +324,14 @@ bool KdTree::shadowHit(const Ray& ray) const {
             max = tsplit;
          }
       }
-      if(checkNodeShadow(ray, node)) {
-         return true;
+
+      // Check nodes for a hit
+      for(uint32_t i = 0; i < nodes[node].nPrimitives(); i++) {
+         GeometryObject* obj = objs[nodes[node].idxs[i]];
+         if(!obj->ignoreShadow && obj->shadowHit(ray)) {
+            return true;
+         }
       }
    }
-   return false;
-}
-
-bool KdTree::checkNodeShadow(const Ray& ray, int node) const {
-   for(uint32_t i = 0; i < nodes[node].nPrimitives(); i++) {
-      GeometryObject* obj = objs[nodes[node].idxs[i]];
-      if(!obj->ignoreShadow && obj->shadowHit(ray)) {
-         return true;
-      }
-   }
-
    return false;
 }

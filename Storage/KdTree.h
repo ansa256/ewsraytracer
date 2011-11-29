@@ -52,8 +52,6 @@ public:
 
 private:
    void buildTree(int nodeNum, unsigned depth, uint32_t* idxs, int nPrimitives, const BBox& bounds, uint32_t* lidxs, uint32_t* ridxs);
-   void checkNode(const Ray& ray, int node, ShadeRecord& sr, boost::dynamic_bitset<>& checked) const;
-   bool checkNodeShadow(const Ray& ray, int node) const;
    void findSplit(uint32_t* idxs, int np, const BBox& bounds, int& axis, double& split, int& offset);
 
    KdNode *nodes;
