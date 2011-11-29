@@ -8,7 +8,7 @@ typedef vector<Vector3D*>::const_iterator VectorIter;
 typedef map<unsigned int, SmoothingGroup*>::const_iterator SmoothingGroupIter;
 typedef map<int, Vector3D*>::const_iterator SGNormalIter;
 
-Face::Face(Mesh& mesh, int idx1, int idx2, int idx3) : normal(), dpdu(), dpdv(), smoothGroup(0), parent(mesh) {
+Face::Face(Mesh& mesh, int idx1, int idx2, int idx3) : GeometryObject(), normal(), dpdu(), dpdv(), smoothGroup(0), parent(mesh) {
    vertIdxs[0] = idx1;
    vertIdxs[1] = idx2;
    vertIdxs[2] = idx3;

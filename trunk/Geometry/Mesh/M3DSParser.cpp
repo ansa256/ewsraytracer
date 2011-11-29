@@ -415,10 +415,10 @@ void M3DSParser::readFaceArray(Mesh* mesh, int contentSize) {
       uint16 v2 = readUshortLE(in);
       readUshortLE(in);
       if(reverse) {
-         mesh->addFace(v2, v1, v0);
+         mesh->addFace(v2, v1, v0, M3D);
       }
       else {
-         mesh->addFace(v0, v1, v2);
+         mesh->addFace(v0, v1, v2, M3D);
       }
    }
 
