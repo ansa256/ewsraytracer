@@ -5,21 +5,14 @@ direction {
    radiance       1.0
 }
 
-#areaLight {
-#   color          [ 1.0 1.0 1.0 ]
-#   radiance       100.0
+environment {
+   numSamples  64
+   numLightSamples 1
+   radiance    0.3
+   color       [ 1.0 1.0 1.0 ]
+}
 
-#   sphere {
-#      center      [ 0.0 10.0 0.0 ]
-#      radius      1.0
-
-#   disk {
-#      center      [ 0.0 10.0 0.0 ]
-#      radius      1.0
-#      normal      [ 0.0 -1.0 0.0 ]
-
-#      material {
-#         type     "matte"
-#      }
-#   }
+#ambient {
+#   color [ 1.0 1.0 1.0 ]
+#   radiance 1.0
 #}
