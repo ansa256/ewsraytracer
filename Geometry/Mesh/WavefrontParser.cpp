@@ -69,17 +69,18 @@ bool WavefrontParser::load(const string& filename) {
       return false;
    }
 
+   Uint32 start = SDL_GetTicks();
+
    string line;
    string matName = "";
    bool done = false;
    Mesh* mesh = NULL;
    string s;
    int vertexOffset = 0;
-   int normalOffset = 0;
    int textureOffset = 0;
    int vertexCount = 0;
-   int normalCount = 0;
    int textureCount = 0;
+   int group = -1;
 
    while(!done) {
       getNextLine(in, line);
@@ -88,18 +89,22 @@ bool WavefrontParser::load(const string& filename) {
       if(line[0] == 'o') {
          vertexOffset += vertexCount;
          vertexCount = 0;
-         normalOffset += normalCount;
-         normalCount = 0;
          textureOffset += textureCount;
          textureCount = 0;
 
          if(mesh != NULL) {
+            if(group != -1) {
+               mesh->setSmoothingGroup(group);
+            }
+
+            mesh->calculateNormals();
             if(useMaterials && !matName.empty()) {
                mesh->setMaterial(materials[matName]);
             }
             matName = "";
             storage->addObject(mesh);
             mesh = NULL;
+            group = -1;
          }
 
          string name = line.substr(2);
@@ -125,19 +130,14 @@ bool WavefrontParser::load(const string& filename) {
          }
          textureCount++;
       }
-      else if(line[0] == 'v' && line[1] == 'n') {
-         if(mesh != NULL) {
-            float x, y, z;
-            strstr >> s >> x >> y >> z;
-            Vector3D* normal = new Vector3D(x, y, z);
-            normal->normalize();
-            mesh->addNormal(normal);
-         }
-         normalCount++;
-      }
       else if(line[0] == 'f') {
          if(mesh != NULL) {
-            handleFace(line, mesh, vertexOffset, normalOffset, textureOffset);
+            handleFace(line, mesh, vertexOffset, textureOffset);
+         }
+      }
+      else if(line[0] == 's') {
+         if(line != "s off") {
+            strstr >> s >> group;
          }
       }
       else if(strncmp(line.c_str(), "usemtl", 6) == 0) {
@@ -154,13 +154,16 @@ bool WavefrontParser::load(const string& filename) {
       storage->addObject(mesh);
    }
 
+   Uint32 end = SDL_GetTicks();
+   printf("Parse time = %f seconds\n", (end - start) / 1000.0);
+
    in.close();
    storage->setup();
 
    return true;
 }
 
-void WavefrontParser::handleFace(string line, Mesh* mesh, int vertexOffset, int normalOffset, int textureOffset) {
+void WavefrontParser::handleFace(string line, Mesh* mesh, int vertexOffset, int textureOffset) {
    vector<string> verticies = faceSplit(line);
    vector<int> vertex1 = vertexSplit(verticies[1]);
    vector<int> vertex2 = vertexSplit(verticies[2]);
@@ -168,12 +171,9 @@ void WavefrontParser::handleFace(string line, Mesh* mesh, int vertexOffset, int 
    for(unsigned i = 3; i < verticies.size(); i++) {
       vector<int> vertex3 = vertexSplit(verticies[i]);
 
-      WavefrontFace* face = (WavefrontFace*) mesh->addFace(vertex1[0] - vertexOffset - 1, vertex2[0] - vertexOffset - 1, vertex3[0] - vertexOffset - 1, WAVEFRONT);
+      Face* face = mesh->addFace(vertex1[0] - vertexOffset - 1, vertex2[0] - vertexOffset - 1, vertex3[0] - vertexOffset - 1);
       if(vertex1.size() > 1) {
          face->setTextureIdxs(vertex1[1] - textureOffset - 1, vertex2[1] - textureOffset - 1, vertex3[1] - textureOffset - 1);
-      }
-      if(vertex1.size() == 3) {
-         face->setNormalIdxs(vertex1[2] - normalOffset - 1, vertex2[2] - normalOffset - 1, vertex3[2] - normalOffset - 1);
       }
       vertex2 = vertex3;
    }

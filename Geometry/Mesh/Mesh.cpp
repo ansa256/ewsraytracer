@@ -8,10 +8,10 @@ typedef vector<Vector3D*>::const_iterator VectorIter;
 typedef map<unsigned int, SmoothingGroup*>::const_iterator SmoothingGroupIter;
 typedef map<int, Vector3D*>::const_iterator SGNormalIter;
 
-Face::Face(Mesh& mesh, int idx1, int idx2, int idx3) : GeometryObject(), normal(), dpdu(), dpdv(), smoothGroup(0), parent(mesh) {
-   vertIdxs[0] = idx1;
-   vertIdxs[1] = idx2;
-   vertIdxs[2] = idx3;
+Face::Face(Mesh& mesh, int idx1, int idx2, int idx3) : GeometryObject(), normal(), /*dpdu(), dpdv(), */smoothGroup(0), parent(mesh) {
+   vertIdxs[0] = textureIdxs[0] = idx1;
+   vertIdxs[1] = textureIdxs[1] = idx2;
+   vertIdxs[2] = textureIdxs[2] = idx3;
 
    Point3D* p1 = parent.getPointAt(idx1);
    Point3D* p2 = parent.getPointAt(idx2);
@@ -58,7 +58,31 @@ bool Face::hit(const Ray& ray, ShadeRecord& sr) const {
 
    ray.tHit = t;
 
-   setNormal(sr, b1, b2);
+   if(smoothGroup == 0) {
+      sr.normal = normal;
+//      sr.dpdu = dpdu;
+//      sr.dpdv = dpdv;
+   }
+   else {
+      sr.normal.reset();
+//      sr.dpdu.reset();
+//      sr.dpdv.reset();
+
+      unsigned mask = 1;
+      for(int i = 0; i < 32; i++) {
+         if(mask & smoothGroup) {
+            SmoothingGroup* g = parent.smoothingGroups[smoothGroup];
+            sr.normal += g->interpolateNormal(this, b1, b2);
+//            sr.dpdu += g->interpolateDPDU(this, b1, b2);
+//            sr.dpdv += g->interpolateDPDV(this, b1, b2);
+         }
+         mask = mask << 1;
+      }
+
+      sr.normal.normalize();
+//      sr.dpdu.normalize();
+//      sr.dpdv.normalize();
+   }
 
    sr.localHitPoint = ray(t);
    sr.hitPoint = ray(t);
@@ -95,91 +119,19 @@ bool Face::shadowHit(const Ray& ray) const {
    return true;
 }
 
-void Face::setNormal(ShadeRecord& sr, double b1, double b2) const {
-   sr.normal = normal;
-   sr.dpdu = dpdu;
-   sr.dpdv = dpdv;
-}
-
 void Face::setTextureCoords(ShadeRecord& sr, double b1, double b2) const {
-   sr.tu = sr.tv = 0;
-}
-
-M3DFace::M3DFace(Mesh& mesh, int idx1, int idx2, int idx3) : Face(mesh, idx1, idx2, idx3) {}
-
-void M3DFace::setNormal(ShadeRecord& sr, double b1, double b2) const {
-   if(smoothGroup == 0) {
-      sr.normal = normal;
-      sr.dpdu = dpdu;
-      sr.dpdv = dpdv;
-   }
-   else {
-      sr.normal.reset();
-      sr.dpdu.reset();
-      sr.dpdv.reset();
-
-      unsigned mask = 1;
-      for(int i = 0; i < 32; i++) {
-         if(mask & smoothGroup) {
-            SmoothingGroup* g = parent.smoothingGroups[i]; // .find(i)->second;
-            sr.normal += g->interpolateNormal(this, b1, b2);
-            sr.dpdu += g->interpolateDPDU(this, b1, b2);
-            sr.dpdv += g->interpolateDPDV(this, b1, b2);
-         }
-         mask = mask << 1;
-      }
-
-      sr.normal.normalize();
-      sr.dpdu.normalize();
-      sr.dpdv.normalize();
-   }
-}
-
-void M3DFace::setTextureCoords(ShadeRecord& sr, double b1, double b2) const {
    if(parent.textureCoords.size() == 0) {
       sr.tu = sr.tv = 0.0;
    } else {
       double b0 = 1.0 - b1 - b2;
-      sr.tu = b0 * parent.textureCoords[vertIdxs[0]].x + b1 * parent.textureCoords[vertIdxs[1]].x + b2 * parent.textureCoords[vertIdxs[2]].x;
-      sr.tv = b0 * parent.textureCoords[vertIdxs[0]].y + b1 * parent.textureCoords[vertIdxs[1]].y + b2 * parent.textureCoords[vertIdxs[2]].y;
+      sr.tu = b0 * parent.textureCoords[textureIdxs[0]].x + b1 * parent.textureCoords[textureIdxs[1]].x + b2 * parent.textureCoords[textureIdxs[2]].x;
+      sr.tv = b0 * parent.textureCoords[textureIdxs[0]].y + b1 * parent.textureCoords[textureIdxs[1]].y + b2 * parent.textureCoords[textureIdxs[2]].y;
       sr.tu = normalize(sr.tu);
       sr.tv = 1.0 - normalize(sr.tv);
    }
 }
 
-WavefrontFace::WavefrontFace(Mesh& mesh, int idx1, int idx2, int idx3) : Face(mesh, idx1, idx2, idx3) {
-   material->setColor(1, 1, 1);
-   material->setDiffuse(0.8);
-}
-
-void WavefrontFace::setNormal(ShadeRecord& sr, double b1, double b2) const {
-/*   if(parent.getNormalCount() == 0) {
-      sr.normal.set(1, 0, 0);
-   }
-   else {
-      sr.normal = *parent.getNormalAt(normalIdxs[0]) * (1.0 - b1 - b2)
-                    + *parent.getNormalAt(normalIdxs[1]) * b1
-                    + *parent.getNormalAt(normalIdxs[2]) * b2;
-      sr.normal.normalize();
-   }*/
-   sr.normal = normal;
-}
-
-void WavefrontFace::setTextureCoords(ShadeRecord& sr, double b1, double b2) const {
-   double b0 = 1.0 - b1 - b2;
-   sr.tu = b0 * parent.textureCoords[textureIdxs[0]].x + b1 * parent.textureCoords[textureIdxs[1]].x + b2 * parent.textureCoords[textureIdxs[2]].x;
-   sr.tv = b0 * parent.textureCoords[textureIdxs[0]].y + b1 * parent.textureCoords[textureIdxs[1]].y + b2 * parent.textureCoords[textureIdxs[2]].y;
-   sr.tu = normalize(sr.tu);
-   sr.tv = 1.0 - normalize(sr.tv);
-}
-
-void WavefrontFace::setNormalIdxs(int idx1, int idx2, int idx3) {
-   normalIdxs[0] = idx1;
-   normalIdxs[1] = idx2;
-   normalIdxs[2] = idx3;
-}
-
-void WavefrontFace::setTextureIdxs(int idx1, int idx2, int idx3) {
+void Face::setTextureIdxs(int idx1, int idx2, int idx3) {
    textureIdxs[0] = idx1;
    textureIdxs[1] = idx2;
    textureIdxs[2] = idx3;
@@ -198,7 +150,7 @@ void SmoothingGroup::addFace(Face* f) {
          normals[f->vertIdxs[i]] = new Vector3D();
       }
       *normals[f->vertIdxs[i]] += f->normal;
-
+/*
       if(dpdu.find(f->vertIdxs[i]) == dpdu.end()) {
          dpdu[f->vertIdxs[i]] = new Vector3D();
       }
@@ -208,6 +160,7 @@ void SmoothingGroup::addFace(Face* f) {
          dpdv[f->vertIdxs[i]] = new Vector3D();
       }
       *dpdv[f->vertIdxs[i]] += f->dpdv;
+*/
    }
 }
 
@@ -215,12 +168,14 @@ void SmoothingGroup::normalize() {
    for(SGNormalIter sit = normals.begin(), end = normals.end(); sit != end; sit++) {
       (*sit).second->normalize();
    }
+/*
    for(SGNormalIter sit = dpdu.begin(), end = dpdu.end(); sit != end; sit++) {
       (*sit).second->normalize();
    }
    for(SGNormalIter sit = dpdv.begin(), end = dpdv.end(); sit != end; sit++) {
       (*sit).second->normalize();
    }
+*/
 }
 
 Vector3D SmoothingGroup::interpolateNormal(const Face* face, const double beta, const double gamma) {
@@ -230,7 +185,7 @@ Vector3D SmoothingGroup::interpolateNormal(const Face* face, const double beta, 
    normal.normalize();
 	return normal;
 }
-
+/*
 Vector3D SmoothingGroup::interpolateDPDU(const Face* face, const double beta, const double gamma) {
    Vector3D normal(*dpdu[face->vertIdxs[0]] * (1.0 - beta - gamma)
                  + *dpdu[face->vertIdxs[1]] * beta
@@ -246,9 +201,9 @@ Vector3D SmoothingGroup::interpolateDPDV(const Face* face, const double beta, co
    normal.normalize();
 	return normal;
 }
+*/
 
-
-Mesh::Mesh() : Compound(), numCells(0) {
+Mesh::Mesh() : Compound() {
    doDelete = false;
 }
 
@@ -257,11 +212,6 @@ Mesh::~Mesh() {
       delete points[i];
    }
    points.clear();
-
-   for(unsigned int i = 0; i < normals.size(); i++) {
-      delete normals[i];
-   }
-   normals.clear();
 
    for(unsigned int i = 0; i < faces.size(); i++) {
       delete faces[i];
@@ -275,20 +225,9 @@ int Mesh::addPoint(Point3D* p) {
    return points.size() - 1;
 }
 
-Face* Mesh::addFace(int v1, int v2, int v3, FaceType type) {
-   Face *f;
-   switch(type) {
-      case M3D:
-         f = new M3DFace(*this, v1, v2, v3);
-         computePartialDerivitives(f);
-         break;
-      case WAVEFRONT:
-         f = new WavefrontFace(*this, v1, v2, v3);
-         break;
-      default:
-         f = new Face(*this, v1, v2, v3);
-         break;
-   }
+Face* Mesh::addFace(int v1, int v2, int v3) {
+   Face *f = new Face(*this, v1, v2, v3);
+//   computePartialDerivitives(f);
    faces.push_back(f);
    return f;
 }
@@ -299,48 +238,11 @@ void Mesh::calculateNormals() {
          (*it).second->normalize();
       }
    }
-   else {
-      normals.reserve(points.size());
-      for(unsigned int i = 0; i < points.size(); i++) {
-         normals.push_back(new Vector3D());
-      }
-
-      for(FaceIter fi = faces.begin(), end = faces.end(); fi != end; ++fi) {
-         *normals[(*fi)->vertIdxs[0]] += (*fi)->normal;
-         *normals[(*fi)->vertIdxs[1]] += (*fi)->normal;
-         *normals[(*fi)->vertIdxs[2]] += (*fi)->normal;
-      }
-
-      for(VectorIter it = normals.begin(), end = normals.end(); it != end; ++it) {
-         if((*it)->x == 0.0 && (*it)->y == 0.0 && (*it)->z == 0.0) {
-            (*it)->y  = 1.0;
-         }
-         (*it)->normalize();
-      }
-   }
 }
 
 void Mesh::setHash(Hash* hash) {
    if(hash->contains("material")) {
       setupMaterial(hash->getValue("material")->getHash());
-   }
-
-   if(hash->contains("verticies")) {
-      Array* verts = hash->getValue("verticies")->getArray();
-      for(unsigned int i = 0; i < verts->size(); i++) {
-         Array* vert = verts->at(i)->getArray();
-         addPoint(new Point3D(vert->at(0)->getDouble(), vert->at(1)->getDouble(), vert->at(2)->getDouble()));
-      }
-   }
-
-   if(hash->contains("faces")) {
-      Array* faces = hash->getValue("faces")->getArray();
-      for(unsigned int i = 0; i < faces->size(); i++) {
-         Array* f = faces->at(i)->getArray();
-         addFace(f->at(0)->getInteger(), f->at(1)->getInteger(), f->at(2)->getInteger());
-      }
-
-      calculateNormals();
    }
 }
 
@@ -350,6 +252,17 @@ void Mesh::setMaterial(Material* m) {
    }
 }
 
+void Mesh::setSmoothingGroup(int group) {
+   if(smoothingGroups.find(group) == smoothingGroups.end()) {
+      smoothingGroups[group] = new SmoothingGroup();
+   }
+   for(FaceIter it = faces.begin(); it != faces.end(); ++it) {
+      (*it)->smoothGroup = group;
+      smoothingGroups[group]->addFace(*it);
+   }
+}
+
+/*
 void Mesh::computePartialDerivitives(Face* face) const {
    double uvs[3][2];
    getUVs(uvs, face);
@@ -386,10 +299,11 @@ void Mesh::getUVs(double uv[3][2], Face* face) const {
    }
    else {
       for(int i = 0; i < 3; i++) {
-         unsigned int idx = face->vertIdxs[i];
+         unsigned int idx = face->textureIdxs[i];
          assert(idx < textureCoords.size());
          uv[i][0] = textureCoords[idx].x;
          uv[i][1] = textureCoords[idx].y;
       }
    }
 }
+*/

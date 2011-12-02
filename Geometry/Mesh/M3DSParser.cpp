@@ -415,10 +415,10 @@ void M3DSParser::readFaceArray(Mesh* mesh, int contentSize) {
       uint16 v2 = readUshortLE(in);
       readUshortLE(in);
       if(reverse) {
-         mesh->addFace(v2, v1, v0, M3D);
+         mesh->addFace(v2, v1, v0);
       }
       else {
-         mesh->addFace(v0, v1, v2, M3D);
+         mesh->addFace(v0, v1, v2);
       }
    }
 
@@ -458,15 +458,16 @@ void M3DSParser::processFaceArrayChunk(int nBytes, Mesh* mesh) {
       else if(chunkType == M3DCHUNK_MESH_SMOOTH_GROUP) {
          for(FaceIter it = mesh->facesBegin(), end = mesh->facesEnd(); it != end; it++) {
             unsigned int group = readUIntLE(in);
+            unsigned mask = 1;
             for(int i = 0; i < 32; i++) {
-               int mask = (int) pow(2, i);
                if(mask & group) {
-                  if(mesh->smoothingGroups.find(i) == mesh->smoothingGroups.end()) {
-                     mesh->smoothingGroups[i] = new SmoothingGroup();
+                  if(mesh->smoothingGroups.find(group) == mesh->smoothingGroups.end()) {
+                     mesh->smoothingGroups[group] = new SmoothingGroup();
                   }
                  (*it)->smoothGroup = group;
-                 mesh->smoothingGroups[i]->addFace(*it);
+                 mesh->smoothingGroups[group]->addFace(*it);
                }
+               mask = mask << 1;
             }
          }
       }
