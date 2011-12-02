@@ -36,6 +36,8 @@ void Grid::cleanup() {
 
 void Grid::setup() {
 //   cleanup();
+   Uint32 start = SDL_GetTicks();
+
    double root = 3.0 * pow(objs.size(), 1.0 / 3.0);
    double voxelsPerUnit = root / bbox.maxExtent();
 
@@ -70,6 +72,10 @@ void Grid::setup() {
       }
       idx++;
    }
+
+   Uint32 end = SDL_GetTicks();
+   fprintf(stdout, "Build time = %f seconds\n", (end - start) / 1000.0);
+   fflush(stdout);
 }
 
 void Grid::setHash(Hash* hash) {
