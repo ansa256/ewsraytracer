@@ -1,3 +1,9 @@
 mesh {
    name     "stationV"
 }
+
+starBox {
+   name     "stars"
+   count    10000
+   halfSize 1000
+} 

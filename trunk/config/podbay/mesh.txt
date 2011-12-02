@@ -1,11 +1,11 @@
 wavefront {
    name        "podbay"
    filename    "resources/PodBay/PodBay.obj"
-   textureDir  "resources/PodBay/Tex/"
    materials   "resources/PodBay/PodBay.mtl"
-   includes    "Left_Wall,LW_Room"
+   textureDir  "resources/PodBay/Tex/"
+#   includes    "LW_Room,Left_Wall"
    
    storage {
-      type  "grid"
+      type  "kdtree"
    }
 }
