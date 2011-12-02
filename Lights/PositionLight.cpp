@@ -14,10 +14,12 @@
 #include "Math/Maths.h"
 #include "Storage/Storage.h"
 
-PositionLight::PositionLight() : Light(), ls(1.0), color(1, 1, 1), location() {
+PositionLight::PositionLight(float halfDistance) : Light(), color(1, 1, 1), location(), ls(1.0) {
+   attenuationPower = LogN(2, halfDistance);
 }
 
-PositionLight::PositionLight(const Point3D& loc) : Light(), ls(1.0), color(1, 1, 1), location(loc) {
+PositionLight::PositionLight(const Point3D& loc, float halfDistance) : Light(), color(1, 1, 1), location(loc), ls(1.0) {
+   attenuationPower = LogN(2, halfDistance);
 }
 
 Vector3D PositionLight::getLightDirection(ShadeRecord& sr) {
@@ -37,8 +39,13 @@ void PositionLight::setHash(Hash* hash) {
    location.set(hash->getValue("location")->getArray());
    color.set(hash->getValue("color")->getArray());
    ls = hash->getDouble("radiance");
+
+   if(hash->contains("halfDistance")) {
+      attenuationPower = LogN(2, hash->getDouble("halfDistance"));
+   }
 }
 
 Color PositionLight::L(const ShadeRecord& sr) {
-   return color * ls;
+   double d = (location - sr.hitPoint).length();
+   return color * ls / pow(d, attenuationPower);
 }
