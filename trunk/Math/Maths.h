@@ -42,6 +42,10 @@ inline float Log2(float v) {
    return logf(v) * invlog;
 }
 
+inline float LogN(float v, float n) {
+   return logf(v) / logf(n);
+}
+
 inline int Log2Int(float v) {
    return (int) floor(Log2(v));
 }

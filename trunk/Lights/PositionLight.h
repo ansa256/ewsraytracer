@@ -15,19 +15,20 @@
 class PositionLight : public Light {
 
 public:
-   PositionLight();
-   PositionLight(const Point3D& loc);
+   PositionLight(float halfDistance = 30.0);
+   PositionLight(const Point3D& loc, float halfDistance = 30.0);
    virtual ~PositionLight() {}
 
    virtual Vector3D getLightDirection(ShadeRecord& sr);
    virtual bool inShadow(const Ray& ray, const ShadeRecord& sr);
    virtual void setHash(Hash* hash);
    virtual Color L(const ShadeRecord& sr);
-   
+
 private:
-   float ls;
    Color color;
    Point3D location;
+   float ls;
+   float attenuationPower;
 };
 
 #endif
