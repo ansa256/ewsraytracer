@@ -1,6 +1,7 @@
 #include "Environment.h"
 #include "Samplers/Regular.h"
 #include "Samplers/MultiJittered.h"
+#include "Samplers/LatinHyperCube.h"
 #include "Parser/Hash.h"
 #include "Geometry/GeometryManager.h"
 #include "Geometry/GeometryObject.h"
@@ -19,18 +20,14 @@ Environment::~Environment() {
 void Environment::setHash(Hash* hash) {
    material->setHash(hash);
 
-   int numSamples = hash->getInteger("numSamples");
-   if(numSamples == 1) {
-      sampler = new Regular(numSamples);
+   numLightSamples = hash->getInteger("numSamples");
+   if(numLightSamples == 1) {
+      sampler = new Regular(1);
    }
    else {
-      sampler = new MultiJittered(numSamples);
+      sampler = new LatinHyperCube(numLightSamples);
    }
    sampler->mapSamplesToHemisphere(1);
-
-   if(hash->contains("numLightSamples")) {
-      numLightSamples = hash->getInteger("numLightSamples");
-   }
 }
 
 Vector3D Environment::getLightDirection(ShadeRecord& sr) {
