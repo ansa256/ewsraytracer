@@ -20,14 +20,16 @@ Environment::~Environment() {
 void Environment::setHash(Hash* hash) {
    material->setHash(hash);
 
-   numLightSamples = hash->getInteger("numSamples");
-   if(numLightSamples == 1) {
+   int numSamples = hash->getInteger("numSamples");
+   if(numSamples == 1) {
       sampler = new Regular(1);
    }
    else {
-      sampler = new LatinHyperCube(numLightSamples);
+      sampler = new LatinHyperCube(numSamples);
    }
    sampler->mapSamplesToHemisphere(1);
+   
+   numLightSamples = hash->getInteger("numLightSamples");
 }
 
 Vector3D Environment::getLightDirection(ShadeRecord& sr) {
