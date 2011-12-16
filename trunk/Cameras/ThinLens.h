@@ -22,7 +22,7 @@ public:
    virtual ~ThinLens();
    
    virtual void setHash(Hash* hash);
-   virtual void renderScene(SDL_Rect& rect);
+   virtual SDL_Surface* renderScene(SDL_Rect& rect);
    
 private:
    float lensRadius;
