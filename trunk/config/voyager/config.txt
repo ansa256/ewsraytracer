@@ -1,7 +1,7 @@
 config {
    width       960
    height      540
-   threads     4
+   threads     8
    boxWidth    192
    boxHeight   108
    camera      "config/voyager/camera.txt"
