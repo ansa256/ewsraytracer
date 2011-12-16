@@ -7,8 +7,8 @@ direction {
 
 environment {
    numSamples  64
-   numLightSamples 1
-   radiance    0.3
+   numLightSamples 8
+   radiance    1.0
    color       [ 1.0 1.0 1.0 ]
 }
 

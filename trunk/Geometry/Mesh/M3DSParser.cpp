@@ -127,7 +127,7 @@ void M3DSParser::processSceneChunk(int nBytes) {
    while (bytesRead < nBytes) {
       uint16 chunkType = readUshortLE(in);
       int chunkSize = readIntLE(in);
-      int contentSize = chunkSize - 6;
+      size_t contentSize = chunkSize - 6;
       bytesRead += chunkSize;
 
       if (chunkType == M3DCHUNK_NAMED_OBJECT) {
@@ -150,7 +150,7 @@ void M3DSParser::processSceneChunk(int nBytes) {
    }
 }
 
-void M3DSParser::processModelChunk(int nBytes, string name) {
+void M3DSParser::processModelChunk(size_t nBytes, string name) {
    int bytesRead = 0;
 
    while(bytesRead < nBytes) {
@@ -171,7 +171,7 @@ void M3DSParser::processModelChunk(int nBytes, string name) {
    }
 
    if(bytesRead != nBytes) {
-      fprintf(stderr, "In processModelChunk expected %d bytes but read %d\n", nBytes, bytesRead);
+      fprintf(stderr, "In processModelChunk expected %lu bytes but read %d\n", nBytes, bytesRead);
    }
 }
 
@@ -217,7 +217,7 @@ void M3DSParser::processTriMeshChunk(int nBytes, string name) {
    storage->addObject(mesh);
 }
 
-void M3DSParser::processMaterialChunk(int nBytes) {
+void M3DSParser::processMaterialChunk(size_t nBytes) {
    int bytesRead = 0;
 
    MaterialProps props;
@@ -248,9 +248,7 @@ void M3DSParser::processMaterialChunk(int nBytes) {
       }
       else if (chunkType == M3DCHUNK_MATERIAL_SHADING) {
          short shade = readUshortLE(in);
-#ifdef PRINT_UNPROCESSED
          printf("SHADING = %d\n", shade);
-#endif
       }
       else if (chunkType == M3DCHUNK_MATERIAL_TEXMAP) {
          props.texMap = processTexmapChunk(contentSize);
@@ -286,7 +284,7 @@ void M3DSParser::processMaterialChunk(int nBytes) {
    }
 
    if(bytesRead != nBytes) {
-      fprintf(stderr, "In processMaterialChunk expected %d bytes but read %d\n", nBytes, bytesRead);
+      fprintf(stderr, "In processMaterialChunk expected %lu bytes but read %d\n", nBytes, bytesRead);
    }
 }
 
@@ -428,10 +426,6 @@ void M3DSParser::readFaceArray(Mesh* mesh, int contentSize) {
    }
 }
 
-bool isPowerOfTwo(int x) {
-   return (x != 0) && ((x & (x - 1)) == 0);
-}
-
 void M3DSParser::processFaceArrayChunk(int nBytes, Mesh* mesh) {
    int bytesRead = 0;
 
@@ -493,7 +487,7 @@ void M3DSParser::readFloatColor(Color* color) {
 }
 
 
-void M3DSParser::skipBytes(int count) {
+void M3DSParser::skipBytes(size_t count) {
    char c;
    while (count-- > 0) {
       in.get(c);

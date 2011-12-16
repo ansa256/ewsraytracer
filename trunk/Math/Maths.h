@@ -50,6 +50,10 @@ inline int Log2Int(float v) {
    return (int) floor(Log2(v));
 }
 
+inline bool isPowerOfTwo(int x) {
+   return (x != 0) && ((x & (x - 1)) == 0);
+}
+
 /**
  * Returns an interpolated value in range [0, 1] based on value of x relative to a and b.
  *

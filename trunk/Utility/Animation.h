@@ -47,7 +47,7 @@ private:
    void loadAnimationFrames(Array* frames, Instance* instance);
    void loadCameraFrames(Array* frames);
 
-   unsigned frameCount;
+   size_t frameCount;
    Camera* camera;
    SDL_Surface* surface;
    vector<Frame*> objFrames;

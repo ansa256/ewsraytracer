@@ -7,7 +7,7 @@
 typedef unsigned int uint32_t;
 
 struct KdNode {
-   void initLeaf(uint32_t* _idxs, int np);
+   void initLeaf(uint32_t* _idxs, size_t np);
    void initInterior(uint32_t axis, uint32_t ac, float s);
 
    float getSplit() const { return split; }
@@ -51,8 +51,8 @@ public:
    virtual bool shadowHit(const Ray& ray) const;
 
 private:
-   void buildTree(int nodeNum, unsigned depth, uint32_t* idxs, int nPrimitives, const BBox& bounds, uint32_t* lidxs, uint32_t* ridxs);
-   void findSplit(uint32_t* idxs, int np, const BBox& bounds, int& axis, double& split, int& offset);
+   void buildTree(int nodeNum, unsigned depth, uint32_t* idxs, size_t nPrimitives, const BBox& bounds, uint32_t* lidxs, uint32_t* ridxs);
+   void findSplit(uint32_t* idxs, size_t np, const BBox& bounds, int& axis, double& split, int& offset);
 
    KdNode *nodes;
    BoundEdge* edges;

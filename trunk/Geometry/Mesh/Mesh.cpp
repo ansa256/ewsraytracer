@@ -219,7 +219,7 @@ Mesh::~Mesh() {
    faces.clear();
 }
 
-int Mesh::addPoint(Point3D* p) {
+size_t Mesh::addPoint(Point3D* p) {
    points.push_back(p);
    bbox.expand(*p);
    return points.size() - 1;
