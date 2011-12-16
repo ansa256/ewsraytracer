@@ -40,9 +40,9 @@ public:
 private:
    void processTopLevelChunk(int nBytes);
    void processSceneChunk(int nBytes);
-   void processModelChunk(int nBytes, string name);
+   void processModelChunk(size_t nBytes, string name);
    void processTriMeshChunk(int nBytes, string name);
-   void processMaterialChunk(int nBytes);
+   void processMaterialChunk(size_t nBytes);
    Color* processColorChunk(int nBytes);
    void processPercentageChunk(int nBytes, float& percent);
    void processFaceArrayChunk(int nBytes, Mesh* mesh);
@@ -53,7 +53,7 @@ private:
    void readColor(Color* color);
    void readFloatColor(Color* color);
 
-   void skipBytes(int count);
+   void skipBytes(size_t count);
 
    void setMaterialTextures(Material* material, const MaterialProps& props) const;
 

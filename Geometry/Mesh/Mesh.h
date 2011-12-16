@@ -61,7 +61,7 @@ public:
    virtual vector<GeometryObject*> getObjects() const { return vector<GeometryObject*>(faces.begin(), faces.end()); }
 
    void pointsReserve(int size) { points.reserve(size); }
-   int addPoint(Point3D* p);
+   size_t addPoint(Point3D* p);
 
    void facesReserve(int size) { faces.reserve(size); }
    Face* addFace(int v1, int v2, int v3);
@@ -84,7 +84,7 @@ public:
    map<unsigned int, SmoothingGroup*> smoothingGroups;
 
 protected:
-   int getPointCount() const { return points.size(); }
+   size_t getPointCount() const { return points.size(); }
 
    vector<Point3D*> points;
    vector<Face*> faces;

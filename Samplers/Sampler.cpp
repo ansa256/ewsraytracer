@@ -89,7 +89,7 @@ Point3D* Sampler::sampleHemisphere() {
 }
 
 void Sampler::mapSamplesToUnitDisk() {
-	int size = samples.size();
+	size_t size = samples.size();
 	float r, phi;		// polar coordinates
 	Point2D sp; 		// sample point on unit disk
 
@@ -132,7 +132,7 @@ void Sampler::mapSamplesToUnitDisk() {
 }
 
 void Sampler::mapSamplesToHemisphere(float exp) {
-   int size = samples.size();
+   size_t size = samples.size();
 	hemisphereSamples.reserve(numSamples * numSets);
 
 	for (int j = 0; j < size; j++) {

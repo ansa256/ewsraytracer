@@ -22,7 +22,7 @@ bool BoundEdge::operator< (const BoundEdge& e) const {
    return tsplit < e.tsplit;
 }
 
-void KdNode::initLeaf(uint32_t* _idxs, int np) {
+void KdNode::initLeaf(uint32_t* _idxs, size_t np) {
    flags = 3;
    nPrims |= (np << 2);
    // Store primitive ids for leaf node
@@ -84,7 +84,7 @@ void KdTree::setup() {
    delete[] ridxs;
 }
 
-void KdTree::findSplit(uint32_t* idxs, int np, const BBox& bounds, int& axis, double& split, int& offset) {
+void KdTree::findSplit(uint32_t* idxs, size_t np, const BBox& bounds, int& axis, double& split, int& offset) {
    double invTotalSA = 1.0 / bounds.surfaceArea();
    double tsplit = numeric_limits<double>::infinity();
 
@@ -103,7 +103,7 @@ void KdTree::findSplit(uint32_t* idxs, int np, const BBox& bounds, int& axis, do
       }
       sort(&edges[0], &edges[2 * np]);
 
-      int nBelow = 0, nAbove = np;
+      size_t nBelow = 0, nAbove = np;
       double bestCost = numeric_limits<double>::max();
 
       int other0 = (taxis + 1) % 3;
@@ -148,7 +148,7 @@ void KdTree::findSplit(uint32_t* idxs, int np, const BBox& bounds, int& axis, do
    }
 }
 
-void KdTree::buildTree(int nodeNum, unsigned depth, uint32_t* idxs, int nPrimitives, const BBox& bounds, uint32_t* lidxs, uint32_t* ridxs) {
+void KdTree::buildTree(int nodeNum, unsigned depth, uint32_t* idxs, size_t nPrimitives, const BBox& bounds, uint32_t* lidxs, uint32_t* ridxs) {
    assert(nodeNum == nextFreeNode);
 
    // Get next free node from _nodes_ array
