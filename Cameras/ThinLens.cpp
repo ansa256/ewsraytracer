@@ -32,7 +32,7 @@ void ThinLens::setHash(Hash* hash) {
    lensSampler->mapSamplesToUnitDisk();
 }
 
-void ThinLens::renderScene(SDL_Rect& rect) {
+SDL_Surface* ThinLens::renderScene(SDL_Rect& rect) {
    Color pixelColor;
    Ray ray;
    Point2D lp;
@@ -70,10 +70,10 @@ void ThinLens::renderScene(SDL_Rect& rect) {
    SDL_UnlockSurface(s);
    rect.y = height - rect.h - rect.y;
 
-   pthread_mutex_lock(&surfLock);
-   SDL_BlitSurface(s, NULL, surface, &rect);
-   SDL_UpdateRect(surface, 0, 0, width, height);
-   pthread_mutex_unlock(&surfLock);
+//   pthread_mutex_lock(&surfLock);
+//   SDL_BlitSurface(s, NULL, surface, &rect);
+//   SDL_UpdateRect(surface, 0, 0, width, height);
+//   pthread_mutex_unlock(&surfLock);
 
-   SDL_FreeSurface(s);
+   return s;
 }

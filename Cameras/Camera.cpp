@@ -16,12 +16,15 @@
 #include <math.h>
 #include <queue>
 #include "Math/Matrix.h"
+#include "Utility/SDL_Utility.h"
 
 using namespace std;
 
 queue<SDL_Rect> rects;
 pthread_mutex_t rectLock;
+pthread_mutex_t surfLock;
 int threadCount;
+SDL_Surface* buffer;
 
 void* renderThread(void* arg) {
    Camera* c = (Camera*) arg;
@@ -37,33 +40,14 @@ void* renderThread(void* arg) {
       rects.pop();
       pthread_mutex_unlock(&rectLock);
 
-      c->renderScene(r);
+      SDL_Surface* s = c->renderScene(r);
+
+      pthread_mutex_lock(&surfLock);
+      SDL_BlitSurface(s, NULL, buffer, &r);
+      pthread_mutex_unlock(&surfLock);
+
+      SDL_FreeSurface(s);
    }
-   pthread_exit(NULL);
-   return NULL;
-}
-
-void* timerThread(void* arg) {
-   pthread_attr_t attr;
-   pthread_attr_init(&attr);
-   pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-
-   Uint32 start = SDL_GetTicks();
-
-   pthread_t tid[threadCount];
-   for(int i = 0; i < threadCount; i++) {
-      pthread_create(&tid[i], &attr, renderThread, arg);
-   }
-
-   for(int i = 0; i < threadCount; i++) {
-      pthread_join(tid[i], NULL);
-   }
-
-   pthread_attr_destroy(&attr);
-
-   Uint32 end = SDL_GetTicks();
-   printf("Render time = %f seconds\n", (end - start) / 1000.0);
-
    pthread_exit(NULL);
    return NULL;
 }
@@ -127,15 +111,29 @@ void Camera::render() {
       }
    }
 
+   buffer = SDL_DisplayFormat(surface);
    pthread_attr_t attr;
    pthread_attr_init(&attr);
    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-
-   pthread_t tid;
-   pthread_create(&tid, &attr, timerThread, (void *) this);
-   pthread_join(tid, NULL);
-
+   
+   Uint32 start = SDL_GetTicks();
+   
+   pthread_t tid[threadCount];
+   for(int i = 0; i < threadCount; i++) {
+      pthread_create(&tid[i], &attr, renderThread, (void *) this);
+   }
+   
+   for(int i = 0; i < threadCount; i++) {
+      pthread_join(tid[i], NULL);
+   }
+   
    pthread_attr_destroy(&attr);
+   
+   Uint32 end = SDL_GetTicks();
+   printf("Render time = %f seconds\n", (end - start) / 1000.0);
+
+   SDL_BlitSurface(buffer, NULL, surface, NULL);
+   SDL_UpdateRect(surface, 0, 0, 0, 0);
 }
 
 void Camera::computeUVW(Hash* h) {

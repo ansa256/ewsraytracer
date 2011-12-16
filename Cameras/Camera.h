@@ -19,6 +19,8 @@ class Tracer;
 class Sampler;
 class Hash;
 
+void* renderThread(void* arg);
+
 class Camera {
 
 public:
@@ -28,7 +30,7 @@ public:
    virtual void setHash(Hash* hash);
 
    void render();
-   virtual void renderScene(SDL_Rect& rect) = 0;
+   virtual SDL_Surface* renderScene(SDL_Rect& rect) = 0;
 
    void setPosition(const Point3D& loc) { eye = loc; }
    void setSurface(SDL_Surface* s) { surface = s; }
@@ -48,7 +50,7 @@ protected:
    int height;
    float viewPlaneDistance;
 
-   pthread_mutex_t surfLock;
+//   pthread_mutex_t surfLock;
 
 private:
    int boxw;
