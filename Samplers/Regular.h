@@ -11,6 +11,9 @@ public:
 
    virtual void setHash(Hash* h);
    virtual uint32_t getSamples(Sample* samples);
+
+private:
+   uint32_t xPos, yPos;
 };
 
 #endif
