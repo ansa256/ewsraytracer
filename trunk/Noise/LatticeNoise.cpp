@@ -1,7 +1,7 @@
 #include "LatticeNoise.h"
 #include "Math/Maths.h"
 #include "Parser/Hash.h"
-#include "Samplers/MultiJittered.h"
+#include "Sampler.h"
 
 /*
  * The following table is by Darwyn Peachey in Ebert et al. (2003), page 70.
@@ -45,18 +45,20 @@ void LatticeNoise::initValueTable(int seed) {
 
 void LatticeNoise::initVectorTable(int seed) {
    srand(seed);
-   MultiJittered sampler(256, 1);
+   float* samples = new float[256 * 2];
+   Sampler::LatinHyperCube(samples, 256, 2);
    
    for(int i = 0; i < 256; i++) {
-      Point2D* point = sampler.sampleOneSet();
-      float z = 1.0 - 2.0 * point->x;
+      float z = 1.0 - 2.0 * samples[2*i];
       float r = sqrt(1.0 - z * z);
-      float phi = 2.0 * M_PI * point->y;
+      float phi = 2.0 * M_PI * samples[2*i+1];
       float x = r * cos(phi);
       float y = r * sin(phi);
       vectors[i].set(x, y, z);
       vectors[i].normalize();
    }
+   
+   delete[] samples;
 }
 
 void LatticeNoise::setHash(Hash* h) {
