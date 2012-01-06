@@ -1,5 +1,4 @@
 #include "GlossySpecular.h"
-#include "Samplers/MultiJittered.h"
 #include <math.h>
 
 GlossySpecular::GlossySpecular() : ks(0.0), exp(0), color(NULL) {
