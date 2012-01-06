@@ -17,17 +17,26 @@ void StratifiedSampler::setHash(Hash* h) {
    strataY = h->getInteger("strataY");
    
    nSamples = strataX * strataY;
-   buffer = new float[nSamples * 2];
+   buffer = new float[nSamples * 4];
 }
 
 uint32_t StratifiedSampler::getSamples(Sample* samples) {
    if(yPos == yend) return 0;
 
-   sample2D(buffer, strataX, strataY, xPos, yPos);
+   float* bufp = buffer;
+   float* imageSamples = bufp; bufp += 2 * nSamples;
+   float* lensSamples = bufp;  bufp += 2 * nSamples;
+
+   sample2D(imageSamples, strataX, strataY, xPos, yPos);
+   sample2D(lensSamples, strataX, strataY, 0, 0);
+   
+   Shuffle(lensSamples, nSamples, 2);
    
    for(int i = 0; i < nSamples; i++) {
-      samples[i].imageX = buffer[2 * i];
-      samples[i].imageY = buffer[2 * i + 1];
+      samples[i].imageX = imageSamples[2 * i];
+      samples[i].imageY = imageSamples[2 * i + 1];
+      samples[i].lensX = lensSamples[2 * i];
+      samples[i].lensY = lensSamples[2 * i + 1];
    }
    
    if(++xPos == xend) {
