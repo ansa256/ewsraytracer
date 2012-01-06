@@ -2,5 +2,6 @@ position {
    location       [ 100.0 0.0 50.0 ]
    color          [ 1.0 1.0 1.0 ]
    radiance       3.0
+   halfDistance   1500.0
 }
 

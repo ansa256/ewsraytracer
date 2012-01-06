@@ -10,11 +10,13 @@ environment {
    radiance          1.0
    color             [ 1.0 1.0 1.0 ]
    numSamples        64
+   numLightSamples   30
 }
 
 areaLight {
-   radiance          14.0
+   radiance          10.0
    color             [ 1.0 1.0 1.0 ]
+   numLightSamples   30
 
    rectangle {
       origin         [ -499.0 0.0 0.0 ]

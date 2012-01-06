@@ -1,4 +1,3 @@
-#ambientOccluder {
 ambient {
    radiance       0.2
    color          [ 1.0 1.0 1.0 ]
@@ -11,5 +10,6 @@ position {
    location       [ 10.0 0.0 4.0 ]
    color          [ 1.0 1.0 1.0 ]
    radiance       3.0
+   halfDistance   10000.0
 }
 
