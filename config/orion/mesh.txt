@@ -1,8 +1,7 @@
 m3ds {
-   name     "stationV"
+   name     "orion"
    filename "resources/OrionIII/Orion.3ds"
    textureDir  "resources/OrionIII/"
-#   scale 0.01
    reverse     "true"
    
    storage {

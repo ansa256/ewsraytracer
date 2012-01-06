@@ -1,5 +1,5 @@
 mesh {
-   name     "stationV"
+   name     "orion"
 }
 
 starBox {

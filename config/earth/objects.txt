@@ -12,8 +12,9 @@ sphere {
       specularTexture "resources/earth/8081_earthspec4k-2.jpg"
 
       texture {
-         type "tinstance"
-         transforms [ "scale" [ 6.37814 6.37814 6.37814 ] ]
+         type     "tinstance"
+         scale    [ 6.37814 6.37814 6.37814 ]
+         rotate   [ 0.0 105.0 0.0 ]
 
          texture {
             type     "image"
@@ -23,8 +24,9 @@ sphere {
       }
 
       normalMap {
-         type "tinstance"
-         transforms [ "scale" [ 6.37814 6.37814 6.37814 ] ]
+         type     "tinstance"
+         scale    [ 6.37814 6.37814 6.37814 ]
+         rotate   [ 0.0 105.0 0.0 ]
 
          texture {
             type     "image"
@@ -46,8 +48,9 @@ sphere {
       kd 1.2
 
       texture {
-         type "tinstance"
-         transforms [ "scale" [ 6.42 6.42 6.42 ] ]
+         type     "tinstance"
+         scale    [ 6.42 6.42 6.42 ]
+         rotate   [ 0.0 105.0 0.0 ]
 
          texture {
             type     "image"

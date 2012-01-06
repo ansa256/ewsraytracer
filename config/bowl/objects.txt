@@ -53,10 +53,16 @@ plane {
       kd          0.65
 
       texture {
-         type           "wood"
-         numOctaves     2
-         lacunarity     4.0
-         gain           0.5
+         type        "tinstance"
+         translate   [ -3.0 0.0 -10.0 ]
+         scale       [ 1.4 1.0 5.0 ]
+         rotate      [ -60.0 0.0 0.0 ]
+         texture {
+            type           "wood"
+            numOctaves     2
+            lacunarity     4.0
+            gain           0.5
+         }
       }
    }
 }
