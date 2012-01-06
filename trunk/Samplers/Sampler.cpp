@@ -1,150 +1,125 @@
 #include "Sampler.h"
+#include "Regular.h"
+#include "StratifiedSampler.h"
+#include "HaltonSampler.h"
+#include "Parser/Hash.h"
 #include "Math/Maths.h"
-#include <algorithm>
 #include <math.h>
+#include <stdexcept>
 
-Sampler::Sampler(const int _numSamples, const int _numSets) : numSamples(_numSamples), numSets(_numSets), count(0), jump(0) {
-   setupShuffledIndices();
+SamplerBounds::SamplerBounds(uint32_t xs, uint32_t xe, uint32_t ys, uint32_t ye) :
+   xstart(xs), 
+   xend(xe), 
+   ystart(ys), 
+   yend(ye)
+{   
+}
+
+SamplerBounds& SamplerBounds::operator=(const SamplerBounds& other) {
+   xstart = other.xstart;
+   xend = other.xend;
+   ystart = other.ystart;
+   yend = other.yend;
+   return *this;
+}
+
+Sampler::Sampler(const SamplerBounds& bounds) : 
+   xstart(bounds.xstart), 
+   xend(bounds.xend), 
+   ystart(bounds.ystart), 
+   yend(bounds.yend), 
+   nSamples(0)
+{
 }
 
 Sampler::~Sampler() {
-   for(unsigned int i = 0; i < samples.size(); i++) {
-      delete samples[i];
-   }
-   samples.clear();
-
-   for(unsigned int i = 0; i < diskSamples.size(); i++) {
-      delete diskSamples[i];
-   }
-   diskSamples.clear();
-
-   for(unsigned int i = 0; i < hemisphereSamples.size(); i++) {
-      delete hemisphereSamples[i];
-   }
-   hemisphereSamples.clear();
 }
 
-void Sampler::shuffleXCoords() {
-   for(int p = 0; p < numSets; p++) {
-      for(int i = 0; i < numSamples; i++) {
-         int target = rand() % numSamples + p * numSamples;
-         float temp = samples[i + p * numSamples + 1]->x;
-         samples[i + p * numSamples + 1]->x = samples[target]->x;
-         samples[target]->x = temp;
+void Sampler::LatinHyperCube(float* samples, uint32_t nSamples, uint32_t nDim) {
+   float delta = 1.f / nSamples;
+   for(uint32_t i = 0; i < nSamples; i++) {
+      for(uint32_t j = 0; j < nDim; j++) {
+         samples[nDim * i + j] = (i + rand_float()) * delta;
+      }
+   }
+   
+   for(uint32_t i = 0; i < nDim; i++) {
+      for (int j = 0; j < nSamples; j++) {
+         uint32_t other = j + (rand() % (nSamples - j));
+         swap(samples[nDim * j + i], samples[nDim * other + i]);
       }
    }
 }
 
-void Sampler::shuffleYCoords() {
-   for(int p = 0; p < numSets; p++) {
-      for(int i = 0; i < numSamples; i++) {
-         int target = rand() % numSamples + p * numSamples;
-         float temp = samples[i + p * numSamples + 1]->y;
-         samples[i + p * numSamples + 1]->x = samples[target]->y;
-         samples[target]->y = temp;
+Sampler* Sampler::createSampler(const SamplerBounds& bounds, Hash* h) {
+   string type = h->getString("type");
+   Sampler* sampler;
+   
+   if(type == "regular") {
+      sampler = new Regular(bounds);
+   }
+   else if(type == "stratified") {
+      sampler = new StratifiedSampler(bounds);
+   }
+   else if(type == "halton") {
+      sampler = new HaltonSampler(bounds);
+   }
+   else {
+      throw runtime_error("Unknown sampler type " + type);
+   }
+   
+   sampler->setHash(h);
+   return sampler;
+}
+
+void Sampler::mapToDisk(float u, float v, float* dx, float* dy) {
+   float r, theta;
+   
+   // Mao samples from [0, 1] to [-1, 1]
+   float sx = 2 * u - 1;
+   float sy = 2 * v - 1;
+   
+   // Handle degeneracy at the origin
+   if (sx == 0.0 && sy == 0.0) {
+      *dx = 0.0;
+      *dy = 0.0;
+      return;
+   }
+   if (sx >= -sy) {
+      if (sx > sy) {
+         // Handle first region of disk
+         r = sx;
+         theta = (sy > 0.0) ? sy / r : 8.f + sy / r;
+      }
+      else {
+         // Handle second region of disk
+         r = sy;
+         theta = 2.0f - sx / r;
       }
    }
-}
-
-void Sampler::setupShuffledIndices() {
-   shuffledIdx.reserve(numSamples * numSets);
-	vector<int> indices;
-
-	for (int j = 0; j < numSamples; j++) {
-		indices.push_back(j);
-   }
-
-	for (int p = 0; p < numSets; p++) {
-		random_shuffle(indices.begin(), indices.end());
-
-		for (int j = 0; j < numSamples; j++) {
-			shuffledIdx.push_back(indices[j]);
+   else {
+      if (sx <= sy) {
+         // Handle third region of disk
+         r = -sx;
+         theta = 4.0f - sy / r;
       }
-	}
-}
-
-Point2D* Sampler::sampleUnitSquare() {
-	if (count % numSamples == 0) {
-		jump = (rand() % numSets) * numSamples;
+      else {
+         // Handle fourth region of disk
+         r = -sy;
+         theta = 6.0f + sx / r;
+      }
    }
-	return (samples[jump + shuffledIdx[jump + count++ % numSamples]]);
+   
+   theta *= M_PI / 4.f;
+   *dx = r * cosf(theta);
+   *dy = r * sinf(theta);
 }
 
-Point2D* Sampler::sampleUnitDisk() {
-   if (count % numSamples == 0) {
-		jump = (rand() % numSets) * numSamples;
-   }
-	return (diskSamples[jump + shuffledIdx[jump + count++ % numSamples]]);
-}
-
-Point2D* Sampler::sampleOneSet() {
-   return samples[count++ % numSamples];
-}
-
-Point3D* Sampler::sampleHemisphere() {
-   if (count % numSamples == 0) {
-		jump = (rand() % numSets) * numSamples;
-   }
-	return (hemisphereSamples[jump + shuffledIdx[jump + count++ % numSamples]]);
-}
-
-void Sampler::mapSamplesToUnitDisk() {
-	size_t size = samples.size();
-	float r, phi;		// polar coordinates
-	Point2D sp; 		// sample point on unit disk
-
-	for (int j = 0; j < size; j++) {
-      // map sample point to [-1, 1] X [-1,1]
-		sp.x = 2.0 * samples[j]->x - 1.0;
-		sp.y = 2.0 * samples[j]->y - 1.0;
-
-		if (sp.x > -sp.y) {			// sectors 1 and 2
-			if (sp.x > sp.y) {		// sector 1
-				r = sp.x;
-				phi = sp.y / sp.x;
-			}
-			else {					// sector 2
-				r = sp.y;
-				phi = 2.0 - sp.x / sp.y;
-			}
-		}
-		else {						// sectors 3 and 4
-			if (sp.x < sp.y) {		// sector 3
-				r = -sp.x;
-				phi = 4.0 + sp.y / sp.x;
-			}
-			else {					// sector 4
-				r = -sp.y;
-				if (sp.y != 0.0)	// avoid division by zero at origin
-					phi = 6.0 - sp.x / sp.y;
-				else
-					phi  = 0.0;
-			}
-		}
-
-		phi *= M_PI / 4.0;
-
-      Point2D* p = new Point2D(r * cos(phi), r * sin(phi));
-      diskSamples.push_back(p);
-	}
-
-//	samples.erase(samples.begin(), samples.end());
-}
-
-void Sampler::mapSamplesToHemisphere(float exp) {
-   size_t size = samples.size();
-	hemisphereSamples.reserve(numSamples * numSets);
-
-	for (int j = 0; j < size; j++) {
-		float cos_phi = cos(2.0 * M_PI * samples[j]->x);
-		float sin_phi = sin(2.0 * M_PI * samples[j]->x);
-		float cos_theta = pow((1.0 - samples[j]->y), 1.0 / (exp + 1.0));
-		float sin_theta = sqrt (1.0 - cos_theta * cos_theta);
-		float pu = sin_theta * cos_phi;
-		float pv = sin_theta * sin_phi;
-		float pw = cos_theta;
-		hemisphereSamples.push_back(new Point3D(pu, pv, pw));
-	}
+Vector3D Sampler::mapToHemisphere(float u, float v) {
+   float x, y;
+   mapToDisk(u, v, &x, &y);
+   float z = sqrtf(max(0.f, 1.f - x * x - y * y));
+   return Vector3D(x, y, z);
 }
 
 Vector3D Sampler::uniformSampleCone(double u, double v, float costhetamax, const Vector3D& x, const Vector3D& y, const Vector3D& z) {

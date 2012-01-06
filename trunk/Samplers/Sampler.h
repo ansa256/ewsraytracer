@@ -1,43 +1,41 @@
-#ifndef _SAMPLER_H_
-#define _SAMPLER_H_
+#ifndef raytracer_Sampler_h
+#define raytracer_Sampler_h
 
-#include <vector>
-#include "Math/Point2D.h"
-#include "Math/Point3D.h"
+#include "Math/Vector3D.h"
+#include <stdint.h>
 
-using namespace std;
+class Hash;
+
+struct SamplerBounds {
+   SamplerBounds(uint32_t xs = 0, uint32_t xe = 0, uint32_t ys = 0, uint32_t ye = 0);
+   SamplerBounds& operator=(const SamplerBounds& other);
+   uint32_t xstart, xend, ystart, yend;
+};
+
+struct Sample {
+   float imageX, imageY;
+};
 
 class Sampler {
-
+   
 public:
-   Sampler(const int _numSamples = 1, const int _numSets = 83);
+   Sampler(const SamplerBounds& bounds);
    virtual ~Sampler();
-
-   virtual void generateSamples() = 0;
-   void shuffleXCoords();
-   void shuffleYCoords();
-   void setupShuffledIndices();
-   void mapSamplesToUnitDisk();
-   void mapSamplesToHemisphere(float exp);
-
-   int getNumSamples() const { return numSamples; }
-
+   
+   static Sampler* createSampler(const SamplerBounds& bounds, Hash* h);
+   
+   virtual void setHash(Hash* h) = 0;
+   virtual uint32_t getSamples(Sample* samples) = 0;
+   uint32_t getNumSamples() const { return nSamples; }
+   
+   static void LatinHyperCube(float* samples, uint32_t nSamples, uint32_t nDim);
+   static void mapToDisk(float u, float v, float* du, float* dv);
+   static Vector3D mapToHemisphere(float u, float v);
    static Vector3D uniformSampleCone(double u, double v, float costhetamax, const Vector3D& x, const Vector3D& y, const Vector3D& z);
 
-   Point2D* sampleUnitSquare();
-   Point2D* sampleUnitDisk();
-   Point2D* sampleOneSet();
-   Point3D* sampleHemisphere();
-
 protected:
-   int numSamples;
-   int numSets;
-   vector<Point2D*> samples;
-   vector<Point2D*> diskSamples;
-   vector<Point3D*> hemisphereSamples;
-   vector<int> shuffledIdx;
-   unsigned long count;
-   int jump;
+   uint32_t xstart, xend, ystart, yend;
+   uint32_t nSamples;
 };
 
 #endif

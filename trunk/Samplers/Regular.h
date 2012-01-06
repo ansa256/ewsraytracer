@@ -6,10 +6,11 @@
 class Regular : public Sampler {
 
 public:
-   Regular(const int num = 1);
+   Regular(const SamplerBounds& bounds);
    virtual ~Regular();
-   
-   virtual void generateSamples();
+
+   virtual void setHash(Hash* h);
+   virtual uint32_t getSamples(Sample* samples);
 };
 
 #endif
