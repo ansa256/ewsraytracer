@@ -1,7 +1,7 @@
 #include "LatticeNoise.h"
 #include "Math/Maths.h"
 #include "Parser/Hash.h"
-#include "Sampler.h"
+#include "Samplers/Sampler.h"
 
 /*
  * The following table is by Darwyn Peachey in Ebert et al. (2003), page 70.
@@ -47,7 +47,7 @@ void LatticeNoise::initVectorTable(int seed) {
    srand(seed);
    float* samples = new float[256 * 2];
    Sampler::LatinHyperCube(samples, 256, 2);
-   
+
    for(int i = 0; i < 256; i++) {
       float z = 1.0 - 2.0 * samples[2*i];
       float r = sqrt(1.0 - z * z);
@@ -57,13 +57,13 @@ void LatticeNoise::initVectorTable(int seed) {
       vectors[i].set(x, y, z);
       vectors[i].normalize();
    }
-   
+
    delete[] samples;
 }
 
 void LatticeNoise::setHash(Hash* h) {
    numOctaves = h->getInteger("numOctaves");
-   
+
    if(h->contains("lacunarity")) {
       lacunarity = h->getDouble("lacunarity");
    }
@@ -91,16 +91,16 @@ float LatticeNoise::fractalSum(const Point3D& p) const {
    float amplitude = 1.0;
    float frequency = 1.0;
    float sum = 0.0;
-   
+
    for(int j = 0; j < numOctaves; j++) {
       sum += amplitude * valueNoise(p * frequency);
       amplitude *= 0.5;
       frequency *= 2.0;
    }
-   
+
    // Map to range [0, 1]
    sum = (sum - fsMin) / (fsMax - fsMin);
-   
+
    return sum;
 }
 
@@ -124,13 +124,13 @@ Vector3D LatticeNoise::vectorTurbulence(const Point3D& p) const {
    float amplitude = 1.0;
    float frequency = 1.0;
    Vector3D sum;
-   
+
    for(int j = 0; j < numOctaves; j++) {
       sum += vectorNoise(p * frequency).absValue() * amplitude;
       amplitude *= 0.5;
       frequency *= 2.0;
    }
-   
+
    return sum;
 }
 
@@ -138,7 +138,7 @@ float LatticeNoise::fbm(const Point3D& p) const {
    float amplitude = 1.0;
    float frequency = 1.0;
    float sum = 0.0;
-   
+
    for(int j = 0; j < numOctaves; j++) {
       sum += amplitude * valueNoise(p * frequency);
       amplitude *= gain;
@@ -154,12 +154,12 @@ Vector3D LatticeNoise::vectorFbm(const Point3D& p) const {
    float amplitude = 1.0;
    float frequency = 1.0;
    Vector3D sum;
-   
+
    for(int j = 0; j < numOctaves; j++) {
       sum += vectorNoise(p * frequency) * amplitude;
       amplitude *= gain;
       frequency *= lacunarity;
    }
-   
+
    return sum;
 }
