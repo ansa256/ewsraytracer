@@ -1,12 +1,3 @@
-/*
- *  Rectangle.h
- *  RayTracer
- *
- *  Created by Eric Saari on 12/20/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #ifndef _RECTANGLE_H_
 #define _RECTANGLE_H_
 
@@ -27,7 +18,7 @@ public:
    virtual bool shadowHit(const Ray& ray) const;
    virtual void setHash(Hash* hash);
 
-   virtual Point3D sample(const Point3D& hitPoint) const;
+   virtual Point3D sample(const Point3D& hitPoint);
    virtual Vector3D getNormal(const Point3D& point) const;
    virtual double pdf(const ShadeRecord& sr) const;
 
@@ -38,11 +29,13 @@ private:
    Vector3D a;
    Vector3D b;
    Vector3D normal;
-   Sampler* sampler;
 
    double lengthASquared;
    double lengthBSquared;
    double inverseArea;
+   
+   float* samples;
+   uint32_t nSamples, idx;
 };
 
 #endif

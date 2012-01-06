@@ -3,8 +3,6 @@
 
 #include "LightObject.h"
 
-class Sampler;
-
 /**
  * Hash values:
  *    - center [ x y z ] - Center of the disk
@@ -21,7 +19,7 @@ public:
    virtual bool hit(const Ray& ray, ShadeRecord& sr) const;
    virtual bool shadowHit(const Ray& ray) const;
 
-   virtual Point3D sample(const Point3D& hitPoint) const;
+   virtual Point3D sample(const Point3D& hitPoint);
    virtual Vector3D getNormal(const Point3D& point) const;
    virtual double pdf(const ShadeRecord& sr) const;
 
@@ -30,9 +28,10 @@ private:
    Vector3D normal;
    float radius;
    float radiusSquared;
-   Sampler* sampler;
    double inverseArea;
    Vector3D a, b;
+   float* samples;
+   int nSamples, idx;
 };
 
 #endif

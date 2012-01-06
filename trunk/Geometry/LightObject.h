@@ -19,7 +19,7 @@ public:
    LightObject() {}
    virtual ~LightObject() {}
 
-   virtual Point3D sample(const Point3D& hitPoint) const = 0;
+   virtual Point3D sample(const Point3D& hitPoint) = 0;
    virtual Vector3D getNormal(const Point3D& point) const = 0;
    virtual double pdf(const ShadeRecord& sr) const = 0;
 };
