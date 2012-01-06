@@ -5,7 +5,7 @@
 #include "Math/Vector3D.h"
 
 class Material;
-class Sampler;
+class SamplerNew;
 
 class Environment : public Light {
 
@@ -22,7 +22,8 @@ public:
 
 private:
    Material* material;
-   Sampler* sampler;
+   float* samples;
+   int numSamples, idx;
 };
 
 #endif

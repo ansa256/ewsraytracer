@@ -1,18 +1,7 @@
-/*
- *  AmbientOccluder.h
- *  RayTracer
- *
- *  Created by Eric Saari on 12/19/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #ifndef _AMBIENT_OCCLUDER_H_
 #define _AMBIENT_OCCLUDER_H_
 
 #include "Ambient.h"
-
-class Sampler;
 
 class AmbientOccluder : public Ambient {
    
@@ -28,8 +17,9 @@ public:
    
 private:
    Color minColor;
-   Sampler* sampler;
    Vector3D u, v, w;
+   uint32_t nSamples, idx;
+   float* samples;
 };
 
 #endif
