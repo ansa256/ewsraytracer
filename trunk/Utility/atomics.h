@@ -3,17 +3,25 @@
 
 #ifdef __APPLE__
 #include <libkern/OSAtomic.h>
+#elif defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
 #endif
 
+#if defined(_WIN32) || defined(_WIN64)
+typedef volatile LONG AtomicInt32;
+#else
 typedef volatile int32_t AtomicInt32;
+#endif
 
 /**
  * If theVal == oldVal, sets theVal = newVal and returns true.
  * Otherwise returns false.
  */
-inline bool AtomicCompareAndSet(int32_t oldVal, int32_t newVal, AtomicInt32* theVal) {
+inline bool AtomicCompareAndSwap(int32_t oldVal, int32_t newVal, AtomicInt32* theVal) {
 #ifdef __APPLE__
    return OSAtomicCompareAndSwap32Barrier(oldVal, newVal, theVal);
+#elif defined(_WIN32) || defined(_WIN64)
+   return InterlockedCompareExchange(theVal, newVal, oldVal) == oldVal;
 #else
 #error "Implemnt this"
 #endif
@@ -22,6 +30,8 @@ inline bool AtomicCompareAndSet(int32_t oldVal, int32_t newVal, AtomicInt32* the
 inline int AtomicAdd(AtomicInt32* val, int32_t delta) {
 #ifdef __APPLE__
    return OSAtomicAdd32Barrier(delta, val);
+#elif defined(_WIN32) || defined(_WIN64)
+   return InterlockedExchangeAdd (val, delta);
 #else
 #error "Implement this"
 #endif
@@ -30,12 +40,12 @@ inline int AtomicAdd(AtomicInt32* val, int32_t delta) {
 inline float AtomicAdd(volatile float* val, float delta) {
    union bits { float f; int32_t i; };
    bits oldVal, newVal;
-   
+
    do {
       oldVal.f = *val;
       newVal.f = oldVal.f + delta;
-   } while(AtomicCompareAndSet(oldVal.i, newVal.i, (AtomicInt32*) val) == false);
-   
+   } while(AtomicCompareAndSwap(oldVal.i, newVal.i, (AtomicInt32*) val) == false);
+
    return newVal.f;
 }
 
