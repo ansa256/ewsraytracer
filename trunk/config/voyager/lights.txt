@@ -6,8 +6,8 @@ direction {
 }
 
 environment {
-   numSamples  64
-   numLightSamples 8
+   numSamples  128
+   numLightSamples 16
    radiance    1.0
    color       [ 1.0 1.0 1.0 ]
 }

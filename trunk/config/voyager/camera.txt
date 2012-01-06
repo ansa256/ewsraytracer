@@ -1,11 +1,12 @@
 camera {
    type                 "pinhole"
-   numSamples           8
+#   numSamples           4
    angle                49.0
    eye                  [ 76.874 8.884 0.0 ]
    rotate               [ 0.0 90.0 29.0 ]
-#   eye                  [ 5.0 -34.0 00 ]
-#   rotate               [ 0.0 90.0 0.0 ]
-   tracer               "rayCast"
-   bgColor              [ 1.0 0.0 0.0 ]
+   sampler {
+      type	"stratified"
+      strataX   2
+      strataY   2
+   }
 }

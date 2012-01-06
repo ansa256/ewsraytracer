@@ -3,7 +3,7 @@ config {
    height      540
    threads     8
    boxWidth    60
-   boxHeight   45
+   boxHeight   60
    camera      "config/podbay/camera.txt"
    lights      "config/podbay/lights.txt"
    objects     "config/podbay/objects.txt"
