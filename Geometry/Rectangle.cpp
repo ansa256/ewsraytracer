@@ -1,19 +1,12 @@
-/*
- *  ;
- *  RayTracer
- *
- *  Created by Eric Saari on 12/20/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include "Rectangle.h"
 #include "Parser/Hash.h"
-#include "Samplers/MultiJittered.h"
-#include "Math/Point2D.h"
+#include "Samplers/Sampler.h"
 
 Rectangle::Rectangle() : LightObject() {
-   sampler = new MultiJittered(100);
+   nSamples = 10;
+   idx = 0;
+   samples = new float[nSamples*2];
+   Sampler::LatinHyperCube(samples, nSamples, 2);
 }
 
 Rectangle::Rectangle(const Point3D& o, const Vector3D& _a, const Vector3D& _b) :
@@ -22,12 +15,15 @@ Rectangle::Rectangle(const Point3D& o, const Vector3D& _a, const Vector3D& _b) :
    a(_a),
    b(_b)
 {
-   sampler = new MultiJittered(100);
    setup();
+   nSamples = 10;
+   idx = 0;
+   samples = new float[nSamples*2];
+   Sampler::LatinHyperCube(samples, nSamples, 2);
 }
 
 Rectangle::~Rectangle() {
-   delete sampler;
+   delete[] samples;
 }
 
 void Rectangle::setHash(Hash* hash) {
@@ -108,9 +104,11 @@ bool Rectangle::shadowHit(const Ray& ray) const {
    return true;
 }
 
-Point3D Rectangle::sample(const Point3D& hitPoint) const {
-   Point2D* point = sampler->sampleUnitSquare();
-   return (origin + a * point->x + b * point->y);
+Point3D Rectangle::sample(const Point3D& hitPoint) {
+   float x = samples[idx];
+   float y = samples[idx+1];
+   idx = (idx + 2) % (nSamples * 2);
+   return (origin + a * x + b * y);
 }
 
 Vector3D Rectangle::getNormal(const Point3D& point) const {

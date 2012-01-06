@@ -1,12 +1,3 @@
-/*
- *  Sphere.cpp
- *  RayTracer
- *
- *  Created by Eric Saari on 12/11/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include <math.h>
 #include "Sphere.h"
 #include "Math/Vector3D.h"
@@ -15,7 +6,7 @@
 #include "Math/Maths.h"
 #include "Math/Matrix.h"
 #include "Textures/Texture.h"
-#include "Samplers/MultiJittered.h"
+#include "Samplers/Sampler.h"
 
 Sphere::Sphere() :
    center(0, 0, 0),
@@ -25,11 +16,15 @@ Sphere::Sphere() :
    cosThetaMin(0),
    cosThetaMax(0),
    phiMin(0),
-   phiMax(0),
-   sampler(NULL)
+   phiMax(0)
 {
    bbox.expand(Point3D(-1, -1, -1));
    bbox.expand(Point3D(1, 1, 1));
+   
+   nSamples = 10;
+   idx = 0;
+   samples = new float[nSamples*2];
+   Sampler::LatinHyperCube(samples, nSamples, 2);
 }
 
 Sphere::Sphere(const Point3D& c, double r) :
@@ -40,17 +35,19 @@ Sphere::Sphere(const Point3D& c, double r) :
    cosThetaMin(0),
    cosThetaMax(0),
    phiMin(0),
-   phiMax(0),
-   sampler(NULL)
+   phiMax(0)
 {
    bbox.expand(center - radius);
    bbox.expand(center + radius);
+
+   nSamples = 10;
+   idx = 0;
+   samples = new float[nSamples*2];
+   Sampler::LatinHyperCube(samples, nSamples, 2);
 }
 
 Sphere::~Sphere() {
-   if(sampler != NULL) {
-      delete sampler;
-   }
+   delete[] samples;
 }
 
 bool Sphere::hit(const Ray& ray, ShadeRecord& sr) const {
@@ -218,13 +215,11 @@ void Sphere::setHash(Hash* hash) {
    setupMaterial(hash->getValue("material")->getHash());
 }
 
-Point3D Sphere::sample(const Point3D& hitPoint) const {
-   if(sampler == NULL) {
-      sampler = new MultiJittered(100);
-   }
-
-   Point2D* sp = sampler->sampleUnitSquare();
-
+Point3D Sphere::sample(const Point3D& hitPoint) {
+   float x = samples[idx];
+   float y = samples[idx+1];
+   idx = (idx + 2) % (nSamples * 2);
+   
    // Get a cooredinate system for sphere sampling. z axis is vector from hit point to sphere center
    Vector3D wc = center - hitPoint;
    wc.normalize();
@@ -235,7 +230,7 @@ Point3D Sphere::sample(const Point3D& hitPoint) const {
    double sinTheta = radius * radius / hitPoint.distanceSquared(center);
    double cosTheta = sqrt(max(0.0, 1.0 - sinTheta));
 
-   Ray ray(hitPoint, Sampler::uniformSampleCone(sp->x, sp->y, cosTheta, wcx, wcy, wc));
+   Ray ray(hitPoint, Sampler::uniformSampleCone(x, y, cosTheta, wcx, wcy, wc));
    if(!shadowHit(ray)) {
       ray.tHit = (center - hitPoint).dot(ray.direction.normalize());
    }

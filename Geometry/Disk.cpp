@@ -1,24 +1,17 @@
-/*
- *  Disk.cpp
- *  RayTracer
- *
- *  Created by Eric Saari on 12/26/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include "Disk.h"
 #include "Parser/Hash.h"
-#include "Samplers/MultiJittered.h"
+#include "Samplers/Sampler.h"
 #include <math.h>
 
 Disk::Disk() : LightObject(), center(), normal(), radiusSquared(1) {
-   sampler = new MultiJittered(100);
-   sampler->mapSamplesToUnitDisk();
+   nSamples = 10;
+   idx = 0;
+   samples = new float[nSamples*2];
+   Sampler::LatinHyperCube(samples, nSamples, 2);
 }
 
 Disk::~Disk() {
-   delete sampler;
+   delete[] samples;
 }
 
 void Disk::setHash(Hash* hash) {
@@ -69,9 +62,11 @@ bool Disk::shadowHit(const Ray& ray) const {
    return false;
 }
 
-Point3D Disk::sample(const Point3D& hitPoint) const {
-   Point2D* point = sampler->sampleUnitDisk();
-   return (center + a * radius * point->x + b * radius * point->y);
+Point3D Disk::sample(const Point3D& hitPoint) {
+   float x, y;
+   Sampler::mapToDisk(samples[idx], samples[idx+1], &x, &y);
+   idx = (idx + 2) % (nSamples * 2);
+   return (center + a * radius * x + b * radius * y);
 }
 
 Vector3D Disk::getNormal(const Point3D& point) const {
