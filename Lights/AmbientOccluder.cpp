@@ -1,29 +1,22 @@
-/*
- *  AmbientOccluder.cpp
- *  RayTracer
- *
- *  Created by Eric Saari on 12/19/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include "AmbientOccluder.h"
-#include "Samplers/MultiJittered.h"
 #include "Geometry/GeometryManager.h"
 #include "Geometry/GeometryObject.h"
 #include "Parser/Hash.h"
 #include "Storage/Storage.h"
+#include "Samplers/Sampler.h"
 
-AmbientOccluder::AmbientOccluder() : Ambient(), minColor(), sampler(NULL) {
+AmbientOccluder::AmbientOccluder() : Ambient(), minColor() {
 }
 
 AmbientOccluder::~AmbientOccluder() {
-   delete sampler;
+   delete[] samples;
 }
 
 Vector3D AmbientOccluder::getLightDirection(ShadeRecord& sr) {
-   Point3D* sp = sampler->sampleHemisphere();
-   return u * sp->x + v * sp->y + w * sp->z;
+   Vector3D sp = Sampler::mapToHemisphere(samples[idx], samples[idx+1]);
+   idx = (idx + 2) % (nSamples * 2);
+   return u * sp.x + v * sp.y + w * sp.z;
+   return Vector3D();
 }
 
 void AmbientOccluder::setHash(Hash* hash) {
@@ -31,9 +24,10 @@ void AmbientOccluder::setHash(Hash* hash) {
    color.set(hash->getValue("color")->getArray());
    minColor.set(hash->getValue("minColor")->getArray());
 
-   int numSamples = hash->getInteger("numSamples");
-   sampler = new MultiJittered(numSamples);
-   sampler->mapSamplesToHemisphere(1);
+   nSamples = hash->getInteger("numSamples");
+   idx = 0;
+   samples = new float[nSamples * 2];
+   Sampler::LatinHyperCube(samples, nSamples, 2);
 }
 
 bool AmbientOccluder::inShadow(const Ray& ray, const ShadeRecord& sr) {
@@ -52,8 +46,10 @@ Color AmbientOccluder::L(const ShadeRecord& sr) {
    Ray shadowRay;
    shadowRay.origin = sr.hitPoint;
 
-   Point3D* sp = sampler->sampleHemisphere();
-   shadowRay.direction = u * sp->x + v * sp->y + w * sp->z;
+   Vector3D sp = Sampler::mapToHemisphere(samples[idx], samples[idx+1]);
+   idx = (idx + 2) % (nSamples * 2);
+
+   shadowRay.direction = u * sp.x + v * sp.y + w * sp.z;
 
    if(inShadow(shadowRay, sr)) {
       return minColor * color * ls;
