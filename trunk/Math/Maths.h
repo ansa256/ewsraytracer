@@ -14,14 +14,17 @@ const double DEG_TO_RAD = M_PI / 180.0;
 /** Multiply to convert from radians to degrees */
 const double RAD_TO_DEG = 180.0 / M_PI;
 
+/** Genrate a random float in the range [0, 1] */
 inline float rand_float() {
 	return((float)rand() * invRAND_MAX);
 }
 
+/** Generate a random float in the range [l, h] */
 inline float rand_float(int l, float h)  {
 	return (rand_float() * (h - l) + l);
 }
 
+/** Generate a random int in the range [l, h] */
 inline int rand_int(int l, int h) {
 	return ((int) (rand_float(0, h - l + 1) + l));
 }
@@ -74,11 +77,15 @@ inline double smoothPulseTrain(double e0, double e1, double e2, double e3, doubl
    return smoothPulse(e0, e1, e2, e3, mod(x, period));
 }
 
+float radicalInverse(int n, int base);
+
 template<class T>
 T mix(const T& a, const T& b, const double f) {
    return a * (1.0 - f) + b * f;
 }
 
+int SolveQuadric(double c[3], double s[2]);
+int SolveCubic(double c[4], double s[3]);
 int SolveQuartic(double c[5], double s[4]);
 
 void coordinateSystem(const Vector3D& v1, Vector3D* v2, Vector3D* v3);

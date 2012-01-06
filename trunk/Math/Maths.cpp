@@ -1,12 +1,3 @@
-/*
- *  Maths.cpp
- *  RayTracer
- *
- *  Created by Eric Saari on 12/28/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include "Maths.h"
 
 float normalize(const float f) {
@@ -41,6 +32,20 @@ double mod(double a, double b) {
       a += b;
    }
    return a;
+}
+
+float radicalInverse(int n, int base) {
+   float val = 0;
+   float invBase = 1. / base;
+   float invBi = invBase;
+   
+   while(n > 0) {
+      int d_i = (n % base);
+      val += d_i * invBi;
+      n *= invBase;
+      invBi *= invBase;
+   }
+   return val;
 }
 
 void coordinateSystem(const Vector3D& v1, Vector3D* v2, Vector3D* v3) {
