@@ -30,6 +30,8 @@ uint32_t HaltonSampler::getSamples(Sample* samples) {
 
    samples->imageX = imageX;
    samples->imageY = imageY;
+   samples->lensX = (float) radicalInverse(current, 5);
+   samples->lensY = (float) radicalInverse(current, 7);
 
    return 1;
 }

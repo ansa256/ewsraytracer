@@ -72,6 +72,14 @@ Sampler* Sampler::createSampler(const SamplerBounds& bounds, Hash* h) {
    return sampler;
 }
 
+void Sampler::Shuffle(float* samp, uint32_t count, uint32_t dims) {
+   for (uint32_t i = 0; i < count; ++i) {
+      uint32_t other = i + (rand() % (count - i));
+      for (uint32_t j = 0; j < dims; ++j)
+         swap(samp[dims*i + j], samp[dims*other + j]);
+   }
+}
+
 void Sampler::mapToDisk(float u, float v, float* dx, float* dy) {
    float r, theta;
    

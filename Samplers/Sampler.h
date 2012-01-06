@@ -14,6 +14,7 @@ struct SamplerBounds {
 
 struct Sample {
    float imageX, imageY;
+   float lensX, lensY;
 };
 
 class Sampler {
@@ -23,6 +24,8 @@ public:
    virtual ~Sampler();
    
    static Sampler* createSampler(const SamplerBounds& bounds, Hash* h);
+   
+   void Shuffle(float* samp, uint32_t count, uint32_t dims);
    
    virtual void setHash(Hash* h) = 0;
    virtual uint32_t getSamples(Sample* samples) = 0;

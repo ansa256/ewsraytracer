@@ -14,5 +14,7 @@ void Regular::setHash(Hash* h) {
 uint32_t Regular::getSamples(Sample* samples) {
    samples->imageX = 0.5;
    samples->imageY = 0.5;
+   samples->lensX = 0.5;
+   samples->lensY = 0.5;
    return nSamples;
 }
