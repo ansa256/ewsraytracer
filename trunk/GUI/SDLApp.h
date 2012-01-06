@@ -17,8 +17,6 @@ public:
    ~SDLApp();
    void run();
 
-   Camera* getCamera() { return camera; }
-
 private:
    void loadConfiguration(int argc, char** argv);
    void setupCamera(string fname, int width, int height);
