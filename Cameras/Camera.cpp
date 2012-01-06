@@ -1,67 +1,47 @@
-/*
- *  Camera.cpp
- *  RayTracer
- *
- *  Created by Eric Saari on 12/15/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include "Camera.h"
-#include "Samplers/MultiJittered.h"
-#include "Samplers/Regular.h"
+#include "Film.h"
 #include "Tracer/RayCast.h"
 #include "Parser/Hash.h"
 #include "Math/Maths.h"
 #include <math.h>
 #include <queue>
+#include <pthread.h>
 #include "Math/Matrix.h"
 #include "Utility/SDL_Utility.h"
 
 using namespace std;
 
-queue<SDL_Rect> rects;
+queue<SamplerBounds> bounds;
 pthread_mutex_t rectLock;
-pthread_mutex_t surfLock;
-int threadCount;
-SDL_Surface* buffer;
 
 void* renderThread(void* arg) {
    Camera* c = (Camera*) arg;
-   SDL_Rect r;
+   SamplerBounds b;
 
    while(true) {
       pthread_mutex_lock(&rectLock);
-      if(rects.empty()) {
+      if(bounds.empty()) {
          pthread_mutex_unlock(&rectLock);
          pthread_exit(NULL);
       }
-      r = rects.front();
-      rects.pop();
+      b = bounds.front();
+      bounds.pop();
       pthread_mutex_unlock(&rectLock);
 
-      SDL_Surface* s = c->renderScene(r);
-
-      pthread_mutex_lock(&surfLock);
-      SDL_BlitSurface(s, NULL, buffer, &r);
-      pthread_mutex_unlock(&surfLock);
-
-      SDL_FreeSurface(s);
+      c->renderScene(b);
    }
    pthread_exit(NULL);
    return NULL;
 }
 
-Camera::Camera(int w, int h) : eye(), u(), v(), w(), tracer(NULL), sampler(NULL), surface(NULL), width(w), height(h), boxw(0), boxh(0) {
-   pthread_mutex_init(&surfLock, NULL);
+Camera::Camera(int w, int h) : eye(), u(), v(), w(), tracer(new RayCast), surface(NULL), film(new Film(w, h)), width(w), height(h), boxw(0), boxh(0) {
    pthread_mutex_init(&rectLock, NULL);
    threadCount = 1;
 }
 
 Camera::~Camera() {
-   delete sampler;
    delete tracer;
-   pthread_mutex_destroy(&surfLock);
+   delete film;
    pthread_mutex_destroy(&rectLock);
 }
 
@@ -77,16 +57,7 @@ void Camera::setHash(Hash* h) {
    float angle = h->getDouble("angle") / 2.0;
    viewPlaneDistance = width * 0.5 / tan(angle * DEG_TO_RAD);
 
-   int numSamples = h->getInteger("numSamples");
-   if(numSamples == 1) {
-      sampler = new Regular();
-   }
-   else {
-      sampler = new MultiJittered(numSamples);
-   }
-
-   string t = h->getString("tracer");
-   tracer = new RayCast();
+   samplerHash = h->getValue("sampler")->getHash();
 
    if(h->contains("bgTexture")) {
       Texture* tex = Texture::createTexture(h->getValue("bgTexture")->getHash());
@@ -102,16 +73,11 @@ void Camera::setHash(Hash* h) {
 void Camera::render() {
    for(int h = 0; h < height; h += boxh) {
       for(int w = 0; w < width; w += boxw) {
-         SDL_Rect rect;
-         rect.w = boxw;
-         rect.h = boxh;
-         rect.x = w;
-         rect.y = h;
-         rects.push(rect);
+//int w = 0, h = 0;
+         bounds.push(SamplerBounds(w, w + boxw, h, h + boxh ));
       }
    }
 
-   buffer = SDL_DisplayFormat(surface);
    pthread_attr_t attr;
    pthread_attr_init(&attr);
    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
@@ -131,9 +97,8 @@ void Camera::render() {
    
    Uint32 end = SDL_GetTicks();
    printf("Render time = %f seconds\n", (end - start) / 1000.0);
-
-   SDL_BlitSurface(buffer, NULL, surface, NULL);
-   SDL_UpdateRect(surface, 0, 0, 0, 0);
+   
+   film->generateImage(surface);
 }
 
 void Camera::computeUVW(Hash* h) {

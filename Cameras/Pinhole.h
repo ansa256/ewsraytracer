@@ -1,12 +1,3 @@
-/*
- *  Pinhole.h
- *  RayTracer
- *
- *  Created by Eric Saari on 12/15/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #ifndef _PINhOLE_H_
 #define _PINhOLE_H_
 
@@ -18,7 +9,7 @@ public:
    Pinhole(int w, int h);
    virtual ~Pinhole() {}
 
-   virtual SDL_Surface* renderScene(SDL_Rect& rect);
+   virtual void renderScene(const SamplerBounds& bounds);
 };
 
 #endif

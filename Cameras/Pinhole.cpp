@@ -1,15 +1,7 @@
-/*
- *  Pinhole.cpp
- *  RayTracer
- *
- *  Created by Eric Saari on 12/15/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include <math.h>
 #include <SDL/SDL.h>
 #include "Pinhole.h"
+#include "Film.h"
 #include "Utility/Color.h"
 #include "Math/Ray.h"
 #include "Tracer/Tracer.h"
@@ -21,43 +13,25 @@
 Pinhole::Pinhole(int w, int h) : Camera(w, h) {
 }
 
-SDL_Surface* Pinhole::renderScene(SDL_Rect& rect) {
-   Color pixelColor;
+void Pinhole::renderScene(const SamplerBounds& bounds) {
    Ray ray;
-   double x, y;
-
    ray.origin = eye;
+  
+   Sampler* sampler = Sampler::createSampler(bounds, samplerHash);
+   Sample* samples = new Sample[sampler->getNumSamples()];
+   
+   double x, y;
+   int nSamples;
+   while((nSamples = sampler->getSamples(samples)) > 0) {
+      for(int i = 0; i < nSamples; i++) {
+         x = samples[i].imageX - 0.5 * width;
+         y = samples[i].imageY - 0.5 * height;
 
-   SDL_Surface* s = createSurface(rect);
-   SDL_LockSurface(s);
-
-   for(int r = rect.y, o = rect.y + rect.h - 1; r < rect.y + rect.h; r++, o--) {
-      for(int c = rect.x; c < rect.x + rect.w; c++) {
-         pixelColor = BLACK;
-
-         for(int j = 0; j < sampler->getNumSamples(); j++) {
-            Point2D* sp = sampler->sampleUnitSquare();
-            x = c - 0.5 * width + sp->x;
-            y = r - 0.5 * height + sp->y;
-            ray.direction = u * x + v * y - w * viewPlaneDistance;
-            ray.direction.normalize();
-
-            pixelColor += tracer->traceRay(ray, 0);
-         }
-
-         pixelColor /= sampler->getNumSamples();
-         pixelColor.normalize();
-         setPixel(s, c - rect.x, o - rect.y, pixelColor);
+         ray.direction = u * x + v * y - w * viewPlaneDistance;
+         ray.direction.normalize();
+         film->addSample(samples[i].imageX, samples[i].imageY, tracer->traceRay(ray, 0));         
       }
    }
-
-   SDL_UnlockSurface(s);
-   rect.y = height - rect.h - rect.y;
-
-//   pthread_mutex_lock(&surfLock);
-//   SDL_BlitSurface(s, NULL, surface, &rect);
-//   SDL_UpdateRect(surface, 0, 0, width, height);
-//   pthread_mutex_unlock(&surfLock);
-
-   return s;
+   
+   delete[] samples;
 }
