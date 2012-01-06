@@ -48,7 +48,7 @@ void Film::addSample(double sx, double sy, const Color& c) {
 void Film::generateImage(SDL_Surface* surf) {
    for(int w = 0; w < width; w++) {
       for(int h = 0; h < height; h++) {
-         setPixel(surf, w, height - h, pixels[width * h + w].getColor());     
+         setPixel(surf, w, height - h - 1, pixels[width * h + w].getColor());     
       }
    }
    SDL_UpdateRect(surf, 0, 0, 0, 0);
