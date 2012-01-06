@@ -4,7 +4,7 @@
 #include <SDL/SDL.h>
 #include "Math/Point3D.h"
 #include "Math/Vector3D.h"
-#include "Sampler.h"
+#include "Samplers/Sampler.h"
 
 class Tracer;
 class Hash;
@@ -27,7 +27,7 @@ public:
    void setSurface(SDL_Surface* s) { surface = s; }
    void setThreadParameters(int tc, int w, int h);
    void rotate(double x, double y, double z);
-   
+
    Hash* samplerHash;
 
 protected:
