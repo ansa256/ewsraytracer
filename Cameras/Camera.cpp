@@ -73,7 +73,6 @@ void Camera::setHash(Hash* h) {
 void Camera::render() {
    for(int h = 0; h < height; h += boxh) {
       for(int w = 0; w < width; w += boxw) {
-//int w = 0, h = 0;
          bounds.push(SamplerBounds(w, w + boxw, h, h + boxh ));
       }
    }

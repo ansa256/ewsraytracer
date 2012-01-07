@@ -71,7 +71,7 @@ bool Annulus::hit(const Ray& ray, ShadeRecord& sr) const {
       sr.normal = normal;
       sr.localHitPoint = sr.hitPoint = p;
       sr.tu = (dist-innerSquared) / (outerSquared-innerSquared);
-      sr.tv = 0;
+      sr.tv = 0.5;
       sr.material = material;
       ray.tHit = t;
       return true;
@@ -110,7 +110,7 @@ bool Annulus::shadowHit(const Ray& ray) const {
    // If distance is between outer and inner radius, it hits the annulus
    if(innerSquared <= dist && dist < outerSquared && partCheck(p)) {
       ShadeRecord sr;
-      sr.localHitPoint = p;
+      sr.localHitPoint = sr.hitPoint = p;
       sr.tu = (dist-innerSquared) / (outerSquared-innerSquared);
       sr.tv = 0;
       float alpha = material->getAlpha(sr, ray);
