@@ -1,10 +1,12 @@
 #include "Camera.h"
+#include "Parser/Parser.h"
 #include "Film.h"
 #include "Tracer/RayCast.h"
 #include "Parser/Hash.h"
 #include "Math/Maths.h"
 #include <math.h>
 #include <queue>
+#include <fstream>
 #include <pthread.h>
 #include "Math/Matrix.h"
 #include "Utility/SDL_Utility.h"
@@ -28,15 +30,24 @@ void* renderThread(void* arg) {
       bounds.pop();
       pthread_mutex_unlock(&rectLock);
 
-      c->renderScene(b);
+      c->renderBounds(b);
    }
    pthread_exit(NULL);
    return NULL;
 }
 
-Camera::Camera(int w, int h) : eye(), u(), v(), w(), tracer(new RayCast), surface(NULL), film(new Film(w, h)), width(w), height(h), boxw(0), boxh(0) {
+Camera::Camera(string fname, int w, int h) : eye(), u(), v(), w(), 
+   tracer(new RayCast), surface(NULL), film(new Film(w, h)), width(w), height(h)
+{
    pthread_mutex_init(&rectLock, NULL);
    threadCount = 1;
+   
+   std::ifstream fin(fname.c_str(), std::ios::in);
+   Tokenizer tok(&fin);
+   Parser parser(&tok);
+
+   tok.nextToken();
+   setHash(parser.readValue()->getHash());
 }
 
 Camera::~Camera() {
@@ -65,6 +76,20 @@ void Camera::setHash(Hash* h) {
    }
    else if(h->contains("bgColor")) {
       tracer->setBackgroundColor(h->getValue("bgColor")->getArray());
+   }
+   
+   if(h->contains("focusPlaneDistance")) {
+      f = h->getDouble("focusPlaneDistance");
+   }
+   else {
+      f = viewPlaneDistance;
+   }
+   
+   if(h->contains("lensRadius")) {
+      lensRadius = h->getDouble("lensRadius");
+   }
+   else {
+      lensRadius = 0.f;
    }
 
    computeUVW(h);
@@ -98,6 +123,34 @@ void Camera::render() {
    printf("Render time = %f seconds\n", (end - start) / 1000.0);
    
    film->generateImage(surface);
+}
+
+void Camera::renderBounds(const SamplerBounds& bounds) {
+   Ray ray;
+   Point2D lp;
+   int nSamples;
+   float fDivV = f / viewPlaneDistance;
+   
+   Sampler* sampler = Sampler::createSampler(bounds, samplerHash);
+   Sample* samples = new Sample[sampler->getNumSamples()];
+   
+   while((nSamples = sampler->getSamples(samples)) > 0) {
+      for(int i = 0; i < nSamples; i++) {
+         double x = samples[i].imageX - 0.5 * width;
+         x *= fDivV;
+         double y = samples[i].imageY - 0.5 * height;
+         y *= fDivV;
+         
+         Sampler::mapToDisk(samples[i].lensX, samples[i].lensY, &lp.x, &lp.y);
+         lp *= lensRadius;
+         ray.origin = eye + u * lp.x + v * lp.y;
+         
+         ray.direction = u * (x - lp.x) + v * (y - lp.y) - w * f;
+         ray.direction.normalize();
+         
+         film->addSample(samples[i].imageX, samples[i].imageY, tracer->traceRay(ray, 0));         
+      }
+   }
 }
 
 void Camera::computeUVW(Hash* h) {

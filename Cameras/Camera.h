@@ -2,6 +2,7 @@
 #define _CAMERA_H_
 
 #include <SDL/SDL.h>
+#include <string.h>
 #include "Math/Point3D.h"
 #include "Math/Vector3D.h"
 #include "Samplers/Sampler.h"
@@ -15,13 +16,11 @@ void* renderThread(void* arg);
 class Camera {
 
 public:
-   Camera(int w, int h);
+   Camera(string fname, int w, int h);
    virtual ~Camera();
 
-   virtual void setHash(Hash* hash);
-
    void render();
-   virtual void renderScene(const SamplerBounds& bounds) = 0;
+   void renderBounds(const SamplerBounds& bounds);
 
    void setPosition(const Point3D& loc) { eye = loc; }
    void setSurface(SDL_Surface* s) { surface = s; }
@@ -30,7 +29,8 @@ public:
 
    Hash* samplerHash;
 
-protected:
+private:
+   void setHash(Hash* hash);
    void computeUVW(Hash* h);
 
    Point3D eye;
@@ -42,9 +42,11 @@ protected:
    int width;
    int height;
    float viewPlaneDistance;
-   int threadCount;
+   
+   float lensRadius;
+   float f;
 
-private:
+   int threadCount;
    int boxw;
    int boxh;
 };
