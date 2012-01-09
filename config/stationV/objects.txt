@@ -1,9 +1,14 @@
-mesh {
-   name     "stationV"
+instance {
+   translate [ 0.0 -1.0 0.0 ]
+   rotate [ 0.0 20.0 55.0 ]
+   object {
+      type     "mesh"
+      name     "stationV"
+   }
 }
 
-stars {
+starBox {
    name     "stars"
-   count    10000
-   distance 100.0
+   count    20000
+   halfSize 1024
 }

@@ -2,8 +2,8 @@ camera {
    type                 "thinLens"
    sampler {
       type    	"stratified"
-      strataX   3
-      strataY	3
+      strataX   5
+      strataY	5
    }
    angle                30.0
    eye                  [ 0.0 -30.0 50.0 ]
