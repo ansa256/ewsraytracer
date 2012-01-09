@@ -1,5 +1,4 @@
 camera {
-   type                 "thinLens"
    sampler {
       type    	"stratified"
       strataX   5

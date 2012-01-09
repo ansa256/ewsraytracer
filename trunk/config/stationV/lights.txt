@@ -11,7 +11,7 @@ position {
 }
 
 environment {
-   radiance          0.5
+   radiance          1.0
    color             [ 1.0 1.0 1.0 ]
    numSamples        64
    numLightSamples   10

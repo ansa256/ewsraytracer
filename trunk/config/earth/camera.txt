@@ -1,9 +1,9 @@
 camera {
-   type                 "pinhole"
    sampler {
       type  "regular"
    }
    angle                49.134
    eye                  [ 0.0 0.0 30.0 ]
    lookat               [ 0.0 0.0 0.0 ]
+   up                   [ 0.25 1.0 0.0 ]
 }

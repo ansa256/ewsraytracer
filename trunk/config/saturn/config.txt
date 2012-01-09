@@ -1,6 +1,6 @@
 config {
-   width       960
-   height      540
+   width       1920
+   height      1080
    threads     4
    boxWidth    60
    boxHeight   60
