@@ -46,6 +46,6 @@ void PositionLight::setHash(Hash* hash) {
 }
 
 Color PositionLight::L(const ShadeRecord& sr) {
-   double d = (location - sr.hitPoint).length();
-   return color * ls / pow(d, attenuationPower);
+//   double d = (location - sr.hitPoint).length();
+   return color * ls; // pow(d, attenuationPower);
 }
