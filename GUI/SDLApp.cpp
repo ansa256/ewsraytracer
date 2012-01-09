@@ -1,7 +1,6 @@
 #include "SDLApp.h"
 #include "Math/Ray.h"
-#include "Cameras/Pinhole.h"
-#include "Cameras/ThinLens.h"
+#include "Cameras/Camera.h"
 #include "Parser/Parser.h"
 #include "Lights/LightManager.h"
 #include "Geometry/GeometryManager.h"
@@ -61,10 +60,6 @@ void SDLApp::loadConfiguration(int argc, char** argv) {
 		exit(2);
 	}
 
-   setupCamera(h->getString("camera"), width, height);
-   camera->setSurface(surface);
-   camera->setThreadParameters(threadCount, boxw, boxh);
-
    if(h->contains("mesh")) {
       MeshManager::instance().loadMeshes(h->getString("mesh"));
    }
@@ -80,31 +75,10 @@ void SDLApp::loadConfiguration(int argc, char** argv) {
       animation = new Animation(camera, surface);
       animation->setup(h->getString("animation"));
    }
-}
-
-void SDLApp::setupCamera(string fname, int width, int height) {
-   std::ifstream fin(fname.c_str(), std::ios::in);
-   Tokenizer tok(&fin);
-   Parser parser(&tok);
-
-   while(tok.nextToken() != Tokenizer::TokenEnd) {
-      if(tok.getTokenType() != Tokenizer::TokenName) {
-         return ;
-      }
-
-      string token = tok.getStringValue();
-      if(token == "camera") {
-         Hash* h = parser.readValue()->getHash();
-         string type = h->getValue("type")->getString();
-         if(type == "pinhole") {
-            camera = new Pinhole(width, height);
-         }
-         else if(type == "thinLens") {
-            camera = new ThinLens(width, height);
-         }
-         camera->setHash(h);
-      }
-   }
+   
+   camera = new Camera(h->getString("camera"), width, height);
+   camera->setSurface(surface);
+   camera->setThreadParameters(threadCount, boxw, boxh);
 }
 
 void SDLApp::run() {
