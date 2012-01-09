@@ -1,5 +1,4 @@
 camera {
-   type                 "pinhole"
    sampler {
       type     "stratified"
       strataX  2

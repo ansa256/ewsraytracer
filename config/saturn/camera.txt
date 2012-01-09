@@ -1,9 +1,8 @@
 camera {
-   type                 "pinhole"
    sampler {
       type     "stratified"
-      strataX  3
-      strataY  3
+      strataX  5
+      strataY  5
    }
    angle                60.0
    eye                  [ 0.0 0.0 5.0 ]

@@ -1,6 +1,4 @@
 camera {
-   type                 "pinhole"
-#   numSamples           4
    angle                49.0
    eye                  [ 76.874 8.884 0.0 ]
    rotate               [ 0.0 90.0 29.0 ]
