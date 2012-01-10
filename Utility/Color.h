@@ -27,6 +27,7 @@ public:
    Color& operator+=(const Color& c);
    Color& operator+=(const float a);
    Color& operator/= (const float a);
+   Color& operator*= (const float a);
    Color operator*(const float a) const;
    Color operator*(const Color& c) const;
    Color operator/(const float a) const;
