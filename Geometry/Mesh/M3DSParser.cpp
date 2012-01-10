@@ -14,8 +14,8 @@
 
 MaterialProps::MaterialProps() :
    name(""),
-   ambient(NULL),
-   diffuse(NULL),
+   ambient(),
+   diffuse(),
    specular(NULL),
    specHighlight(100.f),
    highlightPercent(0.f),
@@ -238,7 +238,7 @@ void M3DSParser::processMaterialChunk(size_t nBytes) {
          props.diffuse = processColorChunk(contentSize);
       }
       else if (chunkType == M3DCHUNK_MATERIAL_SPECULAR) {
-         props.specular = processColorChunk(contentSize);
+         props.specular = new Color(processColorChunk(contentSize));
       }
       else if (chunkType == M3DCHUNK_MATERIAL_SHININESS) {
          processPercentageChunk(contentSize, props.specHighlight);
@@ -266,12 +266,13 @@ void M3DSParser::processMaterialChunk(size_t nBytes) {
    }
 
    if(props.specular != NULL) {
+      Color specColor = *props.specular * props.highlightPercent;
+
       Phong* material = new Phong();
       material->setAmbientColor(props.ambient);
       material->setDiffuseColor(props.diffuse);
-      material->setSpecularColor(props.specular);
+      material->setSpecularColor(specColor);
       material->setSpecularHighlight(props.specHighlight);
-      material->setSpecularPercent(props.highlightPercent);
       setMaterialTextures(material, props);
       materials[props.name] = material;
    }
@@ -308,9 +309,9 @@ void M3DSParser::setMaterialTextures(Material* material, const MaterialProps& pr
    }
 }
 
-Color* M3DSParser::processColorChunk(int nBytes) {
+Color M3DSParser::processColorChunk(int nBytes) {
    int bytesRead = 0;
-   Color* color = new Color;
+   Color color;
 
    while (bytesRead < nBytes) {
       uint16 chunkType = readUshortLE(in);
@@ -319,10 +320,10 @@ Color* M3DSParser::processColorChunk(int nBytes) {
       bytesRead += chunkSize;
 
       if (chunkType == M3DCHUNK_COLOR_24) {
-         readColor(color);
+         readColor(&color);
       }
       else if (chunkType == (M3DCHUNK_COLOR_FLOAT)) {
-         readFloatColor(color);
+         readFloatColor(&color);
       }
       else {
 #ifdef PRINT_UNPROCESSED
@@ -485,7 +486,6 @@ void M3DSParser::readColor(Color* color) {
 void M3DSParser::readFloatColor(Color* color) {
    color->set(readFloatLE(in) / 255.0f, readFloatLE(in) / 255.0f, readFloatLE(in) / 255.0f);
 }
-
 
 void M3DSParser::skipBytes(size_t count) {
    char c;
