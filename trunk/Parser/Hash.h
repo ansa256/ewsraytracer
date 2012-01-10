@@ -20,23 +20,23 @@ class Value;
 typedef map<string, Value *>::const_iterator HashIterator;
 
 class Hash {
-   
+
 public:
    Hash();
    ~Hash();
-   
+
    void addValue(string key, Value &value);
    Value *getValue(const string &key) const;
 
-   int getInteger(const string &key) const;
-   double getDouble(const string &key) const;
-   string getString(const string& key) const;
-   
+   int getInteger(const string &key, int def = 0) const;
+   double getDouble(const string &key, double def = 0) const;
+   string getString(const string& key, const string& def = "") const;
+
    bool contains(const string &key) const;
-   
+
    HashIterator begin();
    HashIterator end();
-   
+
 private:
    map<string, Value *> data;
 };
