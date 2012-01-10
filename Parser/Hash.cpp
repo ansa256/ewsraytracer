@@ -34,28 +34,28 @@ Value* Hash::getValue(const string &key) const {
    }
 }
 
-int Hash::getInteger(const string &key) const {
+int Hash::getInteger(const string &key, int def) const {
    Value *v = getValue(key);
    if(v == NULL || v->getType() != Value::IntegerType) {
-      return 0;
+      return def;
    }
    return v->getInteger();
 }
 
-double Hash::getDouble(const string &key) const {
+double Hash::getDouble(const string &key, double def) const {
    Value *v = getValue(key);
    if(v == NULL || v->getType() != Value::DoubleType) {
-      return 0;
+      return def;
    }
    return v->getDouble();
 }
 
-string Hash::getString(const string& key) const {
+string Hash::getString(const string& key, const string& def) const {
    Value *v = getValue(key);
    if(v == NULL || v->getType() != Value::StringType) {
       return "";
    }
-   return v->getString();   
+   return v->getString();
 }
 
 bool Hash::contains(const string &key) const {
