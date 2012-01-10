@@ -12,14 +12,13 @@ public:
    virtual Color f(const ShadeRecord& sr, const Vector3D& wo, const Vector3D& wi) const;
    virtual Color rho(const ShadeRecord& sr, const Vector3D& wo) const;
 
-   void setKs(const float k) { ks = k; }
    void setExp(const float e) { exp = e; }
-   void setColor(Color* c) { color = c; }
+   void setColor(const Color& c) { color = c; }
+   void setColor(const float r, const float g, const float b);
 
 private:
-   float ks;
    float exp;
-   Color* color;
+   Color color;
 };
 
 #endif
