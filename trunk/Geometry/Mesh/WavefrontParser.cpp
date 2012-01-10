@@ -241,12 +241,12 @@ void WavefrontParser::loadMaterials(string fname) {
       else if(strncmp(line.c_str(), "Kd", 2) == 0) {
          float r, g, b;
          strstr >> s >> r >> g >> b;
-         material->setDiffuseColor(new Color(r, g, b));
+         material->setDiffuseColor(Color(r, g, b));
       }
       else if(strncmp(line.c_str(), "Ka", 2) == 0) {
          float r, g, b;
          strstr >> s >> r >> g >> b;
-         material->setAmbientColor(new Color(r, g, b));
+         material->setAmbientColor(Color(r, g, b));
       }
       else if(strncmp(line.c_str(), "map_Kd", 6) == 0) {
          material->setTexture(textureDir + line.substr(7));

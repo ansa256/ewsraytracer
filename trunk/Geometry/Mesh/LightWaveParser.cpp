@@ -157,6 +157,9 @@ int LightWaveParser::parseSurface() {
       readChar(in);
    }
 
+   Color color(1, 1, 1);
+   float diffuse = 1.f;
+
    while(count < size) {
       string subName = readChunkID(in, 4);
       short subSize = readShortBE(in);
@@ -167,15 +170,11 @@ int LightWaveParser::parseSurface() {
          float b = readFloatBE(in);
          float g = readFloatBE(in);
          readShortBE(in);
-         printf("Color = %f, %f, %f\n", r, g, b);
-         materialMap[sname]->setColor(r, g, b);
-         materialMap[sname]->setDiffuse(1.0);
+         color.set(r, g, b);
       }
       else if(subName == "DIFF") {
-         float value = readFloatBE(in);
+         diffuse = readFloatBE(in);
          readShortBE(in);
-         printf("DIFF = %f\n", value);
-         materialMap[sname]->setDiffuse(value);
       }
       else {
          printf("subName = %s\n", subName.c_str());
@@ -185,6 +184,9 @@ int LightWaveParser::parseSurface() {
       }
       count += subSize;
    }
+
+   color *= diffuse;
+   materialMap[sname]->setColor(color.red, color.green, color.blue);
 
    return count;
 }

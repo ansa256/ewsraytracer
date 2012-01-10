@@ -17,8 +17,8 @@ class Material;
 
 struct MaterialProps {
    string name;
-   Color* ambient;
-   Color* diffuse;
+   Color ambient;
+   Color diffuse;
    Color* specular;
    float specHighlight;
    float highlightPercent;
@@ -43,7 +43,7 @@ private:
    void processModelChunk(size_t nBytes, string name);
    void processTriMeshChunk(int nBytes, string name);
    void processMaterialChunk(size_t nBytes);
-   Color* processColorChunk(int nBytes);
+   Color processColorChunk(int nBytes);
    void processPercentageChunk(int nBytes, float& percent);
    void processFaceArrayChunk(int nBytes, Mesh* mesh);
    string processTexmapChunk(int nBytes);
