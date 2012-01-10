@@ -18,6 +18,9 @@ public:
    virtual Color f(const ShadeRecord& sr, const Vector3D& wo, const Vector3D& wi) const;
    virtual Color rho(const ShadeRecord& sr, const Vector3D& wo) const;
    virtual float getAlpha(const Point3D& p) const { return 1.0; }
+   
+   float fresnelDielectic(float cosi, float etai, float etat) const;
+   float fresnelConductor(float cosi, float eta, float k) const;
 
 protected:
    Sampler* sampler;
