@@ -93,10 +93,10 @@ void Matte::setTexture(string texture) {
    diffuseBRDF->setTexture(tex);
 }
 
-void Matte::setAmbientColor(Color c) {
+void Matte::setAmbientColor(const Color& c) {
    ambientBRDF->setColor(c);
 }
 
-void Matte::setDiffuseColor(Color c) {
+void Matte::setDiffuseColor(const Color& c) {
    diffuseBRDF->setColor(c);
 }

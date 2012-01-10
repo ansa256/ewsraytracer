@@ -109,11 +109,11 @@ void Phong::setTexture(string texture) {
    diffuseBRDF->setTexture(tex);
 }
 
-void Phong::setAmbientColor(Color c) {
+void Phong::setAmbientColor(const Color& c) {
    ambientBRDF->setColor(c);
 }
 
-void Phong::setDiffuseColor(Color c) {
+void Phong::setDiffuseColor(const Color& c) {
    diffuseBRDF->setColor(c);
 }
 

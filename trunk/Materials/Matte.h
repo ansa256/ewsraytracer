@@ -30,8 +30,8 @@ public:
    virtual void setColor(float r, float g, float b);
    virtual void setTexture(string texture);
 
-   void setAmbientColor(Color c);
-   void setDiffuseColor(Color c);
+   void setAmbientColor(const Color& c);
+   void setDiffuseColor(const Color& c);
 
 private:
    Lambertian* ambientBRDF;
