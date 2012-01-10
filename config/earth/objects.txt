@@ -6,7 +6,6 @@ sphere {
    material {
       type  "phong"
       ka 0.25
-      kd 1.0
       ks 0.1
       exp 20.0
       specularTexture "resources/earth/8081_earthspec4k-2.jpg"
@@ -45,7 +44,7 @@ sphere {
    material {
       type  "matte"
       ka 0.25
-      kd 1.2
+      kd 1.0
 
       texture {
          type     "tinstance"

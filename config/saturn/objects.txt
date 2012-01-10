@@ -1,29 +1,9 @@
-rectangle {
-   origin [ -1200.0 -600.0 -800.0 ]
-   a [ 2400.0 0.0 0.0 ]
-   b [ 0.0 1200.0 0.0 ]
-   
-   material {
-      type  "matte"
-      ka    0.2
-      kd    0.3
-
-      texture {
-         type     "image"
-         filename "config/saturn/MilkyWay.jpg"
-         mapping  "uv"
-      }
-   }
-}
-
 sphere {
    center [ 0.0 0.0 0.0 ]
    radius 1.0
    
    material {
       type  "matte"
-      ka 0.25
-      kd 0.75
 
       texture {
          type   "tinstance"
@@ -49,7 +29,6 @@ instance {
       material {
          type  "matte"
          ka    0.2
-         kd    1.0
 
          texture {
             type     "image"
@@ -61,3 +40,9 @@ instance {
    
    rotate   [ 9.0 0.0 -15.0 ]
 }
+
+starBox {
+   name     "stars"
+   count    20000
+   halfSize 1000
+} 

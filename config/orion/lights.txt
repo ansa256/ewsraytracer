@@ -1,12 +1,5 @@
-position {
-   location       [ -200.0 0.0 200.0 ]
+direction {
+   direction       [ -200.0 0.0 200.0 ]
    color          [ 1.0 1.0 1.0 ]
-   radiance       3.0
-   halfDistance   1000.0
+   radiance       1.5
 }
-
-#environment {
-#   radiance          0.5
-#   color             [ 1.0 1.0 1.0 ]
-#   numSamples        64
-#}
