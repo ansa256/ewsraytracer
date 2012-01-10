@@ -1,12 +1,3 @@
-/*
- *  Phong.cpp
- *  RayTracer
- *
- *  Created by Eric Saari on 12/19/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include "Phong.h"
 #include "Math/Maths.h"
 #include "Lights/LightManager.h"
@@ -40,18 +31,22 @@ void Phong::setHash(Hash* hash) {
       colorSet = true;
 
       Array* a = hash->getValue("color")->getArray();
-      ambientBRDF->setColor(new Color(a));
-      diffuseBRDF->setColor(new Color(a));
+      ambientBRDF->setColor(Color(a));
+      diffuseBRDF->setColor(Color(a));
    }
 
    if(!colorSet && !textureSet) {
-      ambientBRDF->setColor(new Color(BLACK));
-      diffuseBRDF->setColor(new Color(BLACK));
+      ambientBRDF->setColor(BLACK);
+      diffuseBRDF->setColor(BLACK);
    }
 
-   ambientBRDF->setKd(hash->getDouble("ka"));
-   diffuseBRDF->setKd(hash->getDouble("kd"));
-   specularBRDF->setKs(hash->getDouble("ks"));
+   float ka = hash->getDouble("ka", 0);
+   float kd = hash->getDouble("kd", 1);
+   float ks = hash->getDouble("ks", 0.1);
+   ambientBRDF->setColor(ka, ka, ka);
+   diffuseBRDF->setColor(kd, kd, kd);
+   specularBRDF->setColor(ks, ks, ks);
+
    specularBRDF->setExp(hash->getDouble("exp"));
 
    if(hash->contains("specularTexture")) {
@@ -96,12 +91,8 @@ Color Phong::shade(ShadeRecord& sr, const Ray& ray) {
 }
 
 void Phong::setColor(float r, float g, float b) {
-   ambientBRDF->setColor(new Color(r, g, b));
-   diffuseBRDF->setColor(new Color(r, g, b));
-}
-
-void Phong::setDiffuse(float d) {
-   diffuseBRDF->setKd(d);
+   ambientBRDF->setColor(Color(r, g, b));
+   diffuseBRDF->setColor(Color(r, g, b));
 }
 
 float Phong::getAlpha(const ShadeRecord& sr, const Ray& ray) const {
@@ -118,24 +109,18 @@ void Phong::setTexture(string texture) {
    diffuseBRDF->setTexture(tex);
 }
 
-void Phong::setAmbientColor(Color* c) {
+void Phong::setAmbientColor(Color c) {
    ambientBRDF->setColor(c);
-   ambientBRDF->setKd(0.2);
 }
 
-void Phong::setDiffuseColor(Color* c) {
+void Phong::setDiffuseColor(Color c) {
    diffuseBRDF->setColor(c);
-   diffuseBRDF->setKd(0.6);
 }
 
-void Phong::setSpecularColor(Color* c) {
+void Phong::setSpecularColor(const Color& c) {
    specularBRDF->setColor(c);
 }
 
 void Phong::setSpecularHighlight(float sh) {
    specularBRDF->setExp(sh);
-}
-
-void Phong::setSpecularPercent(float p) {
-   specularBRDF->setKs(p);
 }

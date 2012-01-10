@@ -19,8 +19,10 @@ void Matte::setHash(Hash* hash) {
    bool colorSet = false;
    bool textureSet = false;
 
-   ambientBRDF->setKd(hash->getDouble("ka"));
-   diffuseBRDF->setKd(hash->getDouble("kd"));
+   float ka = hash->getDouble("ka", 0);
+   float kd = hash->getDouble("kd", 1);
+   ambientBRDF->setColor(ka, ka, ka);
+   diffuseBRDF->setColor(kd, kd, kd);
 
    if(hash->contains("texture")) {
       textureSet = true;
@@ -31,13 +33,13 @@ void Matte::setHash(Hash* hash) {
       colorSet = true;
 
       Array* a = hash->getValue("color")->getArray();
-      ambientBRDF->setColor(new Color(a));
-      diffuseBRDF->setColor(new Color(a));
+      ambientBRDF->setColor(Color(a));
+      diffuseBRDF->setColor(Color(a));
    }
 
    if(!colorSet && !textureSet) {
-      ambientBRDF->setColor(new Color(BLACK));
-      diffuseBRDF->setColor(new Color(BLACK));
+      ambientBRDF->setColor(BLACK);
+      diffuseBRDF->setColor(BLACK);
    }
 }
 
@@ -77,13 +79,8 @@ float Matte::getAlpha(const ShadeRecord& sr, const Ray& ray) const {
 }
 
 void Matte::setColor(float r, float g, float b) {
-   ambientBRDF->setColor(new Color(r, g, b));
-   diffuseBRDF->setColor(new Color(r, g, b));
-}
-
-void Matte::setDiffuse(float d) {
-   ambientBRDF->setKd(d);
-   diffuseBRDF->setKd(d);
+   ambientBRDF->setColor(Color(r, g, b));
+   diffuseBRDF->setColor(Color(r, g, b));
 }
 
 void Matte::setTexture(string texture) {
@@ -96,12 +93,10 @@ void Matte::setTexture(string texture) {
    diffuseBRDF->setTexture(tex);
 }
 
-void Matte::setAmbientColor(Color* c) {
+void Matte::setAmbientColor(Color c) {
    ambientBRDF->setColor(c);
-   ambientBRDF->setKd(0.2);
 }
 
-void Matte::setDiffuseColor(Color* c) {
+void Matte::setDiffuseColor(Color c) {
    diffuseBRDF->setColor(c);
-   diffuseBRDF->setKd(0.8);
 }

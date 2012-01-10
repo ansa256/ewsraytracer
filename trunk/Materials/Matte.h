@@ -28,11 +28,10 @@ public:
    virtual float getAlpha(const ShadeRecord& sr, const Ray& ray) const;
 
    virtual void setColor(float r, float g, float b);
-   virtual void setDiffuse(float d);
    virtual void setTexture(string texture);
 
-   void setAmbientColor(Color* c);
-   void setDiffuseColor(Color* c);
+   void setAmbientColor(Color c);
+   void setDiffuseColor(Color c);
 
 private:
    Lambertian* ambientBRDF;
