@@ -4,15 +4,15 @@
 #include "Geometry/GeometryObject.h"
 #include "Storage/Storage.h"
 
-Direction::Direction() : Light(), ls(1.0), color(), direction() {
+Direction::Direction() : Light(), color(), direction() {
 }
 
 Direction::~Direction() {
 }
 
 void Direction::setHash(Hash* hash) {
-   ls = hash->getDouble("radiance");
    color.set(hash->getValue("color")->getArray());
+   color *= hash->getDouble("radiance");
    direction.set(hash->getValue("direction")->getArray());
    direction.normalize();
 }
@@ -29,5 +29,5 @@ bool Direction::inShadow(const Ray& ray, const ShadeRecord& sr) {
 }
 
 Color Direction::L(const ShadeRecord& sr) {
-   return color * ls;
+   return color;
 }

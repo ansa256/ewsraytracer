@@ -18,7 +18,6 @@ public:
    virtual Color L(const ShadeRecord& sr);
 
 private:
-   float ls;
    Color color;
    Vector3D direction;
 };
