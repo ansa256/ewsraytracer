@@ -5,7 +5,6 @@
 
 class Lambertian;
 class Texture;
-class Color;
 
 /**
  * Hash values:
@@ -31,11 +30,12 @@ public:
    virtual void setTexture(string texture);
 
    void setAmbientColor(const Color& c);
-   void setDiffuseColor(const Color& c);
+   void setColor(const Color& c);
 
 private:
    Lambertian* ambientBRDF;
    Lambertian* diffuseBRDF;
+   float kd;
 };
 
 #endif

@@ -7,7 +7,7 @@
 #include "Parser/Hash.h"
 #include "Lights/Light.h"
 
-Matte::Matte() : ambientBRDF(new Lambertian()), diffuseBRDF(new Lambertian()) {
+Matte::Matte() : ambientBRDF(new Lambertian()), diffuseBRDF(new Lambertian()), kd(0.9) {
 }
 
 Matte::~Matte() {
@@ -16,36 +16,26 @@ Matte::~Matte() {
 }
 
 void Matte::setHash(Hash* hash) {
-   bool colorSet = false;
-   bool textureSet = false;
-
-   float ka = hash->getDouble("ka", 0);
-   float kd = hash->getDouble("kd", 1);
-   ambientBRDF->setColor(ka, ka, ka);
-   diffuseBRDF->setColor(kd, kd, kd);
+   kd = hash->getDouble("kd", 0.9);
 
    if(hash->contains("texture")) {
-      textureSet = true;
       ambientBRDF->setTexture(Texture::createTexture(hash->getValue("texture")->getHash()));
       diffuseBRDF->setTexture(Texture::createTexture(hash->getValue("texture")->getHash()));
    }
-   else if(hash->contains("color")) {
-      colorSet = true;
-
+   if(hash->contains("color")) {
       Array* a = hash->getValue("color")->getArray();
       ambientBRDF->setColor(Color(a));
       diffuseBRDF->setColor(Color(a));
    }
 
-   if(!colorSet && !textureSet) {
-      ambientBRDF->setColor(BLACK);
-      diffuseBRDF->setColor(BLACK);
+   if(hash->contains("ambientColor")) {
+      ambientBRDF->setColor(Color(hash->getValue("ambientColor")->getArray()));
    }
 }
 
 Color Matte::shade(ShadeRecord& sr, const Ray& ray) {
    Vector3D wo = ray.direction * -1;
-   Color L = ambientBRDF->rho(sr, wo) * LightManager::instance().getAmbientLight(sr);
+   Color L = ambientBRDF->rho(sr, wo) * LightManager::instance().getAmbientLight(sr) * (1.f - kd);
 
    for(LightIter it = LightManager::instance().begin(); it != LightManager::instance().end(); it++) {
       Color power;
@@ -68,9 +58,10 @@ Color Matte::shade(ShadeRecord& sr, const Ray& ray) {
 
       power = power / (*it)->getNumLightSamples();
       wis.normalize();
-      L += diffuseBRDF->f(sr, wo, wis) * power;
+      L += diffuseBRDF->f(sr, wo, wis) * power * kd;
    }
 
+   L.alpha = diffuseBRDF->getAlpha(sr);
    return L;
 }
 
@@ -83,6 +74,15 @@ void Matte::setColor(float r, float g, float b) {
    diffuseBRDF->setColor(Color(r, g, b));
 }
 
+void Matte::setColor(const Color& c) {
+   ambientBRDF->setColor(c);
+   diffuseBRDF->setColor(c);
+}
+
+void Matte::setAmbientColor(const Color& c) {
+   ambientBRDF->setColor(c);
+}
+
 void Matte::setTexture(string texture) {
    ImageTexture* tex = new ImageTexture();
    tex->setTextureFile(texture);
@@ -91,12 +91,4 @@ void Matte::setTexture(string texture) {
    tex = new ImageTexture();
    tex->setTextureFile(texture);
    diffuseBRDF->setTexture(tex);
-}
-
-void Matte::setAmbientColor(const Color& c) {
-   ambientBRDF->setColor(c);
-}
-
-void Matte::setDiffuseColor(const Color& c) {
-   diffuseBRDF->setColor(c);
 }

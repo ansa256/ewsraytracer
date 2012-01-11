@@ -279,7 +279,7 @@ void M3DSParser::processMaterialChunk(size_t nBytes) {
    else {
       Matte* material = new Matte();
       material->setAmbientColor(props.ambient);
-      material->setDiffuseColor(props.diffuse);
+      material->setColor(props.diffuse);
       setMaterialTextures(material, props);
       materials[props.name] = material;
    }
