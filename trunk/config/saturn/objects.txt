@@ -4,6 +4,7 @@ sphere {
    
    material {
       type  "matte"
+      kd 1.0
 
       texture {
          type   "tinstance"
@@ -28,7 +29,7 @@ instance {
 
       material {
          type  "matte"
-         ka    0.2
+         kd    0.8
 
          texture {
             type     "image"
