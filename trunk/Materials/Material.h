@@ -36,7 +36,7 @@ public:
    void setNormalMap(string texName);
    void applyNormalMap(ShadeRecord& sr);
 
-private:
+protected:
    Texture* normalMap;
 };
 

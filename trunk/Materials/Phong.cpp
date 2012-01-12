@@ -8,7 +8,7 @@
 #include "Parser/Hash.h"
 #include "Textures/ImageTexture.h"
 
-Phong::Phong() : ambientBRDF(new Lambertian()), diffuseBRDF(new Lambertian()), specularBRDF(new GlossySpecular()) {
+Phong::Phong() : ambientBRDF(new Lambertian()), diffuseBRDF(new Lambertian()), specularBRDF(new GlossySpecular()), kd(1.f) {
 }
 
 Phong::~Phong() {
@@ -44,7 +44,7 @@ void Phong::setHash(Hash* hash) {
 }
 
 Color Phong::shade(ShadeRecord& sr, const Ray& ray) {
-   applyNormalMap(sr);
+   if(normalMap != NULL) applyNormalMap(sr);
    Vector3D wo = ray.direction * -1;
    Color L = ambientBRDF->rho(sr, wo) * LightManager::instance().getAmbientLight(sr);
 
