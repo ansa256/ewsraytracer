@@ -242,7 +242,7 @@ void Mesh::calculateNormals() {
 
 void Mesh::setHash(Hash* hash) {
    if(hash->contains("material")) {
-      setupMaterial(hash->getValue("material")->getHash());
+      material = Material::createMaterial(hash->getValue("material")->getHash());
    }
 }
 

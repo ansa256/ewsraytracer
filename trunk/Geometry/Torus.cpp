@@ -1,7 +1,7 @@
 #include "Torus.h"
 #include "Math/Maths.h"
 #include "Parser/Hash.h"
-#include <math.h>
+#include "Materials/Material.h"
 
 Torus::Torus() :
    GeometryObject(),
@@ -36,7 +36,7 @@ Torus::Torus(double _a, double _b) :
 void Torus::setHash(Hash* hash) {
    a = hash->getDouble("a");
    b = hash->getDouble("b");
-   setupMaterial(hash->getValue("material")->getHash());
+   material = Material::createMaterial(hash->getValue("material")->getHash());
 
    if(hash->contains("thetaRange")) {
       thetaRange = true;

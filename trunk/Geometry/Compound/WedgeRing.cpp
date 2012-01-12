@@ -1,5 +1,6 @@
 #include "WedgeRing.h"
 #include "Parser/Hash.h"
+#include "Materials/Material.h"
 
 WedgeRing::WedgeRing() : Compound() {
 }
@@ -14,11 +15,11 @@ void WedgeRing::setHash(Hash* hash) {
    float bevelR = hash->getDouble("bevelRadius");
    float minY = hash->getDouble("minY");
    float maxY = hash->getDouble("maxY");
-   
+
    float angleSize = 360.0 / count;
    float angle1 = 0.0;
    float angle2 = angleSize;
-   
+
    for(int i = 0;i < count; i++) {
       Wedge* w = new Wedge(innerR, outerR, bevelR, angle1, angle2, minY, maxY);
       bbox.expand(w->bbox);
@@ -27,6 +28,6 @@ void WedgeRing::setHash(Hash* hash) {
       angle1 += angleSize;
       angle2 += angleSize;
    }
-   
-   setupMaterial(hash->getValue("material")->getHash());
+
+   material = Material::createMaterial(hash->getValue("material")->getHash());
 }

@@ -7,6 +7,7 @@
 #include "Geometry/Rectangle.h"
 #include "Geometry/Instance.h"
 #include "Math/Maths.h"
+#include "Materials/Material.h"
 
 Wedge::Wedge() {
 }
@@ -35,19 +36,19 @@ void Wedge::setHash(Hash* hash) {
    angle2 = hash->getDouble("angle2");
    minY = hash->getDouble("minY");
    maxY = hash->getDouble("maxY");
-   
+
    cover = true;
    if(hash->contains("cover")) {
       if(hash->getString("cover") == "false") {
          cover = false;
       }
    }
-   
+
    build();
-   
-   setupMaterial(hash->getValue("material")->getHash());
+
+   material = Material::createMaterial(hash->getValue("material")->getHash());
 }
- 
+
 void Wedge::build() {
    double sinAngle1 = sin(angle1 * DEG_TO_RAD);
    double cosAngle1 = cos(angle1 * DEG_TO_RAD);
@@ -62,7 +63,7 @@ void Wedge::build() {
 
 	double alpha = acos(cos_alpha) * RAD_TO_DEG;
 	double beta = acos(cos_beta) * RAD_TO_DEG;
-	
+
    double s1 = sqrt(innerR * innerR + 2.0 * innerR * bevelR);
    double s2 = sqrt(outerR * outerR - 2.0 * outerR * bevelR);
 
@@ -77,7 +78,7 @@ void Wedge::build() {
 
 
    // BASE
-   
+
    // Use an annulus for the base plate
    if(cover) {
       Annulus* base = new Annulus(Point3D(0, minY, 0), Vector3D(0, -1, 0), innerR + bevelR, outerR - bevelR);
@@ -105,7 +106,7 @@ void Wedge::build() {
    objects.push_back(new Sphere(Point3D(xc2, minY + bevelR, zc2), bevelR));
    objects.push_back(new Sphere(Point3D(xc3, minY + bevelR, zc3), bevelR));
    objects.push_back(new Sphere(Point3D(xc4, minY + bevelR, zc4), bevelR));
-   
+
    // Base cylinders
    Instance* baseCylinder1 = new Instance(new Cylinder(bevelR, 0.0, s2 - s1));
    baseCylinder1->rotateX(90.0);
@@ -118,20 +119,20 @@ void Wedge::build() {
    baseCylinder2->rotateY(angle2);
    baseCylinder2->translate(xc3, minY + bevelR, zc3);
    objects.push_back(baseCylinder2);
-   
+
    // Base tori
    Torus* baseTorus1 = new Torus(innerR + bevelR, bevelR);
    baseTorus1->setPhiRange(angle1 + alpha, angle2 - alpha);
    Instance* bti1 = new Instance(baseTorus1);
    bti1->translate(0.0, minY + bevelR, 0.0);
    objects.push_back(bti1);
-   
+
    Torus* baseTorus2 = new Torus(outerR - bevelR, bevelR);
    baseTorus2->setPhiRange(angle1 + beta, angle2 - beta);
    Instance* bti2 = new Instance(baseTorus2);
    bti2->translate(0.0, minY + bevelR, 0.0);
    objects.push_back(bti2);
-   
+
    // SIDES
 
    // Side Cylinders
@@ -150,7 +151,7 @@ void Wedge::build() {
    Instance* sideCyl4 = new Instance(new Cylinder(bevelR, minY + bevelR, maxY - bevelR));
    sideCyl4->translate(xc4, 0.0, zc4);
    objects.push_back(sideCyl4);
-   
+
    if(cover) {
       // Side Rectanlges
       Point3D p1(s1 * sinAngle1, minY + bevelR, s1 * cosAngle1);
@@ -158,12 +159,12 @@ void Wedge::build() {
       Vector3D a = p2 - p1;
       Vector3D b(0.0, maxY - minY - 2.0 * bevelR, 0.0);
       objects.push_back(new Rectangle(p1, a, b));
-   
+
       p1.set(s1 * sinAngle2, minY + bevelR, s1 * cosAngle2);
       p2.set(s2 * sinAngle2, minY + bevelR, s2 * cosAngle2);
       a = p1 - p2;
       objects.push_back(new Rectangle(p2, a, b));
-   
+
       // Cover Cylinders
       Cylinder* sideC1 = new Cylinder(innerR, minY + bevelR, maxY - bevelR);
       sideC1->setAngleRange(angle1 + alpha, angle2 - alpha);
@@ -175,7 +176,7 @@ void Wedge::build() {
    }
 
    // TOP
-   
+
    // Top spheres
    objects.push_back(new Sphere(Point3D(xc1, maxY - bevelR, zc1), bevelR));
    objects.push_back(new Sphere(Point3D(xc2, maxY - bevelR, zc2), bevelR));
@@ -213,7 +214,7 @@ void Wedge::build() {
       Annulus* top = new Annulus(Point3D(0, maxY, 0), Vector3D(0, 1, 0), innerR + bevelR, outerR - bevelR);
       top->setAngleRange(angle1 + alpha, angle2 - alpha);
       objects.push_back(top);
-   
+
       // Top patches
       Annulus* tap1 = new Annulus(Point3D(0, maxY, 0), Vector3D(0, 1, 0), 0.0, s2-s1);
       tap1->setAngleRange(0.0, alpha);
@@ -221,7 +222,7 @@ void Wedge::build() {
       patch3->rotateY(angle1);
       patch3->translate(xc1, 0.0, zc1);
       objects.push_back(patch3);
-   
+
       Annulus* tap2 = new Annulus(Point3D(0, maxY, 0), Vector3D(0, 1, 0), 0.0, s2-s1);
       tap2->setAngleRange(360.0 - alpha, 360.0);
       Instance* patch4 = new Instance(tap2);
@@ -242,11 +243,11 @@ void Wedge::build() {
    bbox.x1 = x1 + bevelR;
    bbox.y1 = maxY;
    bbox.z1 = z1 + bevelR;
-   
+
    bool spans90 = angle1 < 90.0 && angle2 > 90.0;
    bool spans180 = angle1 < 180.0 && angle2 > 180.0;
    bool spans270 = angle1 < 270.0 && angle2 > 270.0;
-   
+
    if(spans90 && spans180 && spans270) {
       bbox.x0 = bbox.z0 = -outerR;
       bbox.x1 = outerR;

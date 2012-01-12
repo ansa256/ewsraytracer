@@ -1,6 +1,7 @@
 #include "Disk.h"
 #include "Parser/Hash.h"
 #include "Samplers/Sampler.h"
+#include "Materials/Material.h"
 #include <math.h>
 
 Disk::Disk() : LightObject(), center(), normal(), radiusSquared(1) {
@@ -26,7 +27,7 @@ void Disk::setHash(Hash* hash) {
    a = Vector3D(0, 0, 1).cross(normal);
    b = normal.cross(a);
 
-   setupMaterial(hash->getValue("material")->getHash());
+   material = Material::createMaterial(hash->getValue("material")->getHash());
 }
 
 bool Disk::hit(const Ray& ray, ShadeRecord& sr) const {

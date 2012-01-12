@@ -3,6 +3,7 @@
 #include "Math/Point3D.h"
 #include "Math/Vector3D.h"
 #include "Parser/Hash.h"
+#include "Materials/Material.h"
 
 const double GOLDEN = (1.0 + sqrt(5.0)) / 2.0;
 
@@ -74,7 +75,7 @@ void GeoSphere::setHash(Hash* hash) {
    subdivide(9, 11, 10);
    subdivide(10, 11, 6);
 
-   setupMaterial(hash->getValue("material")->getHash());
+   material = Material::createMaterial(hash->getValue("material")->getHash());
 //   printf("face count = %d\n", mesh->getFaceCount());
 }
 

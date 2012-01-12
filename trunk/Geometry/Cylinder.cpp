@@ -1,6 +1,7 @@
 #include "Cylinder.h"
 #include "Parser/Hash.h"
 #include "Math/Maths.h"
+#include "Materials/Material.h"
 
 Cylinder::Cylinder() : radius(1.0), minY(-1.0), maxY(1.0), rangeSet(false), minAngle(0), maxAngle(0) {
 }
@@ -25,7 +26,7 @@ void Cylinder::setHash(Hash* hash) {
    radius = hash->getDouble("radius");
    minY = hash->getDouble("minY");
    maxY = hash->getDouble("maxY");
-   setupMaterial(hash->getValue("material")->getHash());
+   material = Material::createMaterial(hash->getValue("material")->getHash());
 }
 
 bool Cylinder::hit(const Ray& ray, ShadeRecord& sr) const {

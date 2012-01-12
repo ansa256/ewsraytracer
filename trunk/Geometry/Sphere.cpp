@@ -2,7 +2,7 @@
 #include "Sphere.h"
 #include "Math/Vector3D.h"
 #include "Parser/Hash.h"
-#include "Materials/Matte.h"
+#include "Materials/Material.h"
 #include "Math/Maths.h"
 #include "Math/Matrix.h"
 #include "Textures/Texture.h"
@@ -20,7 +20,7 @@ Sphere::Sphere() :
 {
    bbox.expand(Point3D(-1, -1, -1));
    bbox.expand(Point3D(1, 1, 1));
-   
+
    nSamples = 10;
    idx = 0;
    samples = new float[nSamples*2];
@@ -77,7 +77,6 @@ bool Sphere::hit(const Ray& ray, ShadeRecord& sr) const {
 
       sr.localHitPoint = sr.hitPoint = ray(t);
       sr.material = material;
-      if(normalMap != NULL) getNormalFromMap(sr);
       return true;
    }
 
@@ -92,32 +91,10 @@ bool Sphere::hit(const Ray& ray, ShadeRecord& sr) const {
 
       sr.localHitPoint = sr.hitPoint = ray(t);
       sr.material = material;
-      if(normalMap != NULL) getNormalFromMap(sr);
       return true;
    }
 
    return false;
-}
-
-void Sphere::getNormalFromMap(ShadeRecord& sr) const {
-   Vector3D tangent(sr.normal.z, 0, -sr.normal.x);
-   Vector3D binormal(sr.normal.cross(tangent));
-
-   if(sr.normal.x == 0 && sr.normal.y == 1 && sr.normal.z == 0) {
-      tangent.set(1, 0, 0);
-      binormal.set(0, 0, -1);
-   }
-   else if(sr.normal.x == 0 && sr.normal.y == -1 && sr.normal.z == 0) {
-      tangent.set(-1, 0, 0);
-      binormal.set(0, 0, 1);
-   }
-
-   Matrix tangentMatrix(tangent, binormal, sr.normal);
-   tangentMatrix.invert();
-
-   Color color = normalMap->getColor(sr);
-   Vector3D mapNormal(2.0 * color.red - 1.0, 2.0 * color.green - 1.0, 2.0 * color.blue - 1.0);
-   sr.normal = tangentMatrix * mapNormal;
 }
 
 bool Sphere::shadowHit(const Ray& ray) const {
@@ -212,14 +189,14 @@ void Sphere::setHash(Hash* hash) {
    bbox.expand(center - radius);
    bbox.expand(center + radius);
 
-   setupMaterial(hash->getValue("material")->getHash());
+   material = Material::createMaterial(hash->getValue("material")->getHash());
 }
 
 Point3D Sphere::sample(const Point3D& hitPoint) {
    float x = samples[idx];
    float y = samples[idx+1];
    idx = (idx + 2) % (nSamples * 2);
-   
+
    // Get a cooredinate system for sphere sampling. z axis is vector from hit point to sphere center
    Vector3D wc = center - hitPoint;
    wc.normalize();
