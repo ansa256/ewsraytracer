@@ -71,6 +71,7 @@ Color Phong::shade(ShadeRecord& sr, const Ray& ray) {
       L += (diffuseBRDF->f(sr, wo, wis) + specularBRDF->f(sr, wo, wis)) * power;
    }
 
+   L.alpha = diffuseBRDF->getAlpha(sr) * kd + ambientBRDF->getAlpha(sr) * (1.f - kd);
    return L;
 }
 
