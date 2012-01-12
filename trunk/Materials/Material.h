@@ -23,6 +23,8 @@ public:
    Material();
    virtual ~Material();
 
+   static Material* createMaterial(Hash* hash);
+
    virtual Color shade(ShadeRecord& sr, const Ray& ray) { return BLACK; }
    virtual void setHash(Hash* hash) = 0;
    virtual Color getLe(const ShadeRecord& sr) const { return BLACK; }
