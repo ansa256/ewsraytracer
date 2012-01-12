@@ -7,7 +7,7 @@
 #include "Parser/Hash.h"
 #include "Lights/Light.h"
 
-Matte::Matte() : ambientBRDF(new Lambertian()), diffuseBRDF(new Lambertian()), kd(0.9) {
+Matte::Matte() : ambientBRDF(new Lambertian()), diffuseBRDF(new Lambertian()), kd(1.f) {
 }
 
 Matte::~Matte() {
@@ -34,6 +34,7 @@ void Matte::setHash(Hash* hash) {
 }
 
 Color Matte::shade(ShadeRecord& sr, const Ray& ray) {
+   if(normalMap != NULL) applyNormalMap(sr);
    Vector3D wo = ray.direction * -1;
    Color L = ambientBRDF->rho(sr, wo) * LightManager::instance().getAmbientLight(sr) * (1.f - kd);
 
