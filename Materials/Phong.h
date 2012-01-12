@@ -1,12 +1,3 @@
-/*
- *  Phong.h
- *  RayTracer
- *
- *  Created by Eric Saari on 12/19/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #ifndef _PHONG_H_
 #define _PHONG_H_
 
@@ -14,7 +5,6 @@
 
 class Lambertian;
 class GlossySpecular;
-class ImageTexture;
 
 class Phong : public Material {
 
@@ -38,7 +28,7 @@ private:
    Lambertian* ambientBRDF;
    Lambertian* diffuseBRDF;
    GlossySpecular* specularBRDF;
-   ImageTexture* specularTexture;
+   float kd;
 };
 
 #endif

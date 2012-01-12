@@ -8,7 +8,7 @@
 #include "Parser/Hash.h"
 #include "Textures/ImageTexture.h"
 
-Phong::Phong() : ambientBRDF(new Lambertian()), diffuseBRDF(new Lambertian()), specularBRDF(new GlossySpecular()), specularTexture(NULL) {
+Phong::Phong() : ambientBRDF(new Lambertian()), diffuseBRDF(new Lambertian()), specularBRDF(new GlossySpecular()) {
 }
 
 Phong::~Phong() {
@@ -18,40 +18,28 @@ Phong::~Phong() {
 }
 
 void Phong::setHash(Hash* hash) {
-   bool colorSet = false;
-   bool textureSet = false;
+   kd = hash->getDouble("kd", 0.9);
 
    if(hash->contains("texture")) {
-      textureSet = true;
-
       ambientBRDF->setTexture(Texture::createTexture(hash->getValue("texture")->getHash()));
       diffuseBRDF->setTexture(Texture::createTexture(hash->getValue("texture")->getHash()));
    }
    else if(hash->contains("color")) {
-      colorSet = true;
-
       Array* a = hash->getValue("color")->getArray();
       ambientBRDF->setColor(Color(a));
       diffuseBRDF->setColor(Color(a));
    }
 
-   if(!colorSet && !textureSet) {
-      ambientBRDF->setColor(BLACK);
-      diffuseBRDF->setColor(BLACK);
+   if(hash->contains("ambientColor")) {
+      ambientBRDF->setColor(Color(hash->getValue("ambientColor")->getArray()));
    }
 
-   float ka = hash->getDouble("ka", 0);
-   float kd = hash->getDouble("kd", 1);
    float ks = hash->getDouble("ks", 0.1);
-   ambientBRDF->setColor(ka, ka, ka);
-   diffuseBRDF->setColor(kd, kd, kd);
    specularBRDF->setColor(ks, ks, ks);
-
    specularBRDF->setExp(hash->getDouble("exp"));
 
-   if(hash->contains("specularTexture")) {
-      specularTexture = new ImageTexture();
-      specularTexture->setTextureFile(hash->getString("specularTexture"));
+   if(hash->contains("specularMask")) {
+      specularBRDF->setSpecularMask(Texture::createTexture(hash->getValue("specularMask")->getHash()));
    }
 }
 
@@ -73,10 +61,6 @@ Color Phong::shade(ShadeRecord& sr, const Ray& ray) {
             bool inShadow = (*it)->inShadow(shadowRay, sr);
 
             if(!inShadow) {
-               float spec = 1.0;
-               if(specularTexture != NULL) {
-                  spec = specularTexture->getColor(sr).red;
-               }
                power += (*it)->L(sr) * (*it)->G(sr) * ndotwi / (*it)->pdf(sr);
             }
          }
@@ -91,8 +75,10 @@ Color Phong::shade(ShadeRecord& sr, const Ray& ray) {
 }
 
 void Phong::setColor(float r, float g, float b) {
-   ambientBRDF->setColor(Color(r, g, b));
-   diffuseBRDF->setColor(Color(r, g, b));
+   Color c(r, g, b);
+   ambientBRDF->setColor(c);
+   diffuseBRDF->setColor(c);
+   specularBRDF->setColor(c);
 }
 
 float Phong::getAlpha(const ShadeRecord& sr, const Ray& ray) const {
