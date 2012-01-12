@@ -1,5 +1,6 @@
 #include "Box.h"
 #include "Parser/Hash.h"
+#include "Materials/Material.h"
 
 Box::Box() : GeometryObject(), p0(), p1() {
 }
@@ -7,7 +8,7 @@ Box::Box() : GeometryObject(), p0(), p1() {
 void Box::setHash(Hash* hash) {
    p0 = hash->getValue("p0")->getArray();
    p1 = hash->getValue("p1")->getArray();
-   setupMaterial(hash->getValue("material")->getHash());
+   material = Material::createMaterial(hash->getValue("material")->getHash());
 }
 
 bool Box::hit(const Ray& ray, ShadeRecord& sr) const {

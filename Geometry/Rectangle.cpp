@@ -1,6 +1,7 @@
 #include "Rectangle.h"
 #include "Parser/Hash.h"
 #include "Samplers/Sampler.h"
+#include "Materials/Material.h"
 
 Rectangle::Rectangle() : LightObject() {
    nSamples = 10;
@@ -32,7 +33,7 @@ void Rectangle::setHash(Hash* hash) {
    b.set(hash->getValue("b")->getArray());
    setup();
 
-   setupMaterial(hash->getValue("material")->getHash());
+   material = Material::createMaterial(hash->getValue("material")->getHash());
 }
 
 void Rectangle::setup() {

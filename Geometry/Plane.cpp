@@ -1,7 +1,7 @@
 #include "Plane.h"
 #include "Parser/Hash.h"
 #include "Parser/Value.h"
-#include "Materials/Matte.h"
+#include "Materials/Material.h"
 #include "Textures/PlaneChecker.h"
 
 Plane::Plane() : point(Point3D(1, 0, 0)), normal(Vector3D(0, 0, 1)) {
@@ -38,5 +38,5 @@ void Plane::setHash(Hash* hash) {
    normal.set(a->at(0)->getDouble(), a->at(1)->getDouble(), a->at(2)->getDouble());
    normal.normalize();
 
-   setupMaterial(hash->getValue("material")->getHash());
+   material = Material::createMaterial(hash->getValue("material")->getHash());
 }

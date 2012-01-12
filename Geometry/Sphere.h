@@ -30,7 +30,6 @@ public:
 
 private:
    bool partCheck(const Ray& ray, double t) const;
-   void getNormalFromMap(ShadeRecord& sr) const;
 
    Point3D center;
    double radius;

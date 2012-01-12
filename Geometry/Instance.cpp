@@ -1,6 +1,7 @@
 #include "Instance.h"
 #include "Parser/Hash.h"
 #include "GeometryManager.h"
+#include "Materials/Material.h"
 
 const double kHugeValue = 1.0E10;
 
@@ -23,7 +24,7 @@ void Instance::setHash(Hash* hash) {
    object = GeometryManager::instance().createObject(type, objHash, false);
 
    if(hash->contains("material")) {
-      setupMaterial(hash->getValue("material")->getHash());
+      material = Material::createMaterial(hash->getValue("material")->getHash());
    }
    else {
       material = object->getMaterial();

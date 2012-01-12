@@ -1,12 +1,3 @@
-/*
- *  GeometryObject.h
- *  RayTracer
- *
- *  Created by Eric Saari on 12/11/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #ifndef _GEOMETRY_OBJECT_
 #define _GEOMETRY_OBJECT_
 
@@ -18,7 +9,6 @@
 
 class Hash;
 class Material;
-class Texture;
 
 class GeometryObject {
 
@@ -30,9 +20,8 @@ public:
    virtual bool hit(const Ray& ray, ShadeRecord& sr) const = 0;
    virtual bool shadowHit(const Ray& ray) const = 0;
 
-   void setupMaterial(Hash* hash);
    Material* getMaterial() const { return material; }
-   virtual void setMaterial(Material* m);
+   virtual void setMaterial(Material* m) { material = m; }
 
    virtual bool isCompound() { return false; }
 
@@ -43,7 +32,6 @@ public:
 
 protected:
    mutable Material* material;
-   Texture* normalMap;
 };
 
 #endif

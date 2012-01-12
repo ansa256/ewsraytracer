@@ -51,7 +51,7 @@ void Annulus::setHash(Hash* hash) {
       maxAngle = a->at(1)->getDouble() * DEG_TO_RAD;
    }
 
-   setupMaterial(hash->getValue("material")->getHash());
+   material = Material::createMaterial(hash->getValue("material")->getHash());
 }
 
 bool Annulus::hit(const Ray& ray, ShadeRecord& sr) const {
