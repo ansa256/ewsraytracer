@@ -1,19 +1,12 @@
-/*
- *  Color.cpp
- *  RayTracer
- *
- *  Created by Eric Saari on 12/11/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include "Color.h"
 #include <algorithm>
+#include <math.h>
 
 using namespace std;
 
 const Color BLACK;
-const Color RED(1, 0, 0);
+
+float epsilon = 1.0 * pow(10, -6);
 
 Color::Color(float _r, float _g, float _b, float _a) {
    red = _r;
@@ -89,6 +82,19 @@ Color& Color::operator*= (const float a) {
    green *= a;
    blue *= a;
    return *this;
+}
+
+bool Color::operator== (const Color& c) const {
+   if(fabs(red - c.red) > epsilon) {
+      return false;
+   }
+   if(fabs(green - c.green) > epsilon) {
+      return false;
+   }
+   if(fabs(blue - c.blue) > epsilon) {
+      return false;
+   }
+   return true;
 }
 
 void Color::normalize() {

@@ -1,12 +1,3 @@
-/*
- *  Color.h
- *  RayTracer
- *
- *  Created by Eric Saari on 12/11/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #ifndef _COLOR_H_
 #define _COLOR_H_
 
@@ -28,6 +19,7 @@ public:
    Color& operator+=(const float a);
    Color& operator/= (const float a);
    Color& operator*= (const float a);
+   bool operator== (const Color& c) const;
    Color operator*(const float a) const;
    Color operator*(const Color& c) const;
    Color operator/(const float a) const;
@@ -61,6 +53,5 @@ inline Color Color::operator+(const Color& c) const {
 }
 
 extern const Color BLACK;
-extern const Color RED;
 
 #endif
