@@ -61,7 +61,7 @@ Color Matte::shade(ShadeRecord& sr, const Ray& ray) {
       L += diffuseBRDF->f(sr, wo, wis) * power * kd;
    }
 
-   L.alpha = diffuseBRDF->getAlpha(sr);
+   L.alpha = diffuseBRDF->getAlpha(sr) * kd + ambientBRDF->getAlpha(sr) * (1.f - kd);
    return L;
 }
 
