@@ -5,10 +5,9 @@ sphere {
    
    material {
       type  "phong"
-      ka 0.25
+      kd 1.0
       ks 0.1
       exp 20.0
-      specularTexture "resources/earth/8081_earthspec4k-2.jpg"
 
       texture {
          type     "tinstance"
@@ -33,6 +32,18 @@ sphere {
             mapping  "sphere"
          }
       }
+      
+      specularMask {
+         type     "tinstance"
+         scale    [ 6.37814 6.37814 6.37814 ]
+         rotate   [ 0.0 105.0 0.0 ]
+
+         texture {
+            type     "image"
+            filename "resources/earth/8081_earthspec4k-2.jpg"
+            mapping  "sphere"
+         }
+      }
    }
 }
 
@@ -43,7 +54,6 @@ sphere {
    
    material {
       type  "matte"
-      ka 0.25
       kd 1.0
 
       texture {
@@ -64,7 +74,7 @@ sphere {
 sphere {
    name   "atmosphere"
    center [ 0.0 0.0 0.0 ]
-   radius 6.7
+   radius 6.6
    
    material {
       type  "atmosphere"
