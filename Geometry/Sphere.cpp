@@ -9,8 +9,6 @@
 #include "Samplers/Sampler.h"
 
 Sphere::Sphere() :
-   center(0, 0, 0),
-   radius(1.0),
    thetaRange(false),
    phiRange(false),
    cosThetaMin(0),
@@ -27,25 +25,6 @@ Sphere::Sphere() :
    Sampler::LatinHyperCube(samples, nSamples, 2);
 }
 
-Sphere::Sphere(const Point3D& c, double r) :
-   center(c),
-   radius(r),
-   thetaRange(false),
-   phiRange(false),
-   cosThetaMin(0),
-   cosThetaMax(0),
-   phiMin(0),
-   phiMax(0)
-{
-   bbox.expand(center - radius);
-   bbox.expand(center + radius);
-
-   nSamples = 10;
-   idx = 0;
-   samples = new float[nSamples*2];
-   Sampler::LatinHyperCube(samples, nSamples, 2);
-}
-
 Sphere::~Sphere() {
    delete[] samples;
 }
@@ -53,10 +32,10 @@ Sphere::~Sphere() {
 bool Sphere::hit(const Ray& ray, ShadeRecord& sr) const {
    if(!bbox.hit(ray)) return false;
 
-   Vector3D temp(ray.origin - center);
+   Vector3D temp(ray.origin - Point3D());
    double a = ray.direction.dot(ray.direction);
    double b = 2.0 * temp.dot(ray.direction);
-   double c = temp.dot(temp) - (radius * radius);
+   double c = temp.dot(temp) - 1.0;
    double disc = b * b - 4.0 * a * c;
 
    if(disc < 0.0) {
@@ -69,7 +48,7 @@ bool Sphere::hit(const Ray& ray, ShadeRecord& sr) const {
 
    if(t > epsilon && t < ray.tHit && partCheck(ray, t)) {
       ray.tHit = t;
-      sr.normal = (temp + ray.direction * t) / radius;
+      sr.normal = (temp + ray.direction * t);
 
       if((-ray.direction).dot(sr.normal) < 0.0) {
          sr.normal *= -1.0;
@@ -83,7 +62,7 @@ bool Sphere::hit(const Ray& ray, ShadeRecord& sr) const {
    t = (-b + e) / denom;
    if(t > epsilon && t < ray.tHit && partCheck(ray, t)) {
       ray.tHit = t;
-      sr.normal = (temp + ray.direction * t) / radius;
+      sr.normal = (temp + ray.direction * t);
 
       if((-ray.direction).dot(sr.normal) < 0.0) {
          sr.normal *= -1;
@@ -100,10 +79,10 @@ bool Sphere::hit(const Ray& ray, ShadeRecord& sr) const {
 bool Sphere::shadowHit(const Ray& ray) const {
    if(!bbox.hit(ray)) return false;
 
-   Vector3D temp(ray.origin - center);
+   Vector3D temp(ray.origin - Point3D());
    double a = ray.direction.dot(ray.direction);
    double b = 2.0 * temp.dot(ray.direction);
-   double c = temp.dot(temp) - (radius * radius);
+   double c = temp.dot(temp) - 1.0;
    double disc = b * b - 4.0 * a * c;
 
    if(disc < 0.0) {
@@ -145,10 +124,10 @@ bool Sphere::partCheck(const Ray& ray, double t) const {
       return true;
    }
 
-   Vector3D hit = ray.origin + ray.direction * t - center;
+   Point3D hit = ray(t);
 
    if(thetaRange) {
-      if(hit.y > radius * cosThetaMin || hit.y < radius * cosThetaMax) {
+      if(hit.y > cosThetaMin || hit.y < cosThetaMax) {
          return false;
       }
    }
@@ -166,9 +145,6 @@ bool Sphere::partCheck(const Ray& ray, double t) const {
 }
 
 void Sphere::setHash(Hash* hash) {
-   center.set(hash->getValue("center")->getArray());
-   radius = hash->getDouble("radius");
-
    if(hash->contains("thetaRange")) {
       thetaRange = true;
       Array* a = hash->getValue("thetaRange")->getArray();
@@ -185,9 +161,10 @@ void Sphere::setHash(Hash* hash) {
       phiMin = a->at(0)->getDouble() * DEG_TO_RAD;
       phiMax = a->at(1)->getDouble() * DEG_TO_RAD;
    }
-
-   bbox.expand(center - radius);
-   bbox.expand(center + radius);
+   
+   if(hash->contains("ignoreShadow")) {
+      ignoreShadow = true;
+   }
 
    material = Material::createMaterial(hash->getValue("material")->getHash());
 }
@@ -198,18 +175,18 @@ Point3D Sphere::sample(const Point3D& hitPoint) {
    idx = (idx + 2) % (nSamples * 2);
 
    // Get a cooredinate system for sphere sampling. z axis is vector from hit point to sphere center
-   Vector3D wc = center - hitPoint;
+   Vector3D wc = Point3D() - hitPoint;
    wc.normalize();
    Vector3D wcx, wcy;
    coordinateSystem(wc, &wcx, &wcy);
 
    // Sample sphere inside subtended cone
-   double sinTheta = radius * radius / hitPoint.distanceSquared(center);
+   double sinTheta = 1.0 / hitPoint.distanceSquared(Point3D());
    double cosTheta = sqrt(max(0.0, 1.0 - sinTheta));
 
    Ray ray(hitPoint, Sampler::uniformSampleCone(x, y, cosTheta, wcx, wcy, wc));
    if(!shadowHit(ray)) {
-      ray.tHit = (center - hitPoint).dot(ray.direction.normalize());
+      ray.tHit = (Point3D() - hitPoint).dot(ray.direction.normalize());
    }
 
    return ray(ray.tHit);
@@ -222,7 +199,7 @@ Vector3D Sphere::getNormal(const Point3D& point) const {
 }
 
 double Sphere::pdf(const ShadeRecord& sr) const {
-   double sinTheta = radius * radius / sr.hitPoint.distanceSquared(center);
+   double sinTheta = 1.0 / sr.hitPoint.distanceSquared(Point3D());
    double cosTheta = sqrt(max(0.0, 1.0 - sinTheta));
    return 1.0 / (2.0 * M_PI * (1.0 - cosTheta));
 }

@@ -25,9 +25,10 @@ public:
    virtual ~Wedge();
    
    virtual void setHash(Hash* hash);
-   
+
 private:
    void build();
+   void addSphere(double cx, double cy, double cz, double r);
 
    float innerR;
    float outerR;
