@@ -17,22 +17,12 @@ FrameObject::FrameObject(Instance* i) : instance(i), position(), rotation() {
 
 void FrameObject::setup() {
    instance->reset();
-
-   if(rotation.x) {
-      instance->rotateX(rotation.x);
-   }
-   if(rotation.y) {
-      instance->rotateY(rotation.y);
-   }
-   if(rotation.z) {
-      instance->rotateZ(rotation.z);
-   }
-
+   instance->rotate(rotation.x, rotation.y, rotation.z);
    instance->setPosition(position);
    instance->computeBBox();
 }
 
-Animation::Animation(Camera* c, SDL_Surface* s) : frameCount(0), camera(c), surface(s), objFrames(), cameraFrames(), outputDir("") {
+Animation::Animation(Camera* c, SDL_Surface* s) : camera(c), surface(s), objFrames(), cameraFrames(), outputDir(""), startFrame(0), endFrame(numeric_limits<int>::max()) {
 }
 
 Animation::~Animation() {
@@ -53,6 +43,8 @@ void Animation::setup(const string& fname) {
 
       if(name == "config") {
          outputDir = hash->getString("outputDir");
+         startFrame = hash->getInteger("startFrame", 0);
+         endFrame = hash->getInteger("endFrame", numeric_limits<int>::max());
       }
       else if(name == "animation") {
          loadAnimation(hash);
@@ -66,14 +58,18 @@ void Animation::loadAnimation(Hash* hash) {
       loadCameraFrames(hash->getValue("frames")->getArray());
    }
    else {
-//      GeometryObject* obj = GeometryManager::instance().removeObject(objName);
-//      Instance* instance = new Instance(obj);
-//      GeometryManager::instance().getStorage()->addObject(instance);
-
-//      loadAnimationFrames(hash->getValue("frames")->getArray(), instance);
+      GeometryObject* obj = GeometryManager::instance().getStorage()->getObject(objName);
+      Instance* instance = dynamic_cast<Instance*>(obj);
+      if(instance == NULL) {
+         fprintf(stderr, "Error: object %s must be of type Instance sice it is used in an animation\n", objName.c_str());
+         exit(1);
+      }
+      loadAnimationFrames(hash->getValue("frames")->getArray(), instance);
    }
 
-   frameCount = max(cameraFrames.size(), objFrames.size());
+   if(endFrame == numeric_limits<int>::max()) {
+      endFrame = max(cameraFrames.size(), objFrames.size());
+   }
 }
 
 void Animation::loadAnimationFrames(Array* frames, Instance* instance) {
@@ -107,7 +103,7 @@ void Animation::loadCameraFrames(Array* frames) {
 void Animation::play() {
    char fname[512];
 
-   for(unsigned i = 0; i < frameCount; i++) {
+   for(size_t i = startFrame; i < endFrame; i++) {
       if(cameraFrames.size() > i) {
          camera->rotate(cameraFrames[i]->rotation.x, cameraFrames[i]->rotation.y, cameraFrames[i]->rotation.z);
          camera->setPosition(cameraFrames[i]->position);
@@ -120,9 +116,9 @@ void Animation::play() {
       }
 
       GeometryManager::instance().getStorage()->setup();
-      printf("Frame %d\t", i);
+      printf("Frame %lu\t", i);
       camera->render();
-      sprintf(fname, "%s/image%05d.png", outputDir.c_str(), i);
+      sprintf(fname, "%s/image%05lu.png", outputDir.c_str(), i);
       saveImage(surface, fname);
    }
 

@@ -47,12 +47,13 @@ private:
    void loadAnimationFrames(Array* frames, Instance* instance);
    void loadCameraFrames(Array* frames);
 
-   size_t frameCount;
    Camera* camera;
    SDL_Surface* surface;
    vector<Frame*> objFrames;
    vector<CameraFrame*> cameraFrames;
    string outputDir;
+   size_t startFrame;
+   size_t endFrame;
 };
 
 #endif
