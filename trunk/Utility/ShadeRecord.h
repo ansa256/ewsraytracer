@@ -20,6 +20,7 @@ class ShadeRecord {
 
 public:
    ShadeRecord();
+   ShadeRecord(const ShadeRecord& other);
 
    Vector3D normal;
    Point3D hitPoint;
