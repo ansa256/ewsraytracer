@@ -17,14 +17,11 @@ void Storage::addObject(GeometryObject* obj) {
    }
 }
 
-void Storage::removeObject(GeometryObject* obj) {
-   if (obj->isCompound()) {
-      const vector<GeometryObject*>& objects = ((Compound*)obj)->getObjects();
-      for(CompoundIter it = objects.begin(); it != objects.end(); it++) {
-         removeObject(*it);
+GeometryObject* Storage::getObject(const string& name) {
+   for(GeomIter it = objs.begin(); it != objs.end(); ++it) {
+      if((*it)->getName() == name) {
+         return *it;
       }
    }
-   else {
-//      objs.remove(obj);
-   }
+   return NULL;
 }

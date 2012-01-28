@@ -16,7 +16,7 @@ public:
    virtual void setup() = 0;
 
    void addObject(GeometryObject* obj);
-   void removeObject(GeometryObject* obj);
+   GeometryObject* getObject(const string& name);
 
 protected:
    vector<GeometryObject*> objs;
