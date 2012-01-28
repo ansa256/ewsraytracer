@@ -7,7 +7,7 @@
 #include "Parser/Hash.h"
 #include "Lights/Light.h"
 
-Matte::Matte() : ambientBRDF(new Lambertian()), diffuseBRDF(new Lambertian()), kd(1.f) {
+Matte::Matte() : ambientBRDF(new Lambertian()), diffuseBRDF(new Lambertian()), kd(0.9f) {
 }
 
 Matte::~Matte() {

@@ -8,7 +8,7 @@
 #include "Parser/Hash.h"
 #include "Textures/ImageTexture.h"
 
-Phong::Phong() : ambientBRDF(new Lambertian()), diffuseBRDF(new Lambertian()), specularBRDF(new GlossySpecular()), kd(1.f) {
+Phong::Phong() : ambientBRDF(new Lambertian()), diffuseBRDF(new Lambertian()), specularBRDF(new GlossySpecular()), kd(0.9f) {
 }
 
 Phong::~Phong() {
@@ -46,7 +46,7 @@ void Phong::setHash(Hash* hash) {
 Color Phong::shade(ShadeRecord& sr, const Ray& ray) {
    if(normalMap != NULL) applyNormalMap(sr);
    Vector3D wo = ray.direction * -1;
-   Color L = ambientBRDF->rho(sr, wo) * LightManager::instance().getAmbientLight(sr);
+   Color L = ambientBRDF->rho(sr, wo) * LightManager::instance().getAmbientLight(sr) * (1.f - kd);
 
    for(LightIter it = LightManager::instance().begin(); it != LightManager::instance().end(); it++) {
       Color power;
@@ -68,7 +68,7 @@ Color Phong::shade(ShadeRecord& sr, const Ray& ray) {
 
       power = power / (*it)->getNumLightSamples();
       wis.normalize();
-      L += (diffuseBRDF->f(sr, wo, wis) + specularBRDF->f(sr, wo, wis)) * power;
+      L += (diffuseBRDF->f(sr, wo, wis) + specularBRDF->f(sr, wo, wis)) * power * kd;
    }
 
    L.alpha = diffuseBRDF->getAlpha(sr) * kd + ambientBRDF->getAlpha(sr) * (1.f - kd);
