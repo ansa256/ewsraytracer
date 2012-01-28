@@ -10,6 +10,7 @@ class Filter;
 struct Pixel {
    Pixel();
    Color getColor();
+   void reset();
 
    float r, g, b;
    float weightSum;
@@ -23,6 +24,7 @@ public:
 
    void addSample(double sx, double sy, const Color& c);
    void generateImage(SDL_Surface* surf);
+   void reset();
    
 private:
    int width, height;

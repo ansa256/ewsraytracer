@@ -96,6 +96,7 @@ void Camera::setHash(Hash* h) {
 }
 
 void Camera::render() {
+   film->reset();
    for(int h = 0; h < height; h += boxh) {
       for(int w = 0; w < width; w += boxw) {
          bounds.push(SamplerBounds(w, w + boxw, h, h + boxh ));
