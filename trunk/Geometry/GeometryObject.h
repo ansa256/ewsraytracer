@@ -24,6 +24,7 @@ public:
    virtual void setMaterial(Material* m) { material = m; }
 
    virtual bool isCompound() { return false; }
+   string getName() const { return name; }
 
    static const double epsilon;
    bool doDelete;
@@ -32,6 +33,7 @@ public:
 
 protected:
    mutable Material* material;
+   string name;
 };
 
 #endif
