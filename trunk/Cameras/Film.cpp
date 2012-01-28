@@ -17,6 +17,11 @@ Color Pixel::getColor() {
    return c;
 }
 
+void Pixel::reset() {
+   r = g = b = 0;
+   weightSum = 0;
+}
+
 Film::Film(int w, int h) : width(w), height(h) {
    filter = new BoxFilter(1.0, 1.0);
    pixels = new Pixel[width * height];
@@ -52,4 +57,12 @@ void Film::generateImage(SDL_Surface* surf) {
       }
    }
    SDL_UpdateRect(surf, 0, 0, 0, 0);
+}
+
+void Film::reset() {
+   for(int w = 0; w < width; w++) {
+      for(int h = 0; h < height; h++) {
+         pixels[width * h + w].reset();
+      }
+   }
 }
