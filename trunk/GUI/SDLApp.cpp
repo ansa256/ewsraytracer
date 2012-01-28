@@ -70,15 +70,16 @@ void SDLApp::loadConfiguration(int argc, char** argv) {
 
    LightManager::instance().loadLights(h->getString("lights"));
    GeometryManager::instance().loadObjects(h->getString("objects"));
-
-   if(h->contains("animation")) {
-      animation = new Animation(camera, surface);
-      animation->setup(h->getString("animation"));
-   }
    
    camera = new Camera(h->getString("camera"), width, height);
    camera->setSurface(surface);
    camera->setThreadParameters(threadCount, boxw, boxh);
+   
+   if(h->contains("animation")) {
+      animation = new Animation(camera, surface);
+      camera->setSurface(surface);
+      animation->setup(h->getString("animation"));
+   }
 }
 
 void SDLApp::run() {
