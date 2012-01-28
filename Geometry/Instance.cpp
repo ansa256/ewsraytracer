@@ -30,22 +30,55 @@ void Instance::setHash(Hash* hash) {
       material = object->getMaterial();
    }
 
-   if(hash->contains("translate")) {
-      Array* a = hash->getValue("translate")->getArray();
-      invMatrix.invTranslate(a->at(0)->getDouble(), a->at(1)->getDouble(), a->at(2)->getDouble());
+   if(hash->contains("transforms")) {
+      Array* transforms = hash->getValue("transforms")->getArray();
+      unsigned int idx = 0;
+      while(idx < transforms->size()) {
+         type = transforms->at(idx)->getString();
+         idx++;
+
+         if(type == "translate") {
+            Array* a = transforms->at(idx)->getArray();
+            translate(a->at(0)->getDouble(), a->at(1)->getDouble(), a->at(2)->getDouble());
+         }
+         else if(type == "scale") {
+            Array* a = transforms->at(idx)->getArray();
+            scale(a->at(0)->getDouble(), a->at(1)->getDouble(), a->at(2)->getDouble());
+         }
+         else if(type == "rotate") {
+            Array* a = transforms->at(idx)->getArray();
+            rotate(a->at(0)->getDouble(), a->at(1)->getDouble(), a->at(2)->getDouble());
+         }
+         idx++;
+      }
    }
-   if(hash->contains("scale")) {
-      Array* a = hash->getValue("scale")->getArray();
-      invMatrix.invScale(a->at(0)->getDouble(), a->at(1)->getDouble(), a->at(2)->getDouble());
+   
+   if(hash->contains("ignoreShadow")) {
+      ignoreShadow = true;
    }
-   if(hash->contains("rotate")) {
-      Array* a = hash->getValue("rotate")->getArray();
-      invMatrix.invRotateX(a->at(0)->getDouble());
-      invMatrix.invRotateY(a->at(1)->getDouble());
-      invMatrix.invRotateZ(a->at(2)->getDouble());
-   }
+   name = hash->getString("name");
 
    computeBBox();
+}
+
+void Instance::translate(double x, double y, double z) {
+   fwdMatrix.translate(x, y, z);
+   invMatrix.invTranslate(x, y, z);
+}
+
+void Instance::scale(double x, double y, double z) {
+   fwdMatrix.scale(x, y, z);
+   invMatrix.invScale(x, y, z);
+}
+
+void Instance::rotate(double x, double y, double z) {
+   fwdMatrix.rotateX(x);
+   fwdMatrix.rotateY(y);
+   fwdMatrix.rotateZ(z);
+
+   invMatrix.invRotateX(x);
+   invMatrix.invRotateY(y);
+   invMatrix.invRotateZ(z);
 }
 
 bool Instance::hit(const Ray& ray, ShadeRecord& sr) const {
