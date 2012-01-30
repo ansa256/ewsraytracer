@@ -17,6 +17,7 @@ public:
 
    void addObject(GeometryObject* obj);
    GeometryObject* getObject(const string& name);
+   void removeObject(GeometryObject* obj);
 
 protected:
    vector<GeometryObject*> objs;

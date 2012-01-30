@@ -110,6 +110,7 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addT
    else if(type == "mesh") {
       name = hash->getString("name");
       obj = MeshManager::instance().getMesh(name);
+      obj->setName(name);
    }
    else {
       return NULL;

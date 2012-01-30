@@ -18,7 +18,7 @@ FrameObject::FrameObject(Instance* i) : instance(i), position(), rotation() {
 void FrameObject::setup() {
    instance->reset();
    instance->rotate(rotation.x, rotation.y, rotation.z);
-   instance->setPosition(position);
+   instance->translate(position.x, position.y, position.z);
    instance->computeBBox();
 }
 
@@ -59,11 +59,10 @@ void Animation::loadAnimation(Hash* hash) {
    }
    else {
       GeometryObject* obj = GeometryManager::instance().getStorage()->getObject(objName);
-      Instance* instance = dynamic_cast<Instance*>(obj);
-      if(instance == NULL) {
-         fprintf(stderr, "Error: object %s must be of type Instance sice it is used in an animation\n", objName.c_str());
-         exit(1);
-      }
+      GeometryManager::instance().getStorage()->removeObject(obj);
+
+      Instance* instance = new Instance(obj);
+      GeometryManager::instance().getStorage()->addObject(instance);
       loadAnimationFrames(hash->getValue("frames")->getArray(), instance);
    }
 
