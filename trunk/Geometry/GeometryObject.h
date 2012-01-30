@@ -25,6 +25,7 @@ public:
 
    virtual bool isCompound() { return false; }
    string getName() const { return name; }
+   void setName(string n) { name = n; }
 
    static const double epsilon;
    bool doDelete;

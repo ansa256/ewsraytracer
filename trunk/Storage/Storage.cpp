@@ -25,3 +25,16 @@ GeometryObject* Storage::getObject(const string& name) {
    }
    return NULL;
 }
+
+void Storage::removeObject(GeometryObject* obj) {
+   if (obj->isCompound()) {
+      const vector<GeometryObject*>& objects = ((Compound*)obj)->getObjects();
+      for(CompoundIter it = objects.begin(); it != objects.end(); it++) {
+         removeObject(*it);
+      }
+   }
+   else {
+      vector<GeometryObject*>::iterator it = find(objs.begin(), objs.end(), obj);
+      objs.erase(it);
+   }
+}
