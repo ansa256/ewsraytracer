@@ -1,12 +1,3 @@
-/*
- *  Tracer.h
- *  RayTracer
- *
- *  Created by Eric Saari on 12/11/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #ifndef _TRACER_H_
 #define _TRACER_H_
 
@@ -18,14 +9,10 @@
 class Tracer {
 
 public:
-   Tracer() : bgColor(), texture(NULL), maxDepth(10) {}
-   virtual ~Tracer() {
-      if(texture != NULL) {
-         delete texture;
-      }
-   }
+   Tracer();
+   ~Tracer();
 
-   virtual Color traceRay(const Ray& ray, const int depth) = 0;
+   Color traceRay(const Ray& ray, const int depth);
 
    void setBackgroundColor(const Color& c) { bgColor = c; }
    void setBackgroundTexture(Texture* t) { texture = t; }

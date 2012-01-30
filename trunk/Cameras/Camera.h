@@ -41,10 +41,9 @@ private:
 
    int width;
    int height;
-   float viewPlaneDistance;
    
    float lensRadius;
-   float f;
+   float f, fDivV;
 
    int threadCount;
    int boxw;
