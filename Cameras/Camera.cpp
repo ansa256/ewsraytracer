@@ -1,7 +1,7 @@
 #include "Camera.h"
 #include "Parser/Parser.h"
 #include "Film.h"
-#include "Tracer/RayCast.h"
+#include "Tracer/Tracer.h"
 #include "Parser/Hash.h"
 #include "Math/Maths.h"
 #include <math.h>
@@ -37,7 +37,7 @@ void* renderThread(void* arg) {
 }
 
 Camera::Camera(string fname, int w, int h) : eye(), u(), v(), w(), 
-   tracer(new RayCast), surface(NULL), film(new Film(w, h)), width(w), height(h)
+   tracer(new Tracer), surface(NULL), film(new Film(w, h)), width(w), height(h)
 {
    pthread_mutex_init(&rectLock, NULL);
    threadCount = 1;
@@ -66,7 +66,7 @@ void Camera::setHash(Hash* h) {
    eye.set(h->getValue("eye")->getArray());
 
    float angle = h->getDouble("angle") / 2.0;
-   viewPlaneDistance = width * 0.5 / tan(angle * DEG_TO_RAD);
+   float viewPlaneDistance = width * 0.5 / tan(angle * DEG_TO_RAD);
 
    samplerHash = h->getValue("sampler")->getHash();
 
@@ -84,6 +84,7 @@ void Camera::setHash(Hash* h) {
    else {
       f = viewPlaneDistance;
    }
+   fDivV = f / viewPlaneDistance;
    
    if(h->contains("lensRadius")) {
       lensRadius = h->getDouble("lensRadius");
@@ -130,7 +131,6 @@ void Camera::renderBounds(const SamplerBounds& bounds) {
    Ray ray;
    Point2D lp;
    int nSamples;
-   float fDivV = f / viewPlaneDistance;
    
    Sampler* sampler = Sampler::createSampler(bounds, samplerHash);
    Sample* samples = new Sample[sampler->getNumSamples()];
