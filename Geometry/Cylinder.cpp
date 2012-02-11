@@ -45,7 +45,7 @@ bool Cylinder::hit(const Ray& ray, ShadeRecord& sr) const {
    double yHit = ray.origin.y + ray.direction.y * t;
 
    if(t > epsilon && minY <= yHit && yHit <= maxY && partCheck(ray, t)) {
-      if(ray.tHit > t) {
+      if(ray.tHit < t) {
          return false;
       }
       ray.tHit = t;
@@ -63,7 +63,7 @@ bool Cylinder::hit(const Ray& ray, ShadeRecord& sr) const {
    yHit = ray.origin.y + ray.direction.y * t;
 
    if(t > epsilon && minY <= yHit && yHit <= maxY && partCheck(ray, t)) {
-      if(ray.tHit > t) {
+      if(ray.tHit < t) {
          return false;
       }
       ray.tHit = t;
@@ -96,6 +96,7 @@ bool Cylinder::shadowHit(const Ray& ray) const {
    double yHit = ray.origin.y + ray.direction.y * t;
 
    if(t > epsilon && minY <= yHit && yHit <= maxY && partCheck(ray, t)) {
+      ray.tHit = t;
       return true;
    }
 
