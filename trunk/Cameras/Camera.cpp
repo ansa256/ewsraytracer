@@ -137,10 +137,8 @@ void Camera::renderBounds(const SamplerBounds& bounds) {
    
    while((nSamples = sampler->getSamples(samples)) > 0) {
       for(int i = 0; i < nSamples; i++) {
-         double x = samples[i].imageX - 0.5 * width;
-         x *= fDivV;
-         double y = samples[i].imageY - 0.5 * height;
-         y *= fDivV;
+         double x = (samples[i].imageX - 0.5 * width) * fDivV;
+         double y = (samples[i].imageY - 0.5 * height) * fDivV;
          
          Sampler::mapToDisk(samples[i].lensX, samples[i].lensY, &lp.x, &lp.y);
          lp *= lensRadius;
