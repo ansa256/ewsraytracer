@@ -5,9 +5,7 @@
 
 /**
  * Hash values:
- *    - center [ x y z ] - Center of the disk
- *    - normal [ x y z ] - Normal of the disk
- *    - radius <i>value</i> - Radius of the disk
+ *    - material {} Material hash
  */
 class Disk : public LightObject {
 
@@ -21,16 +19,6 @@ public:
 
    virtual Point3D sample(const Point3D& hitPoint, float u1, float u2, Vector3D& normal);
    virtual double pdf(const ShadeRecord& sr) const;
-
-private:
-   Point3D center;
-   Vector3D n;
-   float radius;
-   float radiusSquared;
-   double inverseArea;
-   Vector3D a, b;
-   float* samples;
-   int nSamples, idx;
 };
 
 #endif
