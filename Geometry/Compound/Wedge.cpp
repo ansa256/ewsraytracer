@@ -6,6 +6,7 @@
 #include "Geometry/Torus.h"
 #include "Geometry/Rectangle.h"
 #include "Geometry/Instance.h"
+#include "Geometry/GeometryManager.h"
 #include "Math/Maths.h"
 #include "Materials/Material.h"
 
@@ -47,6 +48,9 @@ void Wedge::setHash(Hash* hash) {
    build();
 
    material = Material::createMaterial(hash->getValue("material")->getHash());
+   for(CompoundIter it = objects.begin(); it != objects.end(); ++it) {
+      (*it)->setMaterial(material);
+   }
 }
 
 void Wedge::build() {
@@ -102,10 +106,10 @@ void Wedge::build() {
    }
 
    // Base spheres
-   addSphere(xc1, minY + bevelR, zc1, bevelR);
-   addSphere(xc2, minY + bevelR, zc2, bevelR);
-   addSphere(xc3, minY + bevelR, zc3, bevelR);
-   addSphere(xc4, minY + bevelR, zc4, bevelR);
+   objects.push_back(GeometryManager::createSphere(xc1, minY + bevelR, zc1, bevelR));
+   objects.push_back(GeometryManager::createSphere(xc2, minY + bevelR, zc2, bevelR));
+   objects.push_back(GeometryManager::createSphere(xc3, minY + bevelR, zc3, bevelR));
+   objects.push_back(GeometryManager::createSphere(xc4, minY + bevelR, zc4, bevelR));
 
    // Base cylinders
    Instance* baseCylinder1 = new Instance(new Cylinder(bevelR, 0.0, s2 - s1));
@@ -156,12 +160,12 @@ void Wedge::build() {
       Point3D p2(s2 * sinAngle1, minY + bevelR, s2 * cosAngle1);
       Vector3D a = p2 - p1;
       Vector3D b(0.0, maxY - minY - 2.0 * bevelR, 0.0);
-      objects.push_back(new Rectangle(p1, a, b));
+//      objects.push_back(new Rectangle(p1, a, b));
 
       p1.set(s1 * sinAngle2, minY + bevelR, s1 * cosAngle2);
       p2.set(s2 * sinAngle2, minY + bevelR, s2 * cosAngle2);
       a = p1 - p2;
-      objects.push_back(new Rectangle(p2, a, b));
+//      objects.push_back(new Rectangle(p2, a, b));
 
       // Cover Cylinders
       Cylinder* sideC1 = new Cylinder(innerR, minY + bevelR, maxY - bevelR);
@@ -176,10 +180,10 @@ void Wedge::build() {
    // TOP
 
    // Top spheres
-   addSphere(xc1, maxY - bevelR, zc1, bevelR);
-   addSphere(xc2, maxY - bevelR, zc2, bevelR);
-   addSphere(xc3, maxY - bevelR, zc3, bevelR);
-   addSphere(xc4, maxY - bevelR, zc4, bevelR);
+   objects.push_back(GeometryManager::createSphere(xc1, maxY - bevelR, zc1, bevelR));
+   objects.push_back(GeometryManager::createSphere(xc2, maxY - bevelR, zc2, bevelR));
+   objects.push_back(GeometryManager::createSphere(xc3, maxY - bevelR, zc3, bevelR));
+   objects.push_back(GeometryManager::createSphere(xc4, maxY - bevelR, zc4, bevelR));
 
    // Top cylinders
    Instance* topCylinder1 = new Instance(new Cylinder(bevelR, 0.0, s2 - s1));
@@ -278,11 +282,4 @@ void Wedge::build() {
       bbox.x1 = max(xc1, xc3);
       bbox.z1 = zc4 + bevelR;
    }
-}
-
-void Wedge::addSphere(double cx, double cy, double cz, double r) {
-   Instance* instance = new Instance(new Sphere());
-   instance->scale(r, r, r);
-   instance->translate(cx, cy, cz);
-   objects.push_back(instance);
 }

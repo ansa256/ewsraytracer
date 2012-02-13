@@ -14,11 +14,11 @@ public:
    void createStars();
    
 private:
+   void createBoxSide(string name, const Vector3D& translate, const Vector3D& rotate);
+
    int count;
    int halfSize;
-   int size;
-   
-   void createBoxSide(string name, const Point3D& origin, const Vector3D& a, const Vector3D& b);
+   int size;   
 };
 
 #endif

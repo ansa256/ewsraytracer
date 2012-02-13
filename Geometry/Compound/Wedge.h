@@ -28,7 +28,6 @@ public:
 
 private:
    void build();
-   void addSphere(double cx, double cy, double cz, double r);
 
    float innerR;
    float outerR;
