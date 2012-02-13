@@ -23,7 +23,10 @@ float Atmosphere::getAlpha(const ShadeRecord& sr, const Ray& ray) const {
 
    LightIter it = LightManager::instance().begin();
    ShadeRecord& sr2 = const_cast<ShadeRecord&>(sr);
-   Vector3D lightDir = (*it)->getLightDirection(sr2);
+//   Vector3D lightDir = (*it)->getLightDirection(sr2);
+   Vector3D lightDir;
+   float pdf;
+   (*it)->Sample_L(sr2, 0, 0, lightDir, pdf);
    alpha = clamp(pow(alpha, 4.0) * sr.normal.dot(lightDir) * 7.0, 0.0, 1.0);
    
    return alpha;
