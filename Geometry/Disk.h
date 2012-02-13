@@ -19,13 +19,12 @@ public:
    virtual bool hit(const Ray& ray, ShadeRecord& sr) const;
    virtual bool shadowHit(const Ray& ray) const;
 
-   virtual Point3D sample(const Point3D& hitPoint);
-   virtual Vector3D getNormal(const Point3D& point) const;
+   virtual Point3D sample(const Point3D& hitPoint, float u1, float u2, Vector3D& normal);
    virtual double pdf(const ShadeRecord& sr) const;
 
 private:
    Point3D center;
-   Vector3D normal;
+   Vector3D n;
    float radius;
    float radiusSquared;
    double inverseArea;

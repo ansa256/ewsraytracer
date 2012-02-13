@@ -169,7 +169,7 @@ void Sphere::setHash(Hash* hash) {
    material = Material::createMaterial(hash->getValue("material")->getHash());
 }
 
-Point3D Sphere::sample(const Point3D& hitPoint) {
+Point3D Sphere::sample(const Point3D& hitPoint, float u1, float u2, Vector3D& normal) {
    float x = samples[idx];
    float y = samples[idx+1];
    idx = (idx + 2) % (nSamples * 2);
@@ -189,13 +189,10 @@ Point3D Sphere::sample(const Point3D& hitPoint) {
       ray.tHit = (Point3D() - hitPoint).dot(ray.direction.normalize());
    }
 
-   return ray(ray.tHit);
-}
+   normal.set(hitPoint.x, hitPoint.y, hitPoint.z);
+   normal.normalize();
 
-Vector3D Sphere::getNormal(const Point3D& point) const {
-   Vector3D n(point.x, point.y, point.z);
-   n.normalize();
-   return n;
+   return ray(ray.tHit);
 }
 
 double Sphere::pdf(const ShadeRecord& sr) const {
