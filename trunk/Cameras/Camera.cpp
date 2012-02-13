@@ -176,7 +176,7 @@ void Camera::computeUVW(Hash* h) {
    }
    else if(h->contains("rotate")) {
       Array* r = h->getValue("rotate")->getArray();
-      rotate(r->at(0)->getDouble(), r->at(1)->getDouble(), r->at(2)->getDouble());
+      setRotation(r->at(0)->getDouble(), r->at(1)->getDouble(), r->at(2)->getDouble());
    }
    else {
       fprintf(stderr, "Must specify either lookat or rotate in camera configuration.\n");
@@ -184,7 +184,13 @@ void Camera::computeUVW(Hash* h) {
    }
 }
 
-void Camera::rotate(double x, double y, double z) {
+void Camera::translate(double x, double y, double z) {
+   eye.x += x;
+   eye.y += y;
+   eye.z += z;
+}
+
+void Camera::setRotation(double x, double y, double z) {
    Matrix m;
 
    m.rotateX(-x);
@@ -198,4 +204,16 @@ void Camera::rotate(double x, double y, double z) {
    u.normalize();
    v.normalize();
    w.normalize();
+}
+
+void Camera::rotate(double x, double y, double z) {
+   Matrix m(u, v, w);
+
+   m.rotateX(-x);
+   m.rotateY(-y);
+   m.rotateZ(-z);
+   
+   m.getRow(u, 0);
+   m.getRow(v, 1);
+   m.getRow(w, 2);
 }

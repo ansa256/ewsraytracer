@@ -23,8 +23,10 @@ public:
    void renderBounds(const SamplerBounds& bounds);
 
    void setPosition(const Point3D& loc) { eye = loc; }
+   void setRotation(double x, double y, double z);
    void setSurface(SDL_Surface* s) { surface = s; }
    void setThreadParameters(int tc, int w, int h);
+   void translate(double x, double y, double z);
    void rotate(double x, double y, double z);
 
    Hash* samplerHash;
