@@ -12,14 +12,16 @@ public:
    ~Direction();
 
    virtual void setHash(Hash* hash);
-   virtual Vector3D getLightDirection(ShadeRecord& sr);
    virtual bool inShadow(const Ray& ray, const ShadeRecord& sr);
 
-   virtual Color L(const ShadeRecord& sr);
+   virtual Color Sample_L(ShadeRecord& sr, float u1, float u2, Vector3D& lightDir, float& pdf) const;
+   virtual bool isDelta() const { return true; }
+   virtual float* getSamples();
 
 private:
    Color color;
    Vector3D direction;
+   float* samples;
 };
 
 #endif

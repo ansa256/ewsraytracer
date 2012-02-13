@@ -7,14 +7,18 @@
 
 PositionLight::PositionLight(float halfDistance) : Light(), color(1, 1, 1), location() {
    attenuationPower = LogN(2, halfDistance);
+   samples = new float[2];
+   samples[0] = samples[1] = 0.5;
 }
 
 PositionLight::PositionLight(const Point3D& loc, float halfDistance) : Light(), color(1, 1, 1), location(loc) {
    attenuationPower = LogN(2, halfDistance);
+   samples = new float[2];
+   samples[0] = samples[1] = 0.5;
 }
 
-Vector3D PositionLight::getLightDirection(ShadeRecord& sr) {
-   return (location - sr.hitPoint).normalize();
+PositionLight::~PositionLight() {
+   delete[] samples;
 }
 
 bool PositionLight::inShadow(const Ray& ray, const ShadeRecord& sr) {
@@ -36,7 +40,13 @@ void PositionLight::setHash(Hash* hash) {
    }
 }
 
-Color PositionLight::L(const ShadeRecord& sr) {
-//   double d = (location - sr.hitPoint).length();
-   return color; // pow(d, attenuationPower);
+Color PositionLight::Sample_L(ShadeRecord& sr, float u1, float u2, Vector3D& lightDir, float& pdf) const {
+   lightDir = location - sr.hitPoint;
+   lightDir.normalize();
+   pdf = 1.0;
+   return color;
+}
+
+float* PositionLight::getSamples() {
+   return samples;
 }

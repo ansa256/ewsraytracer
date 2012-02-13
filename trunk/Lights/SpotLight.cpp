@@ -6,10 +6,12 @@
 #include "Storage/Storage.h"
 
 SpotLight::SpotLight() : Light(), ls(1.0), color(1, 1, 1), cosWidth(0), cosFalloff(0), location(), direction() {
+   samples = new float[2];
+   samples[0] = samples[1] = 0.5;
 }
 
-Vector3D SpotLight::getLightDirection(ShadeRecord& sr) {
-   return -direction;
+SpotLight::~SpotLight() {
+   delete[] samples;
 }
 
 bool SpotLight::inShadow(const Ray& ray, const ShadeRecord& sr) {
@@ -37,13 +39,8 @@ void SpotLight::setHash(Hash* hash) {
    cosFalloff = cos(DEG_TO_RAD * falloff);
 }
 
-Color SpotLight::L(const ShadeRecord& sr) {
-   double f = falloff(sr);
-   return color * ls * f;
-}
-
-double SpotLight::falloff(const ShadeRecord& sr) const {
-   Vector3D v = sr.localHitPoint - location;
+double SpotLight::falloff(const Point3D& p) const {
+   Vector3D v = p - location;
    v.normalize();
    double cosTheta = v.dot(direction);
 
@@ -55,4 +52,15 @@ double SpotLight::falloff(const ShadeRecord& sr) const {
    }
    double delta = (cosTheta - cosWidth) / (cosFalloff - cosWidth);
    return delta * delta * delta * delta;
+}
+
+Color SpotLight::Sample_L(ShadeRecord& sr, float u1, float u2, Vector3D& lightDir, float& pdf) const {
+   lightDir = -direction;
+   pdf = 1.0;
+   double f = falloff(sr.hitPoint);
+   return color * ls * f;
+}
+
+float* SpotLight::getSamples() {
+   return samples;
 }

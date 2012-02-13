@@ -1,12 +1,3 @@
-/*
- *  AreaLight.h
- *  RayTracer
- *
- *  Created by Eric Saari on 12/20/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #ifndef _AREA_LIGHT_H_
 #define _AREA_LIGHT_H_
 
@@ -22,21 +13,18 @@ public:
    AreaLight();
    virtual ~AreaLight();
 
-   virtual Vector3D getLightDirection(ShadeRecord& sr);
    virtual void setHash(Hash* hash);
    virtual bool inShadow(const Ray& ray, const ShadeRecord& sr);
 
-   virtual Color L(const ShadeRecord& sr);
-   virtual float G(const ShadeRecord& sr);
-   virtual float pdf(const ShadeRecord& sr);
-   virtual int getNumLightSamples() const { return 5; }
+   virtual Color L(const ShadeRecord& sr, const Vector3D& wi, const Vector3D& normal) const;
+   virtual Color Sample_L(ShadeRecord& sr, float u1, float u2, Vector3D& lightDir, float& pdf) const;
+   virtual bool isDelta() const { return false; }
+   virtual float* getSamples();
 
 private:
-   LightObject* object;
    Material* material;
-//   Point3D samplePoint;
-//   Vector3D lightNormal;
-//   Vector3D wi;
+   LightObject* object;
+   float* samples;
 };
 
 #endif
