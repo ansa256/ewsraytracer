@@ -37,6 +37,8 @@ public:
    virtual void setHash(Hash* hash);
    virtual bool hit(const Ray& ray, ShadeRecord& sr) const;
    virtual bool shadowHit(const Ray& ray) const;
+   
+   virtual void setMaterial(Material* m);
 
 private:
    GeometryObject* object;
