@@ -21,8 +21,7 @@ public:
    virtual bool shadowHit(const Ray& ray) const;
    virtual void setHash(Hash* hash);
 
-   virtual Point3D sample(const Point3D& hitPoint);
-   virtual Vector3D getNormal(const Point3D& point) const;
+   virtual Point3D sample(const Point3D& hitPoint, float u1, float u2, Vector3D& normal);
    virtual double pdf(const ShadeRecord& sr) const;
 
 private:

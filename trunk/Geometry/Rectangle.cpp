@@ -4,76 +4,44 @@
 #include "Materials/Material.h"
 
 Rectangle::Rectangle() : LightObject() {
-   nSamples = 10;
-   idx = 0;
-   samples = new float[nSamples*2];
-   Sampler::LatinHyperCube(samples, nSamples, 2);
-}
-
-Rectangle::Rectangle(const Point3D& o, const Vector3D& _a, const Vector3D& _b) :
-   LightObject(),
-   origin(o),
-   a(_a),
-   b(_b)
-{
-   setup();
-   nSamples = 10;
-   idx = 0;
-   samples = new float[nSamples*2];
-   Sampler::LatinHyperCube(samples, nSamples, 2);
+   bbox.expand(Point3D(-1, -1, 0));
+   bbox.expand(Point3D(1, 1, 0));
 }
 
 Rectangle::~Rectangle() {
-   delete[] samples;
 }
 
 void Rectangle::setHash(Hash* hash) {
-   origin.set(hash->getValue("origin")->getArray());
-   a.set(hash->getValue("a")->getArray());
-   b.set(hash->getValue("b")->getArray());
-   setup();
+   bbox.expand(Point3D(-1, -1, 0));
+   bbox.expand(Point3D(1, 1, 0));
 
    material = Material::createMaterial(hash->getValue("material")->getHash());
 }
 
-void Rectangle::setup() {
-   normal = a.cross(b).normalize();
-
-   lengthASquared = a.length() * a.length();
-   lengthBSquared = b.length() * b.length();
-
-   inverseArea = 1.0 / (a.length() * b.length());
-
-   bbox.expand(origin);
-   bbox.expand(origin + a);
-   bbox.expand(origin + b);
-}
-
 bool Rectangle::hit(const Ray& ray, ShadeRecord& sr) const {
-   double t = (origin - ray.origin).dot(normal) / ray.direction.dot(normal);
+   double t = -ray.origin.z / ray.direction.z;
    if(t <= epsilon || t > ray.tHit) {
       return false;
    }
 
    Point3D p = ray(t);
-   Vector3D d = p - origin;
 
-   float ddota = d.dot(a);
-   if(ddota < 0.0 || ddota > lengthASquared) {
+   float ddota = 2.f * (p.x + 1.f);
+   if(ddota < 0.0 || ddota > 4.f) {
       return false;
    }
 
-   float ddotb = d.dot(b);
-   if(ddotb < 0.0 || ddotb > lengthBSquared) {
+   float ddotb = 2.f * (p.y + 1.f);
+   if(ddotb < 0.0 || ddotb > 4.f) {
       return false;
    }
 
    ray.tHit = t;
-   sr.normal = normal;
+   sr.normal.set(0, 0, 1);
    sr.localHitPoint = sr.hitPoint = p;
    sr.material = material;
-   sr.tu = ddota / lengthASquared;
-   sr.tv = ddotb / lengthBSquared;
+   sr.tu = ddota / 4.f;
+   sr.tv = ddotb / 4.f;
 
    return true;
 }
@@ -83,21 +51,20 @@ bool Rectangle::shadowHit(const Ray& ray) const {
       return false;
    }
 
-   double t = (origin - ray.origin).dot(normal) / ray.direction.dot(normal);
+   double t = -ray.origin.z / ray.direction.z;
    if(t <= epsilon) {
       return false;
    }
 
-   Point3D p = ray.origin + ray.direction * t;
-   Vector3D d = p - origin;
+   Point3D p = ray(t);
 
-   float ddota = d.dot(a);
-   if(ddota < 0.0 || ddota > lengthASquared) {
+   float ddota = 2.f * (p.x + 1.f);
+   if(ddota < 0.0 || ddota > 4.f) {
       return false;
    }
 
-   float ddotb = d.dot(b);
-   if(ddotb < 0.0 || ddotb > lengthBSquared) {
+   float ddotb = 2.f * (p.y + 1.f);
+   if(ddotb < 0.0 || ddotb > 4.f) {
       return false;
    }
 
@@ -105,17 +72,12 @@ bool Rectangle::shadowHit(const Ray& ray) const {
    return true;
 }
 
-Point3D Rectangle::sample(const Point3D& hitPoint) {
-   float x = samples[idx];
-   float y = samples[idx+1];
-   idx = (idx + 2) % (nSamples * 2);
-   return (origin + a * x + b * y);
-}
-
-Vector3D Rectangle::getNormal(const Point3D& point) const {
-   return normal;
+Point3D Rectangle::sample(const Point3D& hitPoint, float u1, float u2, Vector3D& normal) {
+   normal = normal;
+//   return (Point3D(-1, -1, 0) + a * u1 + b * u2);
+   return Point3D();
 }
 
 double Rectangle::pdf(const ShadeRecord& sr) const {
-   return inverseArea;
+   return 0.25;
 }
