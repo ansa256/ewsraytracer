@@ -8,7 +8,7 @@
 
 const float PDF = 1.0 / 2.0 * M_PI;
 
-Environment::Environment() : Light(), material(new Emissive()), samples(NULL), idx(0) {
+Environment::Environment() : Light(), material(new Emissive()), samples(NULL) {
 }
 
 Environment::~Environment() {
@@ -17,29 +17,24 @@ Environment::~Environment() {
 }
 
 void Environment::setHash(Hash* hash) {
-   material->setHash(hash);
-
-   numSamples = hash->getInteger("numSamples");
-   samples = new float[numSamples * 2];
-   Sampler::LatinHyperCube(samples, numSamples, 2);
-   
-   numLightSamples = hash->getInteger("numLightSamples");
+   material->setHash(hash);   
+   numLightSamples = hash->getInteger("numLightSamples");   
+   samples = new float[numLightSamples * 2];
 }
 
-Vector3D Environment::getLightDirection(ShadeRecord& sr) {
+Vector3D Environment::getLightDirection(const Vector3D& n, float u1, float u2) const {
    Vector3D u;
 
-   if(fabs(sr.normal.x) > fabs(sr.normal.y)) {
-      u.set(-sr.normal.z, 0.0, sr.normal.x);
+   if(fabs(n.x) > fabs(n.y)) {
+      u.set(-n.z, 0.0, n.x);
    }
    else {
-      u.set(0.0, sr.normal.z, -sr.normal.y);
+      u.set(0.0, n.z, n.y);
    }
-   Vector3D v = sr.normal.cross(u);
+   Vector3D v = n.cross(u);
 
-   Vector3D sp = Sampler::mapToHemisphere(samples[idx], samples[idx+1]);
-   idx = (idx + 2) % (numSamples * 2);
-   return u * sp.x + v * sp.y + sr.normal * sp.z;
+   Vector3D sp = Sampler::mapToHemisphere(u1, u2);
+   return u * sp.x + v * sp.y + n * sp.z;
 }
 
 bool Environment::inShadow(const Ray& ray, const ShadeRecord& sr) {
@@ -49,10 +44,17 @@ bool Environment::inShadow(const Ray& ray, const ShadeRecord& sr) {
    return false;
 }
 
-Color Environment::L(const ShadeRecord& sr) {
+Color Environment::Sample_L(ShadeRecord& sr, float u1, float u2, Vector3D& lightDir, float& pdf) const {
+   lightDir = getLightDirection(sr.normal, u1, u2);
+   pdf = PDF;
    return material->getLe(sr);
 }
 
-float Environment::pdf(const ShadeRecord& sr) {
-   return PDF;
+Color Environment::Le(const ShadeRecord& sr) const {
+   return material->getLe(sr);
+}
+
+float* Environment::getSamples() {
+   Sampler::LatinHyperCube(samples, numLightSamples, 2);
+   return samples;
 }

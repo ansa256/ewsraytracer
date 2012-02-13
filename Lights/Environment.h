@@ -14,16 +14,17 @@ public:
    ~Environment();
 
    virtual void setHash(Hash* hash);
-   virtual Vector3D getLightDirection(ShadeRecord& sr);
+   Vector3D getLightDirection(const Vector3D& normal, float u1, float u2) const;
    virtual bool inShadow(const Ray& ray, const ShadeRecord& sr);
 
-   virtual Color L(const ShadeRecord& sr);
-   float pdf(const ShadeRecord& sr);
+   virtual Color Sample_L(ShadeRecord& sr, float u1, float u2, Vector3D& lightDir, float& pdf) const;
+   virtual Color Le(const ShadeRecord& sr) const;
+   virtual bool isDelta() const { return false; }
+   float* getSamples();
 
 private:
    Material* material;
    float* samples;
-   int numSamples, idx;
 };
 
 #endif

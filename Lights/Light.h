@@ -14,15 +14,18 @@ public:
    Light() { numLightSamples = 1; }
    virtual ~Light() {}
 
-   virtual Vector3D getLightDirection(ShadeRecord& sr) = 0;
    virtual void setHash(Hash* hash) = 0;
    virtual bool inShadow(const Ray& ray, const ShadeRecord& sr) { return false; }
 
-   virtual Color L(const ShadeRecord& sr) { return BLACK; }
+   virtual Color L(const ShadeRecord& sr, const Vector3D& wi, const Vector3D& normal) const { return BLACK; }
    virtual float G(const ShadeRecord& sr) { return 1.0; }
-   virtual float pdf(const ShadeRecord& sr) { return 1.0; }
 
    int getNumLightSamples() const { return numLightSamples; }
+   virtual float* getSamples() = 0;
+   
+   virtual Color Sample_L(ShadeRecord& sr, float u1, float u2, Vector3D& lightDir, float& pdf) const = 0;
+   virtual Color Le(const ShadeRecord& sr) const { return BLACK; }
+   virtual bool isDelta() const = 0;
 
 protected:
    int numLightSamples;

@@ -18,15 +18,16 @@ class SpotLight : public Light {
 
 public:
    SpotLight();
-   virtual ~SpotLight() {}
+   virtual ~SpotLight();
    
-   virtual Vector3D getLightDirection(ShadeRecord& sr);
    virtual bool inShadow(const Ray& ray, const ShadeRecord& sr);
    virtual void setHash(Hash* hash);
-   virtual Color L(const ShadeRecord& sr);
+   virtual Color Sample_L(ShadeRecord& sr, float u1, float u2, Vector3D& lightDir, float & pdf) const;
+   virtual bool isDelta() const { return true; }
+   virtual float* getSamples();
 
 private:
-   double falloff(const ShadeRecord& sr) const;
+   double falloff(const Point3D& p) const;
 
    float ls;
    Color color;
@@ -35,6 +36,7 @@ private:
 
    Point3D location;
    Vector3D direction;
+   float* samples;
 };
 
 #endif

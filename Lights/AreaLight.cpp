@@ -5,31 +5,23 @@
 #include "Materials/Emissive.h"
 #include "Parser/Hash.h"
 #include "Storage/Storage.h"
+#include "Samplers/Sampler.h"
 
-AreaLight::AreaLight() : Light() {
-   material = new Emissive();
+AreaLight::AreaLight() : Light(), material(NULL), object(NULL), samples(NULL) {
 }
 
 AreaLight::~AreaLight() {
    delete material;
-}
-
-Vector3D AreaLight::getLightDirection(ShadeRecord& sr) {
-   sr.samplePoint = object->sample(sr.hitPoint);
-   sr.lightNormal = object->getNormal(sr.samplePoint);
-
-   sr.wi = sr.samplePoint - sr.hitPoint;
-   sr.wi.normalize();
-
-   return sr.wi;
+   delete[] samples;
 }
 
 void AreaLight::setHash(Hash* hash) {
+   material = new Emissive();
    material->setHash(hash);
 
    if(hash->contains("rectangle")) {
       Hash* rect = hash->getValue("rectangle")->getHash();
-      object = (LightObject*) GeometryManager::instance().createObject("rectangle", rect);
+      object = (LightObject*) GeometryManager::instance().createObject("rectangle", rect, false);
       object->ignoreShadow = true;
    }
    else if(hash->contains("disk")) {
@@ -43,13 +35,12 @@ void AreaLight::setHash(Hash* hash) {
       object->ignoreShadow = true;
    }
 
-   if(hash->contains("numLightSamples")) {
-      numLightSamples = hash->getInteger("numLightSamples");
-   }
+   numLightSamples = hash->getInteger("numLightSamples");
+   samples = new float[numLightSamples * 2];
 }
 
 bool AreaLight::inShadow(const Ray& ray, const ShadeRecord& sr) {
-   double ts = (sr.samplePoint - ray.origin).dot(ray.direction);
+   const double ts = (sr.samplePoint - ray.origin).dot(ray.direction);
 
    if(GeometryManager::instance().getStorage()->shadowHit(ray) && (ray.tHit < ts)) {
       return true;
@@ -57,22 +48,23 @@ bool AreaLight::inShadow(const Ray& ray, const ShadeRecord& sr) {
    return false;
 }
 
-Color AreaLight::L(const ShadeRecord& sr) {
-   float ndotd = -(sr.lightNormal).dot(sr.wi);
-   if(ndotd > 0.0) {
+Color AreaLight::L(const ShadeRecord& sr, const Vector3D& wi, const Vector3D& normal) const {
+   const float ndotwi = -normal.dot(wi);
+   if(ndotwi > 0.0) {
       return material->getLe(sr);
    }
    return BLACK;
 }
 
-float AreaLight::G(const ShadeRecord& sr) {
-//   float ndotd = sr.lightNormal.dot(-sr.wi);
-//   float d2 = sr.samplePoint.distanceSquared(sr.hitPoint);
-//   return ndotd / d2;
-   return 1.0;
+Color AreaLight::Sample_L(ShadeRecord& sr, float u1, float u2, Vector3D& lightDir, float& pdf) const {
+   Vector3D normal;
+   sr.samplePoint = object->sample(sr.hitPoint, u1, u2, normal);
+   lightDir = (sr.samplePoint - sr.hitPoint).normalize();
+   pdf = object->pdf(sr);
+   return L(sr, lightDir, normal);
 }
 
-float AreaLight::pdf(const ShadeRecord& sr) {
-//   return object->pdf(sr);
-return 1.0;
+float* AreaLight::getSamples() {
+   Sampler::LatinHyperCube(samples, numLightSamples, 2);
+   return samples;
 }
