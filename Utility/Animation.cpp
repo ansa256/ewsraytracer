@@ -104,7 +104,7 @@ void Animation::play() {
 
    for(size_t i = startFrame; i < endFrame; i++) {
       if(cameraFrames.size() > i) {
-         camera->rotate(cameraFrames[i]->rotation.x, cameraFrames[i]->rotation.y, cameraFrames[i]->rotation.z);
+         camera->setRotation(cameraFrames[i]->rotation.x, cameraFrames[i]->rotation.y, cameraFrames[i]->rotation.z);
          camera->setPosition(cameraFrames[i]->position);
       }
 

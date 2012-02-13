@@ -5,14 +5,10 @@ ShadeRecord::ShadeRecord() :
    hitPoint(),
    localHitPoint(),
    material(NULL),
-   dpdu(),
-   dpdv(),
+   samplePoint(),
    tu(0),
    tv(0),
-   depth(0),
-   samplePoint(),
-   lightNormal(),
-   wi()
+   depth(0)
 {
 }
 
@@ -21,12 +17,8 @@ ShadeRecord::ShadeRecord(const ShadeRecord& other) {
    hitPoint = other.hitPoint;
    localHitPoint = other.localHitPoint;
    material = other.material;
-   dpdu = other.dpdu;
-   dpdv = other.dpdv;
+   samplePoint = other.samplePoint;
    tu = other.tu;
    tv = other.tv;
    depth = other.depth;
-   samplePoint = other.samplePoint;
-   lightNormal = other.lightNormal;
-   wi = other.wi;
 }
