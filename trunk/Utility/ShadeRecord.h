@@ -1,12 +1,3 @@
-/*
- *  ShadeRecord.h
- *  RayTracer
- *
- *  Created by Eric Saari on 12/15/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #ifndef _SHADE_RECORD_H_
 #define _SHADE_RECORD_H_
 
@@ -14,7 +5,6 @@
 #include "Math/Point3D.h"
 
 class Material;
-class Tracer;
 
 class ShadeRecord {
 
@@ -27,14 +17,10 @@ public:
    Point3D localHitPoint;
    Material* material;
 
-   Vector3D dpdu, dpdv;
+   Point3D samplePoint;
+
    double tu, tv;
    int depth;
-
-   // The following are used by area lights
-   Point3D samplePoint;
-   Vector3D lightNormal;
-   Vector3D wi;
 };
 
 #endif
