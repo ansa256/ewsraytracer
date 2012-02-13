@@ -17,19 +17,17 @@ void StarBox::setHash(Hash* h) {
 
 void StarBox::createStars() {
    srand(0);
-   createBoxSide("yzNegX", Point3D(-halfSize, -halfSize, -halfSize), Vector3D(0.0, size, 0.0), Vector3D(0.0, 0.0, size));
-   createBoxSide("yzPosX", Point3D(halfSize, -halfSize, -halfSize), Vector3D(0.0, 0.0, size), Vector3D(0.0, size, 0.0));
-   createBoxSide("xyNegZ", Point3D(-halfSize, -halfSize, -halfSize), Vector3D(size, 0.0, 0.0), Vector3D(0.0, size, 0.0));
-   createBoxSide("xyPosZ", Point3D(-halfSize, -halfSize, halfSize), Vector3D(0.0, size, 0.0), Vector3D(size, 0.0, 0.0));
-   createBoxSide("xzNegY", Point3D(-halfSize, -halfSize, -halfSize), Vector3D(0.0, 0.0, size), Vector3D(size, 0.0, 0.0));
-   createBoxSide("xzPosY", Point3D(-halfSize, halfSize, -halfSize), Vector3D(size, 0.0, 0.0), Vector3D(0.0, 0.0, size));
+   createBoxSide("yzNegX", Vector3D(-halfSize, 0, 0), Vector3D(0, 90, 0));
+   createBoxSide("yzPosX", Vector3D(halfSize, 0, 0), Vector3D(0, -90, 0));
+   createBoxSide("xyNegZ", Vector3D(0, 0, -halfSize), Vector3D(0, 0, 0));
+   createBoxSide("xyPosZ", Vector3D(0, 0, halfSize), Vector3D(0, 180, 0));
+   createBoxSide("xzNegY", Vector3D(0, -halfSize, 0), Vector3D(-90, 0, 0));   
+   createBoxSide("xzPosY", Vector3D(0, halfSize, 0), Vector3D(90, 0, 0));
 }
 
-void StarBox::createBoxSide(string name, const Point3D& origin, const Vector3D& a, const Vector3D& b) {
-   SDL_Rect srect;
-   srect.w = srect.h = size;
-   SDL_Surface* surface = createSurface(srect);
-
+void StarBox::createBoxSide(string name, const Vector3D& translate, const Vector3D& rotate) {
+   SDL_Surface* surface = createSurface(size, size);
+   
    Uint32 color = SDL_MapRGBA(surface->format, 0, 0, 0, 255);
    SDL_FillRect(surface, NULL, color);
 
@@ -39,14 +37,14 @@ void StarBox::createBoxSide(string name, const Point3D& origin, const Vector3D& 
       float c = (float) rand() / (float) RAND_MAX;
       setPixel(surface, x, y, Color(c, c, c, 1.0));
    }
-
+   
    ImageTexture* texture = new ImageTexture();
    texture->setSurface(surface);
-
+   
    Emissive* em = new Emissive();
    em->setTexture(texture);
-
-   Rectangle* rect = new Rectangle(origin, a, b);
+   
+   GeometryObject* rect = GeometryManager::createRectangle(translate, size, size, rotate);
    rect->setMaterial(em);
    rect->ignoreShadow = true;
    GeometryManager::instance().getStorage()->addObject(rect);

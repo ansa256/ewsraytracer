@@ -1,6 +1,8 @@
 #ifndef _GEOMETRY_MANAGER_H_
 #define _GEOMETRY_MANAGER_H_
 
+#include "Math/Point3D.h"
+#include "Math/Vector3D.h"
 #include <map>
 #include <memory>
 #include <string>
@@ -23,6 +25,13 @@ public:
 
    Storage* getStorage() { return storage; }
    void setStorageConfig(Hash* h);
+
+   /**
+    * Create a sphere wrapped in an Instance object. Instance is used to center sphere to
+    * (cx, cy, cz) and scales it by r.
+    */
+   static GeometryObject* createSphere(double cx, double cy, double cz, double r);
+   static GeometryObject* createRectangle(const Vector3D& translate, double scalex, double scaley, const Vector3D& rotation);
 
 private:
    GeometryManager();

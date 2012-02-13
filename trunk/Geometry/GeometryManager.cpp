@@ -140,3 +140,18 @@ void GeometryManager::setStorageConfig(Hash* h) {
    }
    storage->setHash(h);
 }
+
+GeometryObject* GeometryManager::createSphere(double cx, double cy, double cz, double r) {
+   Instance* instance = new Instance(new Sphere());
+   instance->scale(r, r, r);
+   instance->translate(cx, cy, cz);
+   return instance;
+}
+
+GeometryObject* GeometryManager::createRectangle(const Vector3D& translate, double scalex, double scaley, const Vector3D& rotation) {
+   Instance* instance = new Instance(new Rectangle());
+   instance->scale(scalex, scaley, 1);
+   instance->rotate(rotation.x, rotation.y, rotation.z);
+   instance->translate(translate.x, translate.y, translate.z);
+   return instance;
+}
