@@ -61,6 +61,13 @@ void Instance::setHash(Hash* hash) {
    computeBBox();
 }
 
+void Instance::setMaterial(Material* m) {
+   material = m;
+   if(object != NULL) {
+      object->setMaterial(m);
+   }
+}
+
 void Instance::translate(double x, double y, double z) {
    fwdMatrix.translate(x, y, z);
    invMatrix.invTranslate(x, y, z);
