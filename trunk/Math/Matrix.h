@@ -1,12 +1,3 @@
-/*
- *  Matrix.h
- *  RayTracer
- *
- *  Created by Eric Saari on 1/1/11.
- *  Copyright 2011 __MyCompanyName__. All rights reserved.
- *
- */
-
 #ifndef _MATRIX_H_
 #define _MATRIX_H_
 
@@ -25,6 +16,8 @@ public:
    void set(const Vector3D& row1, const Vector3D& row2, const Vector3D& row3);
    void set(const Matrix& matrix);
    void setPosition(const Point3D& position);
+   
+   void getRow(Vector3D& v, uint8_t row) const;
 
    void translate(double x, double y, double z);
    void invTranslate(double x, double y, double z);

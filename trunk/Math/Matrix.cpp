@@ -1,12 +1,3 @@
-/*
- *  Matrix.cpp
- *  RayTracer
- *
- *  Created by Eric Saari on 1/1/11.
- *  Copyright 2011 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include "Matrix.h"
 #include "Math/Maths.h"
 
@@ -44,6 +35,16 @@ void Matrix::setPosition(const Point3D& position) {
    m[0][3] = position.x;
    m[1][3] = position.y;
    m[2][3] = position.z;
+}
+
+void Matrix::getRow(Vector3D& v, uint8_t row) const {
+   if(row > 2) {
+      fprintf(stderr, "Invalid value %d for row to getRow(). Must be between 0 and 2.\n", row);
+      exit(1);
+   }
+   v.x = m[row][0];
+   v.y = m[row][1];
+   v.z = m[row][2];
 }
 
 void Matrix::translate(double x, double y, double z) {
