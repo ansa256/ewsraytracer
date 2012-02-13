@@ -32,6 +32,7 @@ public:
     */
    static GeometryObject* createSphere(double cx, double cy, double cz, double r);
    static GeometryObject* createRectangle(const Vector3D& translate, double scalex, double scaley, const Vector3D& rotation);
+   static GeometryObject* createDisk(const Vector3D& translate, double scalex, double scaley, const Vector3D& rotation);
 
 private:
    GeometryManager();
