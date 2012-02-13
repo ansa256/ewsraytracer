@@ -155,3 +155,11 @@ GeometryObject* GeometryManager::createRectangle(const Vector3D& translate, doub
    instance->translate(translate.x, translate.y, translate.z);
    return instance;
 }
+
+GeometryObject* GeometryManager::createDisk(const Vector3D& translate, double scalex, double scaley, const Vector3D& rotation) {
+   Instance* instance = new Instance(new Disk());
+   instance->scale(scalex, scaley, 1);
+   instance->rotate(rotation.x, rotation.y, rotation.z);
+   instance->translate(translate.x, translate.y, translate.z);
+   return instance;
+}
