@@ -6,6 +6,7 @@
 #include "Textures/ImageTexture.h"
 #include "Parser/Hash.h"
 #include "Lights/Light.h"
+#include "Samplers/Sampler.h"
 
 Matte::Matte() : ambientBRDF(new Lambertian()), diffuseBRDF(new Lambertian()), kd(0.9f) {
 }
@@ -37,22 +38,24 @@ Color Matte::shade(ShadeRecord& sr, const Ray& ray) {
    if(normalMap != NULL) applyNormalMap(sr);
    Vector3D wo = ray.direction * -1;
    Color L = ambientBRDF->rho(sr, wo) * LightManager::instance().getAmbientLight(sr) * (1.f - kd);
+   Vector3D wi;
+   float pdf;
 
    for(LightIter it = LightManager::instance().begin(); it != LightManager::instance().end(); it++) {
       Color power;
       Vector3D wis;
-
+      
+      float* samples = (*it)->getSamples();
       for(int s = 0; s < (*it)->getNumLightSamples(); s++) {
-         Vector3D wi = (*it)->getLightDirection(sr);
+         Color c = (*it)->Sample_L(sr, samples[s * 2], samples[s * 2 + 1], wi, pdf);
          wis += wi;
          float ndotwi = sr.normal.dot(wi);
-
+         
          if(ndotwi > 0.0) {
             Ray shadowRay(sr.hitPoint, wi);
             bool inShadow = (*it)->inShadow(shadowRay, sr);
-
             if(!inShadow) {
-               power += (*it)->L(sr) * (*it)->G(sr) * ndotwi / (*it)->pdf(sr);
+               power += c * (*it)->G(sr) * ndotwi / pdf;
             }
          }
       }
