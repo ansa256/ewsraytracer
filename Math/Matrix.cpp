@@ -1,5 +1,6 @@
 #include "Matrix.h"
 #include "Math/Maths.h"
+#include <stdio.h>
 
 Matrix::Matrix() {
    setIdentity();

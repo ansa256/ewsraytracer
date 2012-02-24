@@ -1,6 +1,7 @@
 #include "Storage.h"
 #include "Geometry/GeometryObject.h"
 #include "Geometry/Compound/Compound.h"
+#include <algorithm>
 
 Storage::Storage() : objs() {}
 
