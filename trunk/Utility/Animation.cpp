@@ -9,6 +9,7 @@
 #include "Cameras/Camera.h"
 #include "Utility/SDL_Utility.h"
 #include "Storage/Storage.h"
+#include <limits>
 
 typedef vector<FrameObject*>::const_iterator FrameObjectIter;
 
