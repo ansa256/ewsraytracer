@@ -1,42 +1,51 @@
-sphere {
+instance {
+
+transforms [
+   "scale"    [ 6.37814 6.37814 6.37814 ]
+   "rotate"   [ 30.0 0.0 0.0 ]
+]
+
+object {
+   type  "sphere"
    name   "surface"
-   center [ 0.0 0.0 0.0 ]
-   radius 6.37814 
    
    material {
       type  "phong"
       kd 1.0
-      ks 0.1
+      ks 0.02
       exp 20.0
 
       texture {
          type     "tinstance"
-         scale    [ 6.37814 6.37814 6.37814 ]
-         rotate   [ 0.0 105.0 0.0 ]
+         transforms [
+            "rotate"   [ 0.0 115.0 20.0 ]
+         ]
 
          texture {
             type     "image"
-            filename "resources/earth/8081_earthmap4k.jpg"
+            filename "resources/earth2/world3.png"
             mapping  "sphere"
          }
       }
 
       normalMap {
          type     "tinstance"
-         scale    [ 6.37814 6.37814 6.37814 ]
-         rotate   [ 0.0 105.0 0.0 ]
+         transforms [
+            "rotate"   [ 0.0 115.0 20.0 ]
+         ]
 
          texture {
             type     "image"
-            filename "resources/earth/earthNormalMap_2048.png"
+            filename "resources/earth2/normal.png"
             mapping  "sphere"
          }
       }
       
       specularMask {
          type     "tinstance"
-         scale    [ 6.37814 6.37814 6.37814 ]
-         rotate   [ 0.0 105.0 0.0 ]
+         transforms [
+            "rotate"   [ 0.0 115.0 20.0 ]
+         ]
 
          texture {
             type     "image"
@@ -46,11 +55,17 @@ sphere {
       }
    }
 }
+}
 
-sphere {
+instance {
+
+transforms [
+   "scale"    [ 6.38 6.38 6.38 ]
+]
+
+object {
+   type  "sphere"
    name   "clouds"
-   center [ 0.0 0.0 0.0 ]
-   radius 6.4
    
    material {
       type  "matte"
@@ -58,23 +73,30 @@ sphere {
 
       texture {
          type     "tinstance"
-         scale    [ 6.42 6.42 6.42 ]
-         rotate   [ 0.0 105.0 0.0 ]
+         transforms [
+            "rotate"   [ 0.0 115.0 20.0 ]
+         ]
 
          texture {
             type     "image"
-            filename "resources/earth/8081_earthhiresclouds4K.jpg"
+            filename "resources/earth2/clouds.png"
             mapping  "sphere"
-	    colorAsAlpha 1
+	         colorAsAlpha 1
          }
       }
    }
-} 
+}
+}
 
-sphere {
+instance {
+
+transforms [
+   "scale"  [ 6.45 6.45 6.45 ]
+]
+
+object {
+   type  "sphere"
    name   "atmosphere"
-   center [ 0.0 0.0 0.0 ]
-   radius 6.6
    
    material {
       type  "atmosphere"
@@ -86,4 +108,5 @@ starBox {
    name     "stars"
    count    10000
    halfSize 1000
+}
 }
