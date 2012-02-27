@@ -8,7 +8,5 @@ Color PerfectSpecular::sample_f(const ShadeRecord& sr, const Vector3D& wo, Vecto
 
    // Set wi = the reflection of wo throught the surface normal
    wi = -wo + sr.normal * 2.0 * ndotwo;
-//   return color * kr / fabs(sr.normal.dot(wi));
-   float ndotwi = sr.normal.dot(wi);
-   return color * fresnelDielectic(ndotwi, 1.f, 1.f) / fabs(ndotwi);
+   return color * kr / fabs(sr.normal.dot(wi));
 }
