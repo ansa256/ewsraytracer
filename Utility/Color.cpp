@@ -97,6 +97,15 @@ bool Color::operator== (const Color& c) const {
    return true;
 }
 
+Array* Color::toArray() const {
+   Array* a = new Array();
+   a->push_back(new Value(red));
+   a->push_back(new Value(green));
+   a->push_back(new Value(blue));
+   a->push_back(new Value(alpha));
+   return a;
+}
+
 void Color::normalize() {
    red = min(red, 1.0f);
    green = min(green, 1.0f);

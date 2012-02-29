@@ -24,6 +24,8 @@ public:
    Color operator*(const Color& c) const;
    Color operator/(const float a) const;
    Color operator+(const Color& c) const;
+   
+   Array* toArray() const;
 
    void normalize();
 
