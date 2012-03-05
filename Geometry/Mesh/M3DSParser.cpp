@@ -4,6 +4,7 @@
 #include "utility/3dschunk.h"
 #include "Materials/Matte.h"
 #include "Materials/Phong.h"
+#include "Materials/Metal.h"
 #include "Parser/Hash.h"
 #include "Storage/KdTree.h"
 #include "Storage/Grid.h"
@@ -11,17 +12,6 @@
 
 // Include this line to see output of unprocessed chunks
 //#define PRINT_UNPROCESSED
-
-MaterialProps::MaterialProps() :
-   name(""),
-   ambient(),
-   diffuse(),
-   specular(NULL),
-   specHighlight(100.f),
-   highlightPercent(0.f),
-   texMap("")
-{
-}
 
 M3DSParser::M3DSParser() : scale(1.0), textureDir(""), storage(NULL), reverse(false), applyNormalMap(false) {
 }
@@ -220,7 +210,11 @@ void M3DSParser::processTriMeshChunk(int nBytes, string name) {
 void M3DSParser::processMaterialChunk(size_t nBytes) {
    int bytesRead = 0;
 
-   MaterialProps props;
+   Hash* props = new Hash();
+   string name;
+   short shade = 1;
+   Color specColor;
+   float highlightPercent = 1;
 
    while(bytesRead < nBytes) {
       uint16 chunkType = readUshortLE(in);
@@ -229,29 +223,37 @@ void M3DSParser::processMaterialChunk(size_t nBytes) {
       bytesRead += chunkSize;
 
       if (chunkType == M3DCHUNK_MATERIAL_NAME) {
-         props.name = readString(in);
+         name = readString(in);
       }
       else if (chunkType == M3DCHUNK_MATERIAL_AMBIENT) {
-         props.ambient = processColorChunk(contentSize);
+         Color c = processColorChunk(contentSize);
+         Value* v = new Value(c.toArray());
+         props->addValue("ambientColor", *v);
       }
       else if (chunkType == M3DCHUNK_MATERIAL_DIFFUSE) {
-         props.diffuse = processColorChunk(contentSize);
+         Color c = processColorChunk(contentSize);
+         Value* v = new Value(c.toArray());
+         props->addValue("color", *v);
       }
       else if (chunkType == M3DCHUNK_MATERIAL_SPECULAR) {
-         props.specular = new Color(processColorChunk(contentSize));
+         specColor = processColorChunk(contentSize);
       }
       else if (chunkType == M3DCHUNK_MATERIAL_SHININESS) {
-         processPercentageChunk(contentSize, props.specHighlight);
+         Value* v = new Value(processPercentageChunk(contentSize));
+         props->addValue("exp", *v);
       }
       else if (chunkType == M3DCHUNK_MATERIAL_SHIN2PCT) {
-         processPercentageChunk(contentSize, props.highlightPercent);
+         highlightPercent = processPercentageChunk(contentSize);
       }
       else if (chunkType == M3DCHUNK_MATERIAL_SHADING) {
-         short shade = readUshortLE(in);
-         printf("SHADING = %d\n", shade);
+         shade = readUshortLE(in);
       }
       else if (chunkType == M3DCHUNK_MATERIAL_TEXMAP) {
-         props.texMap = processTexmapChunk(contentSize);
+         string texture = processTexmapChunk(contentSize);
+         Value* v = new Value(texture);
+         props->addValue("textureFile", *v);
+         
+         checkForNormalMap(props, texture);
       }
 //      else if (chunkType == M3DCHUNK_MATERIAL_TRANSPARENCY) {
 //         float p;
@@ -264,61 +266,55 @@ void M3DSParser::processMaterialChunk(size_t nBytes) {
          skipBytes(contentSize);
       }
    }
+   
+   specColor *= highlightPercent;
+   Value v(specColor.toArray());
+   props->addValue("specColor", v);
+   
+   Material* material;
 
-   if(props.specular != NULL) {
-      Color specColor = *props.specular * props.highlightPercent;
-
-      Phong* material = new Phong();
-      material->setAmbientColor(props.ambient);
-      material->setDiffuseColor(props.diffuse);
-      material->setSpecularColor(specColor);
-      material->setSpecularHighlight(props.specHighlight);
-      setMaterialTextures(material, props);
-      materials[props.name] = material;
+   if(shade == 1) {
+      material = new Matte();
    }
    else {
-      Matte* material = new Matte();
-      material->setAmbientColor(props.ambient);
-      material->setColor(props.diffuse);
-      setMaterialTextures(material, props);
-      materials[props.name] = material;
+      material = new Phong();
    }
+
+   material->setHash(props);
+   materials[name] = material;
 
    if(bytesRead != nBytes) {
       fprintf(stderr, "In processMaterialChunk expected %lu bytes but read %d\n", nBytes, bytesRead);
    }
 }
 
-void M3DSParser::setMaterialTextures(Material* material, const MaterialProps& props) const {
-   if(props.texMap.length() > 0) {
-      material->setTexture(props.texMap);
-
-      if(applyNormalMap) {
-         // Generate nornal map file name
-         string normalMap = props.texMap.substr(0, props.texMap.length() - 4) + "Normal.bmp";
-
-         // Check if normal map file exists
-         ifstream inp;
-         inp.open(normalMap.c_str(), ifstream::in);
-         if(!inp.fail()) {
-            inp.close();
-            material->setNormalMap(normalMap);
-         }
-         inp.clear(ios::failbit);
+void M3DSParser::checkForNormalMap(Hash* props, string texMap) const {
+   if(applyNormalMap) {
+      // Generate nornal map file name
+      string normalMap = texMap.substr(0, texMap.length() - 4) + "Normal.bmp";
+      
+      // Check if normal map file exists
+      ifstream inp;
+      inp.open(normalMap.c_str(), ifstream::in);
+      if(!inp.fail()) {
+         inp.close();
+         Value v(normalMap);
+         props->addValue("normalMapFile", v);
       }
+      inp.clear(ios::failbit);
    }
 }
 
 Color M3DSParser::processColorChunk(int nBytes) {
    int bytesRead = 0;
    Color color;
-
+   
    while (bytesRead < nBytes) {
       uint16 chunkType = readUshortLE(in);
       int chunkSize = readIntLE(in);
       int contentSize = chunkSize - 6;
       bytesRead += chunkSize;
-
+      
       if (chunkType == M3DCHUNK_COLOR_24) {
          readColor(&color);
       }
@@ -332,16 +328,17 @@ Color M3DSParser::processColorChunk(int nBytes) {
          skipBytes(contentSize);
       }
    }
-
+   
    if(bytesRead != nBytes) {
       fprintf(stderr, "In processColorChunk expected %d bytes but read %d\n", nBytes, bytesRead);
    }
-
+   
    return color;
 }
 
-void M3DSParser::processPercentageChunk(int nBytes, float& percent) {
+float M3DSParser::processPercentageChunk(int nBytes) {
    int bytesRead = 0;
+   float percent;
    while (bytesRead < nBytes) {
       uint16 chunkType = readUshortLE(in);
       int chunkSize = readIntLE(in);
@@ -366,6 +363,7 @@ void M3DSParser::processPercentageChunk(int nBytes, float& percent) {
    if(bytesRead != nBytes) {
       fprintf(stderr, "In processPercentageChunk expected %d bytes but read %d\n", nBytes, bytesRead);
    }
+   return percent;
 }
 
 string M3DSParser::processTexmapChunk(int nBytes) {
@@ -447,8 +445,6 @@ void M3DSParser::processFaceArrayChunk(int nBytes, Mesh* mesh) {
             uint16 fidx = readUshortLE(in);
             mesh->setFaceMaterial(fidx, materials[materialName]);
          }
-
-//         mesh->setMaterial(materials[materialName]);
       }
       else if(chunkType == M3DCHUNK_MESH_SMOOTH_GROUP) {
          for(FaceIter it = mesh->facesBegin(), end = mesh->facesEnd(); it != end; it++) {
@@ -479,7 +475,7 @@ void M3DSParser::readColor(Color* color) {
    unsigned char r = readChar(in);
    unsigned char g = readChar(in);
    unsigned char b = readChar(in);
-
+   
    color->set((float) r / 255.0f, (float) g / 255.0f, (float) b / 255.0f);
 }
 

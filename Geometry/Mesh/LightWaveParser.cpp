@@ -186,7 +186,7 @@ int LightWaveParser::parseSurface() {
    }
 
    color *= diffuse;
-   materialMap[sname]->setColor(color.red, color.green, color.blue);
+//   materialMap[sname]->setColor(color.red, color.green, color.blue);
 
    return count;
 }

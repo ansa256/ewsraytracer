@@ -228,6 +228,7 @@ void WavefrontParser::loadMaterials(string fname) {
    string s;
    bool done = false;
    Phong* material = NULL;
+   Hash* props = new Hash();
 
    while(!done) {
       getNextLine(in, line);
@@ -239,22 +240,26 @@ void WavefrontParser::loadMaterials(string fname) {
          materials[name] = material;
       }
       else if(strncmp(line.c_str(), "Kd", 2) == 0) {
-         float r, g, b;
-         strstr >> s >> r >> g >> b;
-         material->setDiffuseColor(Color(r, g, b));
+         Color c;
+         strstr >> s >> c.red >> c.green >> c.blue;
+         Value* v = new Value(c.toArray());
+         props->addValue("color", *v);
       }
       else if(strncmp(line.c_str(), "Ka", 2) == 0) {
-         float r, g, b;
-         strstr >> s >> r >> g >> b;
-         material->setAmbientColor(Color(r, g, b));
+         Color c;
+         strstr >> s >> c.red >> c.green >> c.blue;
+         Value* v = new Value(c.toArray());
+         props->addValue("ambientColor", *v);
       }
       else if(strncmp(line.c_str(), "map_Kd", 6) == 0) {
-         material->setTexture(textureDir + line.substr(7));
+         Value* v = new Value(textureDir + line.substr(7));
+         props->addValue("textureFile", *v);
       }
 
       done = line.empty();
    }
 
    in.close();
+   material->setHash(props);
    useMaterials = true;
 }
