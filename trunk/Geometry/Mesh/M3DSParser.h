@@ -15,18 +15,6 @@ class Hash;
 class Mesh;
 class Material;
 
-struct MaterialProps {
-   string name;
-   Color ambient;
-   Color diffuse;
-   Color* specular;
-   float specHighlight;
-   float highlightPercent;
-   string texMap;
-
-   MaterialProps();
-};
-
 class M3DSParser {
 
 public:
@@ -44,7 +32,7 @@ private:
    void processTriMeshChunk(int nBytes, string name);
    void processMaterialChunk(size_t nBytes);
    Color processColorChunk(int nBytes);
-   void processPercentageChunk(int nBytes, float& percent);
+   float processPercentageChunk(int nBytes);
    void processFaceArrayChunk(int nBytes, Mesh* mesh);
    string processTexmapChunk(int nBytes);
 
@@ -55,7 +43,7 @@ private:
 
    void skipBytes(size_t count);
 
-   void setMaterialTextures(Material* material, const MaterialProps& props) const;
+   void checkForNormalMap(Hash* props, string texMap) const;
 
    double scale;
    string textureDir;
