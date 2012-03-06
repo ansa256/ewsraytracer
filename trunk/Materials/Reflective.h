@@ -24,7 +24,6 @@ public:
 
    virtual Color shade(ShadeRecord& sr, const Ray& ray);
    virtual void setHash(Hash* hash);
-   virtual void setColor(float r, float g, float b);
 
 private:
    PerfectSpecular* psBRDF;

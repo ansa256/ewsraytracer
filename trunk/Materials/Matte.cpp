@@ -23,6 +23,10 @@ void Matte::setHash(Hash* hash) {
       ambientBRDF->setTexture(Texture::createTexture(hash->getValue("texture")->getHash()));
       diffuseBRDF->setTexture(Texture::createTexture(hash->getValue("texture")->getHash()));
    }
+   else if(hash->contains("textureFile")) {
+      setTexture(hash->getString("textureFile"));
+   }
+
    if(hash->contains("color")) {
       Array* a = hash->getValue("color")->getArray();
       ambientBRDF->setColor(Color(a));
@@ -71,20 +75,6 @@ Color Matte::shade(ShadeRecord& sr, const Ray& ray) {
 
 float Matte::getAlpha(const ShadeRecord& sr, const Ray& ray) const {
    return diffuseBRDF->getAlpha(sr);
-}
-
-void Matte::setColor(float r, float g, float b) {
-   ambientBRDF->setColor(Color(r, g, b));
-   diffuseBRDF->setColor(Color(r, g, b));
-}
-
-void Matte::setColor(const Color& c) {
-   ambientBRDF->setColor(c);
-   diffuseBRDF->setColor(c);
-}
-
-void Matte::setAmbientColor(const Color& c) {
-   ambientBRDF->setColor(c);
 }
 
 void Matte::setTexture(string texture) {

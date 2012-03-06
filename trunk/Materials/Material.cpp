@@ -42,14 +42,14 @@ Material* Material::createMaterial(Hash* hash) {
    if(hash->contains("normalMap")) {
       material->normalMap = Texture::createTexture(hash->getValue("normalMap")->getHash());
    }
+   
+   if(hash->contains("normalMapFile")) {
+      ImageTexture* tex = new ImageTexture();
+      tex->setTextureFile(hash->getString("normalMapFile"));
+      material->normalMap = tex;
+   }
 
    return material;
-}
-
-void Material::setNormalMap(string texName) {
-   ImageTexture* tex = new ImageTexture();
-   tex->setTextureFile(texName);
-   normalMap = tex;
 }
 
 void Material::applyNormalMap(ShadeRecord& sr) {

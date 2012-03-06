@@ -26,13 +26,9 @@ public:
    virtual void setHash(Hash* hash);
    virtual float getAlpha(const ShadeRecord& sr, const Ray& ray) const;
 
-   virtual void setColor(float r, float g, float b);
-   virtual void setTexture(string texture);
+private:   
+   void setTexture(string texture);
 
-   void setAmbientColor(const Color& c);
-   void setColor(const Color& c);
-
-private:
    Lambertian* ambientBRDF;
    Lambertian* diffuseBRDF;
    float kd;

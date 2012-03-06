@@ -30,10 +30,6 @@ public:
    virtual Color getLe(const ShadeRecord& sr) const { return BLACK; }
    virtual float getAlpha(const ShadeRecord& sr, const Ray& ray) const { return 1.0; }
 
-   virtual void setColor(float r, float g, float b) = 0;
-   virtual void setTexture(string texture) {}
-
-   void setNormalMap(string texName);
    void applyNormalMap(ShadeRecord& sr);
 
 protected:

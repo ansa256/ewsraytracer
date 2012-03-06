@@ -25,7 +25,11 @@ void Phong::setHash(Hash* hash) {
       ambientBRDF->setTexture(Texture::createTexture(hash->getValue("texture")->getHash()));
       diffuseBRDF->setTexture(Texture::createTexture(hash->getValue("texture")->getHash()));
    }
-   else if(hash->contains("color")) {
+   else if(hash->contains("textureFile")) {
+      setTexture(hash->getString("textureFile"));
+   }
+
+   if(hash->contains("color")) {
       Array* a = hash->getValue("color")->getArray();
       ambientBRDF->setColor(Color(a));
       diffuseBRDF->setColor(Color(a));
@@ -35,8 +39,13 @@ void Phong::setHash(Hash* hash) {
       ambientBRDF->setColor(Color(hash->getValue("ambientColor")->getArray()));
    }
 
-   float ks = hash->getDouble("ks", 0.1);
-   specularBRDF->setColor(ks, ks, ks);
+   if(hash->contains("specColor")) {
+      specularBRDF->setColor(Color(hash->getValue("specColor")->getArray()));
+   }
+   else {
+      float ks = hash->getDouble("ks", 0.1);
+      specularBRDF->setColor(Color(ks, ks, ks));
+   }
    specularBRDF->setExp(hash->getDouble("exp"));
 
    if(hash->contains("specularMask")) {
@@ -80,13 +89,6 @@ Color Phong::shade(ShadeRecord& sr, const Ray& ray) {
    return L;
 }
 
-void Phong::setColor(float r, float g, float b) {
-   Color c(r, g, b);
-   ambientBRDF->setColor(c);
-   diffuseBRDF->setColor(c);
-   specularBRDF->setColor(c);
-}
-
 float Phong::getAlpha(const ShadeRecord& sr, const Ray& ray) const {
    return diffuseBRDF->getAlpha(sr);
 }
@@ -101,18 +103,3 @@ void Phong::setTexture(string texture) {
    diffuseBRDF->setTexture(tex);
 }
 
-void Phong::setAmbientColor(const Color& c) {
-   ambientBRDF->setColor(c);
-}
-
-void Phong::setDiffuseColor(const Color& c) {
-   diffuseBRDF->setColor(c);
-}
-
-void Phong::setSpecularColor(const Color& c) {
-   specularBRDF->setColor(c);
-}
-
-void Phong::setSpecularHighlight(float sh) {
-   specularBRDF->setExp(sh);
-}
