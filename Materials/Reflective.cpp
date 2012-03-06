@@ -28,7 +28,3 @@ Color Reflective::shade(ShadeRecord& sr, const Ray& ray) {
 //   L += fr * sr.tracer->traceRay(reflectedRay, sr.depth+1) * sr.normal.dot(wi);
    return L;
 }
-
-void Reflective::setColor(float r, float g, float b) {
-   psBRDF->setColor(Color(r, g, b));
-}

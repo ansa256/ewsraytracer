@@ -1,12 +1,3 @@
-/*
- *  Emissive.cpp
- *  RayTracer
- *
- *  Created by Eric Saari on 12/20/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include "Emissive.h"
 #include "Parser/Hash.h"
 #include "Textures/Texture.h"
@@ -38,13 +29,6 @@ Color Emissive::getLe(const ShadeRecord& sr) const {
       return texture->getColor(sr) * ls;
    }
    return color * ls;
-}
-
-void Emissive::setColor(float r, float g, float b) {
-   color.set(r, g, b);
-}
-
-void Emissive::setDiffuse(float d) {
 }
 
 void Emissive::setTexture(Texture* tex) {

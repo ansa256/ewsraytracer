@@ -1,12 +1,3 @@
-/*
- *  Emissive.h
- *  RayTracer
- *
- *  Created by Eric Saari on 12/20/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #ifndef _EMISSIVE_H_
 #define _EMISSIVE_H_
 
@@ -23,9 +14,6 @@ public:
    virtual Color shade(ShadeRecord& sr, const Ray& ray);
    virtual void setHash(Hash* hash);
    virtual Color getLe(const ShadeRecord& sr) const;
-
-   virtual void setColor(float r, float g, float b);
-   virtual void setDiffuse(float d);
 
    void setTexture(Texture* tex);
 
