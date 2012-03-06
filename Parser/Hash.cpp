@@ -53,7 +53,7 @@ double Hash::getDouble(const string &key, double def) const {
 string Hash::getString(const string& key, const string& def) const {
    Value *v = getValue(key);
    if(v == NULL || v->getType() != Value::StringType) {
-      return "";
+      return def;
    }
    return v->getString();
 }
