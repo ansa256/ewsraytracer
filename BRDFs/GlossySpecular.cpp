@@ -11,10 +11,6 @@ GlossySpecular::~GlossySpecular() {
    }
 }
 
-void GlossySpecular::setColor(const float r, const float g, const float b) {
-   color.set(r, g, b);
-}
-
 Color GlossySpecular::f(const ShadeRecord& sr, const Vector3D& wo, const Vector3D& wi) const {
    if(specularMask != NULL) {
       Color c = specularMask->getColor(sr);

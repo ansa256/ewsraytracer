@@ -16,7 +16,6 @@ public:
 
    void setExp(const float e) { exp = e; }
    void setColor(const Color& c) { color = c; }
-   void setColor(const float r, const float g, const float b);
    void setSpecularMask(Texture* mask) { specularMask = mask; }
 
 private:
