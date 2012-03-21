@@ -59,28 +59,16 @@ void run() {
 
 void drawShapes(SDL_Surface* surf) {
    Color color(0, 0, 0, 0), pColor(0, 0, 0, 0);
-//   int div = 0;
    Film film(500, 500);
+   float step = 0.5;
 
-   for(int x = 0; x < 500; x++) {
-      for(int y = 0; y < 500; y++) {
-         for(float sx = x; sx < x+1; sx += 0.1) {
-            for(float sy = y; sy < y+1; sy += 0.1) {
-               for(ShapeIter it = shapes.begin(); it != shapes.end(); ++it) {
-                  if((*it)->hit(sx, sy, pColor)) {
-                     film.addSample(sx, sy, pColor);
-//                     color += pColor;
-//                     div++;
-                  }
-               }
+   for(float x = 0; x < 500; x += step) {
+      for(float y = 0; y < 500; y += step) {
+         for(ShapeIter it = shapes.begin(); it != shapes.end(); ++it) {
+            if((*it)->hit(x, y, pColor)) {
+               film.addSample(x, y, pColor);
             }
          }
-         
-//         color = color / div;
-//         Uint8 *p = (Uint8 *)surf->pixels + y * surf->pitch + x * surf->format->BytesPerPixel;
-//         *(Uint32*)p = SDL_MapRGBA(surf->format, color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-//         color.set(0, 0, 0, 0);
-//         div = 0;
       }
    }
    
@@ -100,7 +88,6 @@ int main(int argc, char **argv) {
    SDL_FillRect(surface, NULL, black);
    
    shapes.push_back(new Circle(250, 250, 200));
-//   shapes.push_back(new Circle(0, 0, 100));
    shapes.push_back(new Line(Point2D(0, 0), 100, 30));
    shapes.push_back(new Line(Point2D(0, 0), 100, 45));
    shapes.push_back(new Line(Point2D(0, 0), 100, 60));
