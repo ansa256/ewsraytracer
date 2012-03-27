@@ -38,6 +38,7 @@ Color& Color::operator+= (const Color& c) {
    red += c.red;
    green += c.green;
    blue += c.blue;
+   alpha += c.alpha;
    return *this;
 }
 
@@ -45,6 +46,7 @@ Color& Color::operator+=(const float a) {
    red += a;
    green += a;
    blue += a;
+   alpha += a;
    return *this;
 }
 
@@ -52,6 +54,7 @@ Color& Color::operator/= (const float a) {
    red /= a;
    green /= a;
    blue /= a;
+   alpha /= a;
    return *this;
 }
 
@@ -59,6 +62,7 @@ Color& Color::operator*= (const float a) {
    red *= a;
    green *= a;
    blue *= a;
+   alpha *= a;
    return *this;
 }
 
@@ -79,4 +83,5 @@ void Color::normalize() {
    red = min(red, 1.0f);
    green = min(green, 1.0f);
    blue = min(blue, 1.0f);
+   alpha = min(alpha, 1.0f);
 }
