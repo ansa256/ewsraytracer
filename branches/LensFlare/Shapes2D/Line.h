@@ -16,6 +16,7 @@ protected:
    Color color1, color2;
 
    void horizontal(SDL_Surface* surf, Uint16 y);
+   void vertical(SDL_Surface * surf, Uint16 x);
 };
 
 #endif

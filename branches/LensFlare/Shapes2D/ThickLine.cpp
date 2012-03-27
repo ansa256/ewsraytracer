@@ -8,6 +8,15 @@ ThickLine::ThickLine(Uint16 _x1, Uint16 _y1, Uint16 _x2, Uint16 _y2, Uint16 w, c
 }
 
 void ThickLine::draw(SDL_Surface* surf) {
+   if(y1 == y2) {
+      drawHorizontal(surf);
+   }
+   else if(x1 == x2) {
+      drawVertical(surf);
+   }
+}
+
+void ThickLine::drawHorizontal(SDL_Surface* surf) {
    int y = y1 - hw;
    int sy = y1;
    int a1 = color1.alpha;
@@ -21,5 +30,20 @@ void ThickLine::draw(SDL_Surface* surf) {
       color2.alpha = a2 * alpha;
       Line::draw(surf);
       y++;
+   }
+}
+
+void ThickLine::drawVertical(SDL_Surface* surf) {
+   int x = x1 - hw;
+   int sx = x1;
+
+   float denom = fabs(x1 - (x1 - hw));
+   for(int i = 0; i < hw * 2 + 1; i++) {
+      float alpha = 1.f - (fabs(x - sx) / denom);
+      x1 = x2 = x;
+      color1.alpha = alpha;
+      color2.alpha = alpha;
+      Line::draw(surf);
+      x++;
    }
 }
