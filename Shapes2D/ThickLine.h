@@ -12,6 +12,9 @@ public:
 
 private:
    Uint16 hw;
+
+   void drawHorizontal(SDL_Surface* surf);
+   void drawVertical(SDL_Surface* surf);
 };
 
 #endif

@@ -25,6 +25,10 @@ void Line::draw(SDL_Surface* surf) {
       horizontal(surf, y1);
       return ;
    }
+   if(x1 == x2) {
+      vertical(surf, x1);
+      return ;
+   }
 
    // Adjust for negative dx and set xdir
    short xdir = (dx > 0) ? 1 : -1;
@@ -78,55 +82,34 @@ void Line::draw(SDL_Surface* surf) {
 }
 
 void Line::horizontal(SDL_Surface* surf, Uint16 y) {
-   Sint16 left, right, top, bottom;
-   Uint8 *pixel, *pixellast;
-   int dx;
-   int pixx, pixy;
-
-   /*
-    * Swap x1, x2 if required to ensure x1<=x2
-    */
    if (x1 > x2) {
       swap(x1, x2);
    }
 
-   /*
-    * Get clipping boundary and
-    * check visibility of hline
-    */
-   left = surf->clip_rect.x;
-   right = surf->clip_rect.x + surf->clip_rect.w - 1;
-   top = surf->clip_rect.y;
-   bottom = surf->clip_rect.y + surf->clip_rect.h - 1;
+   x1 = max(x1, (Uint16) surf->clip_rect.x);
+   x2 = min(x2, (Uint16) (surf->clip_rect.x + surf->clip_rect.w - 1));
+   float dx = x2 - x1;
 
-   /*
-    * Clip x
-    */
-   if (x1 < left) {
-      x1 = left;
+   for (int x = x1; x <= x2; x++) {
+      float f = (x - x1) / dx;
+      Color c = lerp(f, color1, color2);
+      setBlendColor(surf, x, y, c);
    }
-   if (x2 > right) {
-      x2 = right;
+}
+
+void Line::vertical(SDL_Surface * surf, Uint16 x) {
+   if (y1 > y2) {
+      swap(y1, y2);
    }
 
-   /*
-    * More variable setup
-    */
-   pixx = surf->format->BytesPerPixel;
-   pixy = surf->pitch;
-   pixel = ((Uint8 *) surf->pixels) + pixx * (int) x1 + pixy * (int) y;
+   y1 = max(y1, (Uint16) surf->clip_rect.y);
+   y2 = min(y2, (Uint16) (surf->clip_rect.y + surf->clip_rect.h - 1));
 
-   dx = x2 - x1;
-   dx = 4 * dx;
-   pixellast = pixel + dx;
-   int x = x1;
+   float dy = y2 - y1;
 
-   for (; pixel <= pixellast; pixel += pixx) {
-      float f = 1.f - (pixellast - pixel) / (float) dx;
-      Color color = lerp(f, color1, color2);
-//      Uint32 c = SDL_MapRGBA(surf->format, color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-//      *(Uint32 *) pixel = c;
-      setBlendColor(surf, x, (int) y, color);
-      x++;
+   for (int y = y1; y <= y2; y++) {
+      float f = (y - y1) / dy;
+      Color c = lerp(f, color1, color2);
+      setBlendColor(surf, x, y, c);
    }
 }
