@@ -36,13 +36,15 @@ void ThickLine::drawHorizontal(SDL_Surface* surf) {
 void ThickLine::drawVertical(SDL_Surface* surf) {
    int x = x1 - hw;
    int sx = x1;
+   int a1 = color1.alpha;
+   int a2 = color2.alpha;
 
    float denom = fabs(x1 - (x1 - hw));
    for(int i = 0; i < hw * 2 + 1; i++) {
       float alpha = 1.f - (fabs(x - sx) / denom);
       x1 = x2 = x;
-      color1.alpha = alpha;
-      color2.alpha = alpha;
+      color1.alpha = a1 * alpha;
+      color2.alpha = a2 * alpha;
       Line::draw(surf);
       x++;
    }

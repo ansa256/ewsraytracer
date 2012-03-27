@@ -20,10 +20,11 @@ Color::Color(const Color& c) {
    alpha = c.alpha;
 }
 
-void Color::set(float r, float g, float b) {
+void Color::set(float r, float g, float b, float a) {
    red = r;
    green = g;
    blue = b;
+   alpha = a;
 }
 
 Color& Color::operator= (const Color& p) {
