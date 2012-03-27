@@ -47,12 +47,15 @@ int main(int argc, char **argv) {
    Color blue(.1, .3, .8, 1);
    Color white(1, 1, 1, 1);
 
-//   shapes.push_back(new FilledCircle(250, 250, 150, white, Color(.1, .3, .8, 0)));
-   shapes.push_back(new ThickLine(250, 250, 499, 250, 100, white, blue));
-   shapes.push_back(new ThickLine(249, 250, 0, 250, 100, blue, white));
+   shapes.push_back(new ThickLine(250, 250, 499, 250, 25, white, blue));
+   shapes.push_back(new ThickLine(249, 250, 0, 250, 25, blue, white));
 
-   shapes.push_back(new ThickLine(250, 250, 250, 499, 100, white, blue));
-   shapes.push_back(new ThickLine(250, 249, 250, 0, 100, blue, white));
+   blue.alpha = 0;
+   shapes.push_back(new ThickLine(250, 250, 250, 450, 25, white, blue));
+   shapes.push_back(new ThickLine(250, 249, 250, 50, 25, blue, white));
+
+   shapes.push_back(new FilledCircle(250, 250, 150, white, Color(.1, .3, .8, 0)));
+   shapes.push_back(new FilledCircle(250, 250, 50, white, Color(1, 1, 1, 0)));
 
    for(ShapeIter it = shapes.begin(); it != shapes.end(); ++it) {
       (*it)->draw(surface);

@@ -37,54 +37,30 @@ void setColor(SDL_Surface* surf, int x, int y, Uint32 color) {
    *(Uint32 *) p = color;
 }
 
-void setBlendColor(SDL_Surface *dst, Sint16 x, Sint16 y, const Color& c) {
-//   Uint32 color = SDL_MapRGBA(dst->format, c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha());
-//   setBlendColor(dst, x, y, color, c.getAlpha());
-
-   Uint32 *pixel = (Uint32 *) dst->pixels + y * dst->pitch / 4 + x;
-   Uint8 r, g, b, a;
-   SDL_GetRGBA(*pixel, dst->format, &r, &g, &b, &a);
-   float ca = c.getAlphaF();
-
-   r = (1.f - ca) * r + ca * c.getRed();
-   g = (1.f - ca) * g + ca * c.getGreen();
-   b = (1.f - ca) * b + ca * c.getBlue();
-   a = (1.f - ca) * a + ca * c.getAlpha();
-
-   *pixel = SDL_MapRGBA(dst->format, r, g, b, a);
-
+void setBlendColor(SDL_Surface *surf, Uint16 x, Uint16 y, const Color& c) {
+   Uint32 *pixel = (Uint32 *) surf->pixels + y * surf->pitch / 4 + x;
+   setBlendColor(surf, pixel, c);
 }
 
-void setBlendColor(SDL_Surface *dst, Sint16 x, Sint16 y, Uint32 color, Uint8 alpha) {
-   SDL_PixelFormat *format = dst->format;
-   Uint32 Rmask, Gmask, Bmask, Amask;
-   Uint32 Rshift, Gshift, Bshift, Ashift;
-   Uint32 R, G, B, A;
+void setBlendColor(SDL_Surface* surf, Uint32* pixel, const Color& c) {
+   Uint8 r, g, b, a;
+   SDL_GetRGBA(*pixel, surf->format, &r, &g, &b, &a);
+   float dr = r / 255.f;
+   float dg = g / 255.f;
+   float db = b / 255.f;
+   float da = a / 255.f;
 
-   if (alpha == 255) {
-      *((Uint32 *) dst->pixels + y * dst->pitch / 4 + x) = color;
-   } else {
-      Uint32 *pixel = (Uint32 *) dst->pixels + y * dst->pitch / 4 + x;
-      Uint32 dc = *pixel;
+   float sa = c.alpha;
 
-      Rmask = format->Rmask;
-      Gmask = format->Gmask;
-      Bmask = format->Bmask;
-      Amask = format->Amask;
+   float ao = sa + da * (1.f - sa);
+   float ro = (c.red * sa + dr * da * (1.f - sa)) / ao;
+   float go = (c.green * sa + dg * da * (1.f - sa)) / ao;
+   float bo = (c.blue * sa + db * da * (1.f - sa)) / ao;
 
-      Rshift = format->Rshift;
-      Gshift = format->Gshift;
-      Bshift = format->Bshift;
-      Ashift = format->Ashift;
+   r = ro * 255;
+   g = go * 255;
+   b = bo * 255;
+   a = ao * 255;
 
-      R = ((dc & Rmask) + (((((color & Rmask) - (dc & Rmask)) >> Rshift) * alpha >> 8) << Rshift)) & Rmask;
-      G = ((dc & Gmask) + (((((color & Gmask) - (dc & Gmask)) >> Gshift) * alpha >> 8) << Gshift)) & Gmask;
-      B = ((dc & Bmask) + (((((color & Bmask) - (dc & Bmask)) >> Bshift) * alpha >> 8) << Bshift)) & Bmask;
-      *pixel = R | G | B;
-
-      if (Amask!=0) {
-         A = ((dc & Amask) + (((((color & Amask) - (dc & Amask)) >> Ashift) * alpha >> 8) << Ashift)) & Amask;
-         *pixel |= A;
-      }
-   }
+   *pixel = SDL_MapRGBA(surf->format, r, g, b, a);
 }

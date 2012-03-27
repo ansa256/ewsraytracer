@@ -28,9 +28,8 @@ void FilledCircle::draw(SDL_Surface* surf) {
 
       for (; x <= cx + dx; x++) {
          Color c = lerp(getF(dy, x, cx, r), color2, color1);
-         Uint32 pixel = SDL_MapRGBA(surf->format, c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha());
-         *(Uint32 *)target_pixel_a = pixel;
-         *(Uint32 *)target_pixel_b = pixel;
+         setBlendColor(surf, (Uint32*) target_pixel_a, c);
+         setBlendColor(surf, (Uint32*) target_pixel_b, c);
          target_pixel_a += BPP;
          target_pixel_b += BPP;
       }
