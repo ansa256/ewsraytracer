@@ -1,9 +1,0 @@
-mesh {
-   name  "voyager"
-}
-
-starBox {
-   name     "stars"
-   count    50000
-   halfSize 1024
-}

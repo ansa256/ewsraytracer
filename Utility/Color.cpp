@@ -4,8 +4,6 @@
 
 using namespace std;
 
-const Color BLACK;
-
 float epsilon = 1.0 * pow(10, -6);
 
 Color::Color(float _r, float _g, float _b, float _a) {
@@ -22,30 +20,10 @@ Color::Color(const Color& c) {
    alpha = c.alpha;
 }
 
-Color::Color(Array* a) {
-   red = a->at(0)->getDouble();
-   green = a->at(1)->getDouble();
-   blue = a->at(2)->getDouble();
-
-   if(a->size() > 3) {
-      alpha = a->at(3)->getDouble();
-   }
-   else {
-      alpha = 1.0;
-   }
-}
-
 void Color::set(float r, float g, float b) {
    red = r;
    green = g;
    blue = b;
-}
-
-void Color::set(Array* a) {
-   red = a->at(0)->getDouble();
-   green = a->at(1)->getDouble();
-   blue = a->at(2)->getDouble();
-   alpha = 1.0;
 }
 
 Color& Color::operator= (const Color& p) {
@@ -95,15 +73,6 @@ bool Color::operator== (const Color& c) const {
       return false;
    }
    return true;
-}
-
-Array* Color::toArray() const {
-   Array* a = new Array();
-   a->push_back(new Value(red));
-   a->push_back(new Value(green));
-   a->push_back(new Value(blue));
-   a->push_back(new Value(alpha));
-   return a;
 }
 
 void Color::normalize() {

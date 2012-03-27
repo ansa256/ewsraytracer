@@ -2,17 +2,14 @@
 #define _COLOR_H_
 
 #include <SDL/SDL.h>
-#include "Parser/Value.h"
 
 class Color {
 
 public:
    Color(float _r = 0, float _g = 0, float _b = 0, float _a = 1);
    Color(const Color& c);
-   Color(Array* a);
 
    void set(float r, float b, float g);
-   void set(Array* a);
 
    Color& operator=(const Color& c);
    Color& operator+=(const Color& c);
@@ -24,8 +21,7 @@ public:
    Color operator*(const Color& c) const;
    Color operator/(const float a) const;
    Color operator+(const Color& c) const;
-   
-   Array* toArray() const;
+   Color operator-(const Color& c) const;
 
    void normalize();
 
@@ -39,21 +35,23 @@ public:
 };
 
 inline Color Color::operator*(const float a) const {
-   return Color(red * a, green * a, blue * a, alpha);
+   return Color(red * a, green * a, blue * a, alpha * a);
 }
 
 inline Color Color::operator*(const Color& c) const {
-   return Color(red * c.red, green * c.green, blue * c.blue, alpha);
+   return Color(red * c.red, green * c.green, blue * c.blue, alpha * c.alpha);
 }
 
 inline Color Color::operator/(const float a) const {
-   return Color(red / a, green / a, blue / a, alpha);
+   return Color(red / a, green / a, blue / a, alpha / a);
 }
 
 inline Color Color::operator+(const Color& c) const {
-   return Color(red + c.red, green + c.green, blue + c.blue, alpha);
+   return Color(red + c.red, green + c.green, blue + c.blue, alpha + c.alpha);
 }
 
-extern const Color BLACK;
+inline Color Color::operator-(const Color& c) const {
+   return Color(red - c.red, green - c.green, blue - c.blue, alpha - c.alpha);
+}
 
 #endif
