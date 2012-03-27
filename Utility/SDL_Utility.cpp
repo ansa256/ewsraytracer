@@ -38,8 +38,21 @@ void setColor(SDL_Surface* surf, int x, int y, Uint32 color) {
 }
 
 void setBlendColor(SDL_Surface *dst, Sint16 x, Sint16 y, const Color& c) {
-   Uint32 color = SDL_MapRGBA(dst->format, c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha());
-   setBlendColor(dst, x, y, color, c.getAlpha());
+//   Uint32 color = SDL_MapRGBA(dst->format, c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha());
+//   setBlendColor(dst, x, y, color, c.getAlpha());
+
+   Uint32 *pixel = (Uint32 *) dst->pixels + y * dst->pitch / 4 + x;
+   Uint8 r, g, b, a;
+   SDL_GetRGBA(*pixel, dst->format, &r, &g, &b, &a);
+   float ca = c.getAlphaF();
+
+   r = (1.f - ca) * r + ca * c.getRed();
+   g = (1.f - ca) * g + ca * c.getGreen();
+   b = (1.f - ca) * b + ca * c.getBlue();
+   a = (1.f - ca) * a + ca * c.getAlpha();
+
+   *pixel = SDL_MapRGBA(dst->format, r, g, b, a);
+
 }
 
 void setBlendColor(SDL_Surface *dst, Sint16 x, Sint16 y, Uint32 color, Uint8 alpha) {
@@ -67,8 +80,11 @@ void setBlendColor(SDL_Surface *dst, Sint16 x, Sint16 y, Uint32 color, Uint8 alp
       R = ((dc & Rmask) + (((((color & Rmask) - (dc & Rmask)) >> Rshift) * alpha >> 8) << Rshift)) & Rmask;
       G = ((dc & Gmask) + (((((color & Gmask) - (dc & Gmask)) >> Gshift) * alpha >> 8) << Gshift)) & Gmask;
       B = ((dc & Bmask) + (((((color & Bmask) - (dc & Bmask)) >> Bshift) * alpha >> 8) << Bshift)) & Bmask;
-      A = ((dc & Amask) + (((((color & Amask) - (dc & Amask)) >> Ashift) * alpha >> 8) << Ashift)) & Amask;
+      *pixel = R | G | B;
 
-      *pixel = R | G | B | A;
+      if (Amask!=0) {
+         A = ((dc & Amask) + (((((color & Amask) - (dc & Amask)) >> Ashift) * alpha >> 8) << Ashift)) & Amask;
+         *pixel |= A;
+      }
    }
 }
