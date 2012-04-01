@@ -1,6 +1,7 @@
 #include "Line.h"
 #include "Utility/SDL_Utility.h"
 #include <algorithm>
+#include <math.h>
 
 using namespace std;
 
@@ -35,10 +36,12 @@ void Line::draw(SDL_Surface* surf) {
    dx = abs(dx);
 
    int erracc = 0;
-   int intshift = 32 - AAbits;
 
    // Draw the initial pixel in the foreground color
    setColor(surf, x1, y1, color1);
+   
+   float length = sqrt(dx*dx + dy*dy);
+   float pos = 0;
 
    if(dy > dx) {
       int erradj = ((dx << 16) / dy) << 16;
@@ -54,9 +57,9 @@ void Line::draw(SDL_Surface* surf) {
 
          y1++;
 
-         int wgt = (erracc >> intshift) & 255;
-//         setWeightedColor(surf, x1, y1, color, 255 - wgt);
-//         setWeightedColor(surf, x0pxdir, y1, color, wgt);
+         float f = pos++ / length;
+         Color c = lerp(f, color1, color2);
+         setBlendColor(surf, x1, y1, c);
       }
    }
    else {
@@ -71,14 +74,14 @@ void Line::draw(SDL_Surface* surf) {
             y0p1++;
          }
          x1 += xdir;
-
-         int wgt = (erracc >> intshift) & 255;
-//         setWeightedColor(surf, x1, y1, color, 255 - wgt);
-//         setWeightedColor(surf, x1, y0p1, color, wgt);
+         
+         float f = pos++ / length;
+         Color c = lerp(f, color1, color2);
+         setBlendColor(surf, x1, y1, c);
       }
    }
 
-   setColor(surf, x2, y2, color1);
+   setColor(surf, x2, y2, color2);
 }
 
 void Line::horizontal(SDL_Surface* surf, Uint16 y) {
