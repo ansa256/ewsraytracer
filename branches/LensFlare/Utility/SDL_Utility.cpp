@@ -64,3 +64,9 @@ void setBlendColor(SDL_Surface* surf, Uint32* pixel, const Color& c) {
 
    *pixel = SDL_MapRGBA(surf->format, r, g, b, a);
 }
+
+void setBlendColor(SDL_Surface * surf, Uint16 x, Uint16 y, const Color& c, int weight) {
+   int alpha = ((c.getAlpha() * weight) >> 8);
+   Color color(c.red, c.green, c.blue, alpha / 255.f);
+   setBlendColor(surf, x, y, color);
+}
