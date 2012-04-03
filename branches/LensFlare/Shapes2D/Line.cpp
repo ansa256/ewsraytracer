@@ -5,12 +5,12 @@
 
 using namespace std;
 
-Line::Line(Uint32 _x1, Uint32 _y1, Uint32 _x2, Uint32 _y2, const Color& c1, const Color& c2) :
+Line::Line(int _x1, int _y1, int _x2, int _y2, const Color& c1, const Color& c2) :
    x1(_x1), y1(_y1), x2(_x2), y2(_y2), color1(c1), color2(c2)
 {
 }
 
-Line::Line(Uint32 x, Uint32 y, Uint32 length, float angle, Uint32 height, const Color& c1, const Color& c2) {
+Line::Line(int x, int y, int length, float angle, int height, const Color& c1, const Color& c2) {
    x1 = x;
    y1 = y;
    
@@ -20,17 +20,17 @@ Line::Line(Uint32 x, Uint32 y, Uint32 length, float angle, Uint32 height, const 
    
    bool swap = (angle > 180);
    angle *= M_PI / 180.f;
-   x2 = (Uint32)(length * cos(angle)) + x1;
-   y2 = (Uint32)(length * sin(angle)) + y1;
+   x2 = (int)(length * cos(angle)) + x1;
+   y2 = (int)(length * sin(angle)) + y1;
    
+   if(y2 < height) {
+      y2 = (height-1) - y2;
+   }
    if(y2 >= height) {
       y2 = height - 1;
       float l = (y2-y1) / sin(angle);
-      x2 = (Uint32)(l * cos(angle)) + x1;
+      x2 = (int)(l * cos(angle)) + x1;
       y2 = 0;
-   }
-   else {
-      y2 = (height-1) - y2;
    }
 
    color1 = c1;
@@ -119,13 +119,13 @@ void Line::draw(SDL_Surface* surf) {
    setBlendColor(surf, x2, y2, color2);
 }
 
-void Line::horizontal(SDL_Surface* surf, Uint32 y) {
+void Line::horizontal(SDL_Surface* surf, int y) {
    if (x1 > x2) {
       swap(x1, x2);
    }
 
-   x1 = max(x1, (Uint32) surf->clip_rect.x);
-   x2 = min(x2, (Uint32) (surf->clip_rect.x + surf->clip_rect.w - 1));
+   x1 = max(x1, (int) surf->clip_rect.x);
+   x2 = min(x2, (int) (surf->clip_rect.x + surf->clip_rect.w - 1));
    float dx = x2 - x1;
 
    for (int x = x1; x <= x2; x++) {
@@ -135,13 +135,13 @@ void Line::horizontal(SDL_Surface* surf, Uint32 y) {
    }
 }
 
-void Line::vertical(SDL_Surface * surf, Uint32 x) {
+void Line::vertical(SDL_Surface * surf, int x) {
    if (y1 > y2) {
       swap(y1, y2);
    }
 
-   y1 = max(y1, (Uint32) surf->clip_rect.y);
-   y2 = min(y2, (Uint32) (surf->clip_rect.y + surf->clip_rect.h - 1));
+   y1 = max(y1, (int) surf->clip_rect.y);
+   y2 = min(y2, (int) (surf->clip_rect.y + surf->clip_rect.h - 1));
 
    float dy = y2 - y1;
 
@@ -151,3 +151,4 @@ void Line::vertical(SDL_Surface * surf, Uint32 x) {
       setBlendColor(surf, x, y, c);
    }
 }
+

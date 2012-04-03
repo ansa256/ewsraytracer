@@ -7,8 +7,10 @@
 
 using namespace std;
 
-const int width = 800;
-const int height = 500;
+const int width = 960;
+const int height = 540;
+const int cx = 480;
+const int cy = 270;
 
 typedef vector<Shape2D*>::const_iterator ShapeIter;
 
@@ -57,24 +59,22 @@ int main(int argc, char **argv) {
 
    Color blue(.1, .3, .8, 0);
    Color white(1, 1, 1, 1);
-   
-   int hw = width / 2;
-   int hh = height / 2;
 
-   shapes.push_back(new ThickLine(hw, hh, min(hw + 400, width-1) , hh, 35, white, blue));
-   shapes.push_back(new ThickLine(hw, hh, max(hw - 400, 0), hh, 35, blue, white));
+   shapes.push_back(new ThickLine(cx, cy, min(cx + 400, width-1) , cy, 35, white, blue));
+   shapes.push_back(new ThickLine(cx, cy, max(cx - 400, 0), cy, 35, blue, white));
 
-   shapes.push_back(new ThickLine(hw, hh, hw, hh + 200, 25, white, blue));
-   shapes.push_back(new ThickLine(hw, hh, hw, hh - 200, 25, blue, white));
+   shapes.push_back(new ThickLine(cx, cy, cx, cy + 200, 25, white, blue));
+   shapes.push_back(new ThickLine(cx, cy, cx, cy - 200, 25, blue, white));
    
    float angle = 100;
    while(angle < 200) {
       int length = randomNoBetween(100, 250);
-      shapes.push_back(new Line(hw, hh, length, angle, height, blue, white));
-      shapes.push_back(new Line(hw, hh, length, angle + 180, height, blue, white));
+//      shapes.push_back(new Line(cx, cy, length, angle, height, blue, white));
+      shapes.push_back(new Line(cx, cy, length, angle + 180, height, blue, white));
       angle += randomNoBetween(1, 8);
    }
-   shapes.push_back(new FilledEllipse(hw, hh, 100, 85, white, blue));
+
+   shapes.push_back(new FilledEllipse(cx, cy, 100, 85, white, blue));
 
    for(ShapeIter it = shapes.begin(); it != shapes.end(); ++it) {
       (*it)->draw(surface);
@@ -87,3 +87,4 @@ int main(int argc, char **argv) {
 
    return 0;
 }
+

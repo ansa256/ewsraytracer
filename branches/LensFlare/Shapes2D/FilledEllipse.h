@@ -16,7 +16,7 @@ private:
    double rx, ry;
    Color color1, color2;
    
-   void horizontal(SDL_Surface* surf, Uint16 x1, Uint16 x2, Uint16 y);
+   void horizontal(SDL_Surface* surf, int x1, int x2, Uint16 y);
    float getF(int x, int y);
 };
 

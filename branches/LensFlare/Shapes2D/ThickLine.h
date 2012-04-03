@@ -6,15 +6,16 @@
 class ThickLine : public Line {
 
 public:
-   ThickLine(Uint16 _x1, Uint16 _y1, Uint16 _x2, Uint16 _y2, Uint16 w, const Color& c1, const Color& c2);
+   ThickLine(int _x1, int _y1, int _x2, int _y2, int w, const Color& c1, const Color& c2);
 
    virtual void draw(SDL_Surface* surf);
 
 private:
-   Uint16 hw;
+   int hw;
 
    void drawHorizontal(SDL_Surface* surf);
    void drawVertical(SDL_Surface* surf);
 };
 
 #endif
+

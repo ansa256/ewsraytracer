@@ -10,9 +10,9 @@ FilledEllipse::FilledEllipse(int x, int y, int w, int h, const Color& c1, const 
 {
 }
 
-void FilledEllipse::horizontal(SDL_Surface* surf, Uint16 x1, Uint16 x2, Uint16 y) {
-   x1 = max(x1, (Uint16) surf->clip_rect.x);
-   x2 = min(x2, (Uint16) (surf->clip_rect.x + surf->clip_rect.w - 1));
+void FilledEllipse::horizontal(SDL_Surface* surf, int x1, int x2, Uint16 y) {
+   x1 = max(x1, (int)surf->clip_rect.x);
+   x2 = min(x2, (int)(surf->clip_rect.x + surf->clip_rect.w - 1));
    
    for (int x = x1; x <= x2; x++) {
       float f = getF(x, y);
