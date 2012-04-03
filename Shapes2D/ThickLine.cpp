@@ -1,7 +1,7 @@
 #include "ThickLine.h"
 #include <math.h>
 
-ThickLine::ThickLine(Uint16 _x1, Uint16 _y1, Uint16 _x2, Uint16 _y2, Uint16 w, const Color& c1, const Color& c2) :
+ThickLine::ThickLine(int _x1, int _y1, int _x2, int _y2, int w, const Color& c1, const Color& c2) :
    Line(_x1, _y1, _x2, _y2, c1, c2)
 {
    hw = w / 2;
@@ -49,3 +49,4 @@ void ThickLine::drawVertical(SDL_Surface* surf) {
       x++;
    }
 }
+
