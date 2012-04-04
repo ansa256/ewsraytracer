@@ -21,17 +21,7 @@ Line::Line(int x, int y, int length, float angle, int height, const Color& c1, c
    bool swap = (angle > 180);
    angle *= M_PI / 180.f;
    x2 = (int)(length * cos(angle)) + x1;
-   y2 = (int)(length * sin(angle)) + y1;
-   
-   if(y2 < height) {
-      y2 = (height-1) - y2;
-   }
-   if(y2 >= height) {
-      y2 = height - 1;
-      float l = (y2-y1) / sin(angle);
-      x2 = (int)(l * cos(angle)) + x1;
-      y2 = 0;
-   }
+   y2 = (int)(-length * sin(angle)) + y1;
 
    color1 = c1;
    color2 = c2;
