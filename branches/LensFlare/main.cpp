@@ -3,6 +3,7 @@
 #include "Shapes2D/ThickLine.h"
 #include "Shapes2D/FilledCircle.h"
 #include "Shapes2D/FilledEllipse.h"
+#include "Shapes2D/Ring.h"
 #include <vector>
 
 using namespace std;
@@ -75,6 +76,7 @@ int main(int argc, char **argv) {
    }
 
    shapes.push_back(new FilledEllipse(cx, cy, 100, 85, white, blue));
+   shapes.push_back(new Ring(cx, cy, 200, 220, Color(.3, .6, .8, .2), Color(.3, .6, .8, 0)));
 
    for(ShapeIter it = shapes.begin(); it != shapes.end(); ++it) {
       (*it)->draw(surface);
