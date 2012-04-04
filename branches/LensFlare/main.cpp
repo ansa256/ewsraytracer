@@ -69,8 +69,8 @@ int main(int argc, char **argv) {
    float angle = 100;
    while(angle < 200) {
       int length = randomNoBetween(100, 250);
-//      shapes.push_back(new Line(cx, cy, length, angle, height, blue, white));
-      shapes.push_back(new Line(cx, cy, length, angle + 180, height, blue, white));
+      shapes.push_back(new Line(cx, cy, length, angle, height, blue, white));
+      shapes.push_back(new Line(cx, cy, length, angle + 180, height, blue, white));      
       angle += randomNoBetween(1, 8);
    }
 
