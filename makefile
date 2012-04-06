@@ -24,4 +24,5 @@ obj/%.o: %.cpp
 
 clean:
 	rm -rf obj
+	rm flare
 
