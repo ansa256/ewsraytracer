@@ -1,5 +1,6 @@
 #include "Line.h"
 #include "Utility/SDL_Utility.h"
+#include "Utility/Math.h"
 #include <algorithm>
 #include <math.h>
 

@@ -1,5 +1,6 @@
 #include "FilledEllipse.h"
 #include "Utility/SDL_Utility.h"
+#include "Utility/Math.h"
 #include <math.h>
 #include <algorithm>
 

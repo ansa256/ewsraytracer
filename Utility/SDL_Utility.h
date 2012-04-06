@@ -11,10 +11,5 @@ void setBlendColor(SDL_Surface *surf, int x, int y, const Color& c);
 void setBlendColor(SDL_Surface* surf, Uint32* pixel, const Color& c);
 void setBlendColor(SDL_Surface * surf, int x, int y, const Color& c, int weight);
 
-template<class T>
-inline T lerp(const float f, const T a, const T b) {
-   return a + (b - a) * f;
-}
-
 #endif
 

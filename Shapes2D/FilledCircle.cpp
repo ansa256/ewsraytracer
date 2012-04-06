@@ -1,5 +1,6 @@
 #include "FilledCircle.h"
 #include "Utility/SDL_Utility.h"
+#include "Utility/Math.h"
 #include <math.h>
 
 FilledCircle::FilledCircle(int x, int y, int r, const Color& c1, const Color& c2) :
@@ -27,7 +28,7 @@ void FilledCircle::draw(SDL_Surface* surf) {
       Uint8 *target_pixel_b = (Uint8 *)surf->pixels + ((int)(cy - r + dy)) * surf->pitch + x * BPP;
 
       for (; x <= cx + dx; x++) {
-         Color c = lerp(getF(x, dy, r), color2, color1);
+         Color c = lerp(getF(x, dy, r), color1, color2);
          setBlendColor(surf, (Uint32*) target_pixel_a, c);
          if(dy < r) setBlendColor(surf, (Uint32*) target_pixel_b, c);
          target_pixel_a += BPP;
@@ -40,5 +41,7 @@ double FilledCircle::getF(double x, double y, double radius) {
    double deltay = radius - y;
    double deltax = fabs(x - cx);
    double dist = sqrt(deltay*deltay + deltax*deltax);
-   return (radius - dist) / radius;
+   double f = 1.0 - (radius - dist) / radius;
+   return smootherstep(0.7, 1.0, f);
 }
+
