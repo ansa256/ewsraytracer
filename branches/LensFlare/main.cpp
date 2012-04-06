@@ -4,6 +4,7 @@
 #include "Shapes2D/FilledCircle.h"
 #include "Shapes2D/FilledEllipse.h"
 #include "Shapes2D/Ring.h"
+#include "Shapes2D/Fan.h"
 #include <vector>
 
 using namespace std;
@@ -12,6 +13,11 @@ const int width = 960;
 const int height = 540;
 const int cx = 480;
 const int cy = 270;
+
+vector<Shape2D*> shapes;
+
+Color blue(.1, .3, .8, 0);
+Color white(1, 1, 1, 1);
 
 typedef vector<Shape2D*>::const_iterator ShapeIter;
 
@@ -42,25 +48,7 @@ void run() {
    }
 }
 
-int main(int argc, char **argv) {
-   if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
-      fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
-      exit(1);
-   }
-   
-   srand(0);
-
-   SDL_Surface* screen = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
-
-   SDL_Surface* surface = createSurface(width, height);
-   Uint32 black = SDL_MapRGBA(surface->format, 0, 0, 0, 0);
-   SDL_FillRect(surface, NULL, black);
-
-   vector<Shape2D*> shapes;
-
-   Color blue(.1, .3, .8, 0);
-   Color white(1, 1, 1, 1);
-
+void light1() {
    shapes.push_back(new ThickLine(cx, cy, min(cx + 400, width-1) , cy, 35, white, blue));
    shapes.push_back(new ThickLine(cx, cy, max(cx - 400, 0), cy, 35, blue, white));
 
@@ -77,6 +65,33 @@ int main(int argc, char **argv) {
 
    shapes.push_back(new FilledEllipse(cx, cy, 100, 85, white, blue));
    shapes.push_back(new Ring(cx, cy, 200, 220, Color(.3, .6, .8, .2), Color(.3, .6, .8, 0)));
+}
+
+void light2() {
+   shapes.push_back(new FilledCircle(cx, cy, 100, white, blue));
+   int spread = 10;
+   
+   for(float angle = 30; angle < 180; angle += 30) {
+      shapes.push_back(new Fan(cx, cy, 300, angle, spread, height, white, blue));
+//      shapes.push_back(new Fan(cx, cy, 300, angle + 180, spread, height, blue, white));
+   }
+}
+
+int main(int argc, char **argv) {
+   if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
+      fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
+      exit(1);
+   }
+   
+   srand(0);
+
+   SDL_Surface* screen = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
+
+   SDL_Surface* surface = createSurface(width, height);
+   Uint32 black = SDL_MapRGBA(surface->format, 0, 0, 0, 0);
+   SDL_FillRect(surface, NULL, black);
+   
+   light2();
 
    for(ShapeIter it = shapes.begin(); it != shapes.end(); ++it) {
       (*it)->draw(surface);

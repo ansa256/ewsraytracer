@@ -1,5 +1,6 @@
 #include "Ring.h"
 #include "Utility/SDL_Utility.h"
+#include "Utility/Math.h"
 #include <math.h>
 
 Ring::Ring(int x, int y, int i, int o, const Color& c1, const Color& c2) :
