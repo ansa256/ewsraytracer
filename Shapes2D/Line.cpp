@@ -78,8 +78,7 @@ void Line::draw(SDL_Surface* surf) {
 
          float f = pos++ / length;
          Color c = lerp(f, color1, color2);
-//         setBlendColor(surf, x1, y1, c);
-			Uint32 wgt = (erracc >> 24) & 255;
+         Uint32 wgt = (erracc >> 24) & 255;
          setBlendColor(surf, x1, y1, c, 255 - wgt);
          setBlendColor(surf, x0pxdir, y1, c, wgt);
       }
@@ -99,8 +98,7 @@ void Line::draw(SDL_Surface* surf) {
          
          float f = pos++ / length;
          Color c = lerp(f, color1, color2);
-//         setBlendColor(surf, x1, y1, c);
-			Uint32 wgt = (erracc >> 24) & 255;         
+         Uint32 wgt = (erracc >> 24) & 255;
          setBlendColor(surf, x1, y1, c, 255 - wgt);
          setBlendColor(surf, x1, y0p1, c, wgt);
       }
