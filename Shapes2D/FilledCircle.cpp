@@ -27,16 +27,16 @@ void FilledCircle::draw(SDL_Surface* surf) {
       Uint8 *target_pixel_b = (Uint8 *)surf->pixels + ((int)(cy - r + dy)) * surf->pitch + x * BPP;
 
       for (; x <= cx + dx; x++) {
-         Color c = lerp(getF(dy, x, cx, r), color2, color1);
+         Color c = lerp(getF(x, dy, r), color2, color1);
          setBlendColor(surf, (Uint32*) target_pixel_a, c);
-         setBlendColor(surf, (Uint32*) target_pixel_b, c);
+         if(dy < r) setBlendColor(surf, (Uint32*) target_pixel_b, c);
          target_pixel_a += BPP;
          target_pixel_b += BPP;
       }
    }
 }
 
-double FilledCircle::getF(double y, int x, int cx, double radius) {
+double FilledCircle::getF(double x, double y, double radius) {
    double deltay = radius - y;
    double deltax = fabs(x - cx);
    double dist = sqrt(deltay*deltay + deltax*deltax);
