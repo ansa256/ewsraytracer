@@ -1,11 +1,13 @@
 #include "FilledCircle.h"
 #include "Utility/SDL_Utility.h"
 #include "Utility/Math.h"
+#include "Falloff/SmoothStepFilter.h"
 #include <math.h>
 
 FilledCircle::FilledCircle(int x, int y, int r, const Color& c1, const Color& c2) :
    cx(x), cy(y), radius(r), color1(c1), color2(c2)
 {
+   filter = new SmoothStepFilter(0.7, 1.0);
 }
 
 void FilledCircle::draw(SDL_Surface* surf) {
@@ -42,6 +44,5 @@ double FilledCircle::getF(double x, double y, double radius) {
    double deltax = fabs(x - cx);
    double dist = sqrt(deltay*deltay + deltax*deltax);
    double f = 1.0 - (radius - dist) / radius;
-   return smootherstep(0.7, 1.0, f);
+   return filter->filter(f);
 }
-
