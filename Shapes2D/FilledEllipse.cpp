@@ -1,6 +1,7 @@
 #include "FilledEllipse.h"
 #include "Utility/SDL_Utility.h"
 #include "Utility/Math.h"
+#include "Falloff/CosineFilter.h"
 #include <math.h>
 #include <algorithm>
 
@@ -9,12 +10,13 @@ using namespace std;
 FilledEllipse::FilledEllipse(int x, int y, int w, int h, const Color& c1, const Color& c2) :
    cx(x), cy(y), rx(w), ry(h), color1(c1), color2(c2)
 {
+   filter = new CosineFilter();
 }
 
 void FilledEllipse::horizontal(SDL_Surface* surf, int x1, int x2, Uint16 y) {
    x1 = max(x1, (int)surf->clip_rect.x);
    x2 = min(x2, (int)(surf->clip_rect.x + surf->clip_rect.w - 1));
-   
+
    for (int x = x1; x <= x2; x++) {
       float f = getF(x, y);
       Color c = lerp(f, color1, color2);
@@ -34,7 +36,7 @@ void FilledEllipse::draw(SDL_Surface* surf) {
    int oi = 0xFFFF;
    int oj = 0xFFFF;
    int ok = 0xFFFF;
-   
+
    if (rx > ry) {
       int ix = 0;
       int iy = rx * 64;
@@ -44,7 +46,7 @@ void FilledEllipse::draw(SDL_Surface* surf) {
          i = (iy + 32) >> 6;
          j = (h * ry) / rx;
          k = (i * ry) / rx;
-         
+
          if ((ok != k) && (oj != k)) {
             xph = cx + h;
             xmh = cx - h;
@@ -113,14 +115,14 @@ void FilledEllipse::draw(SDL_Surface* surf) {
 float FilledEllipse::getF(int x, int y) {
    x = x - cx;
    y = y - cy;
-   
+
    if(x == 0 && y == 0) {
       return 0;
    }
-   
+
    float px = rx * ry * x / sqrtf(powf(ry * x, 2) + powf(rx * y, 2));
    float py = rx * ry * y / sqrtf(powf(ry * x, 2) + powf(rx * y, 2));
-   
+
    float dist = sqrt(x*x + y*y) / sqrt(px*px + py*py);
-   return 1.f - cos(dist * M_PI / 2.f);
+   return filter->filter(dist);
 }

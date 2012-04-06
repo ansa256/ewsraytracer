@@ -54,12 +54,12 @@ void light1() {
 
    shapes.push_back(new ThickLine(cx, cy, cx, cy + 200, 25, white, blue));
    shapes.push_back(new ThickLine(cx, cy, cx, cy - 200, 25, blue, white));
-   
+
    float angle = 100;
    while(angle < 200) {
       int length = randomNoBetween(100, 250);
       shapes.push_back(new Line(cx, cy, length, angle, height, blue, white));
-      shapes.push_back(new Line(cx, cy, length, angle + 180, height, blue, white));      
+      shapes.push_back(new Line(cx, cy, length, angle + 180, height, blue, white));
       angle += randomNoBetween(1, 8);
    }
 
@@ -70,7 +70,7 @@ void light1() {
 void light2() {
    shapes.push_back(new FilledCircle(cx, cy, 100, white, blue));
    int spread = 10;
-   
+
    for(float angle = 30; angle < 180; angle += 30) {
       shapes.push_back(new Fan(cx, cy, 300, angle, spread, height, white, blue));
 //      shapes.push_back(new Fan(cx, cy, 300, angle + 180, spread, height, blue, white));
@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
       fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
       exit(1);
    }
-   
+
    srand(0);
 
    SDL_Surface* screen = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
@@ -90,8 +90,8 @@ int main(int argc, char **argv) {
    SDL_Surface* surface = createSurface(width, height);
    Uint32 black = SDL_MapRGBA(surface->format, 0, 0, 0, 0);
    SDL_FillRect(surface, NULL, black);
-   
-   light2();
+
+   light1();
 
    for(ShapeIter it = shapes.begin(); it != shapes.end(); ++it) {
       (*it)->draw(surface);
