@@ -1,5 +1,5 @@
-#ifndef _MATH_H_
-#define _MATH_H_
+#ifndef _LensFlare_MATH_H_
+#define _LensFlare_MATH_H_
 
 template<class T>
 T clamp(const T x, const T min, const T max) {
