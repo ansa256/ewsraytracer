@@ -7,7 +7,6 @@
 FilledCircle::FilledCircle(int x, int y, int r, const Color& c1, const Color& c2) :
    cx(x), cy(y), radius(r), color1(c1), color2(c2)
 {
-   filter = new SmoothStepFilter(0.7, 1.0);
 }
 
 void FilledCircle::draw(SDL_Surface* surf) {

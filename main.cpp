@@ -5,6 +5,8 @@
 #include "Shapes2D/FilledEllipse.h"
 #include "Shapes2D/Ring.h"
 #include "Shapes2D/Fan.h"
+#include "Falloff/SmoothStepFilter.h"
+#include "Falloff/CosineFilter.h"
 #include <vector>
 
 using namespace std;
@@ -63,12 +65,17 @@ void light1() {
       angle += randomNoBetween(1, 8);
    }
 
-   shapes.push_back(new FilledEllipse(cx, cy, 100, 85, white, blue));
+   FilledEllipse* ellipse = new FilledEllipse(cx, cy, 100, 85, white, blue);
+   ellipse->setFilter(new CosineFilter());
+   shapes.push_back(ellipse);
    shapes.push_back(new Ring(cx, cy, 200, 220, Color(.3, .6, .8, .2), Color(.3, .6, .8, 0)));
 }
 
 void light2() {
-   shapes.push_back(new FilledCircle(cx, cy, 100, white, blue));
+   FilledCircle* circle = new FilledCircle(cx, cy, 100, white, blue);
+   circle->setFilter(new SmoothStepFilter(0.7, 1.0));
+   shapes.push_back(circle);
+
    int spread = 10;
 
    for(float angle = 30; angle < 180; angle += 30) {
