@@ -16,7 +16,7 @@ private:
    int radius;
    Color color1, color2;
 
-   double getF(double y, int x, int cx, double radius);
+   double getF(double x, double y, double radius);
 };
 
 #endif
