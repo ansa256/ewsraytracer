@@ -1,10 +1,13 @@
 #include "Shape2D.h"
-#include "Falloff/FalloffFilter.h"
+#include "Falloff/LinearFilter.h"
 
-Shape2D::Shape2D() : filter(NULL) {}
+Shape2D::Shape2D() : filter(new LinearFilter()) {}
 
 Shape2D::~Shape2D() {
-   if(filter != NULL) {
-      delete filter;
-   }
+   delete filter;
+}
+
+void Shape2D::setFilter(FalloffFilter* f) {
+   delete filter;
+   filter = f;
 }

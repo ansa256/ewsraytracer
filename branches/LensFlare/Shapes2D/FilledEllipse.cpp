@@ -10,7 +10,6 @@ using namespace std;
 FilledEllipse::FilledEllipse(int x, int y, int w, int h, const Color& c1, const Color& c2) :
    cx(x), cy(y), rx(w), ry(h), color1(c1), color2(c2)
 {
-   filter = new CosineFilter();
 }
 
 void FilledEllipse::horizontal(SDL_Surface* surf, int x1, int x2, Uint16 y) {

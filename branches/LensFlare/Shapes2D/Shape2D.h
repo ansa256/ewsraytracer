@@ -10,6 +10,8 @@ class Shape2D {
 public:
    Shape2D();
    virtual ~Shape2D();
+
+   void setFilter(FalloffFilter* f);
    virtual void draw(SDL_Surface* surf) = 0;
 
 protected:
