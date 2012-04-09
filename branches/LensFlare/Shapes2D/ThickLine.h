@@ -1,9 +1,10 @@
 #ifndef LensFlare_ThickLine_h
 #define LensFlare_ThickLine_h
 
-#include "Line.h"
+#include "Shape2D.h"
+#include "Utility/Color.h"
 
-class ThickLine : public Line {
+class ThickLine : public Shape2D {
 
 public:
    ThickLine(int _x1, int _y1, int _x2, int _y2, int w, const Color& c1, const Color& c2);
@@ -12,9 +13,14 @@ public:
 
 private:
    int hw;
+   int x1, y1, x2, y2;
+   int length;
+   float angle;
+   Color color1, color2;
 
    void drawHorizontal(SDL_Surface* surf);
    void drawVertical(SDL_Surface* surf);
+   void drawAngle(SDL_Surface* surf);
 };
 
 #endif
