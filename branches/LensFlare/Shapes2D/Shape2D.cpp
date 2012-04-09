@@ -4,10 +4,16 @@
 Shape2D::Shape2D() : filter(new LinearFilter()) {}
 
 Shape2D::~Shape2D() {
-   delete filter;
+   if(filter != NULL) {
+      delete filter;
+   }
 }
 
 void Shape2D::setFilter(FalloffFilter* f) {
    delete filter;
+   filter = f;
+}
+
+void Shape2D::setFilterNoDelete(FalloffFilter* f) {
    filter = f;
 }
