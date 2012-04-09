@@ -1,35 +1,39 @@
 #include "Line.h"
 #include "Utility/SDL_Utility.h"
 #include "Utility/Math.h"
+#include "Falloff/SmoothStepFilter.h"
+#include "Falloff/CosineFilter.h"
 #include <algorithm>
 #include <math.h>
-
-using namespace std;
 
 Line::Line(int _x1, int _y1, int _x2, int _y2, const Color& c1, const Color& c2) :
    x1(_x1), y1(_y1), x2(_x2), y2(_y2), color1(c1), color2(c2)
 {
+   swapAlpha = false;
 }
 
-Line::Line(int x, int y, int length, float angle, int height, const Color& c1, const Color& c2) {
+Line::Line(int x, int y, int length, float angle, const Color& c1, const Color& c2) {
    x1 = x;
    y1 = y;
    
    if(angle > 360) {
       angle -= 360;
    }
+   if(angle < 0) {
+      angle += 360;
+   }
    
-   bool swap = (angle > 180);
+   swapAlpha = (angle > 180);   
    angle *= M_PI / 180.f;
    x2 = (int)(length * cos(angle)) + x1;
    y2 = (int)(-length * sin(angle)) + y1;
 
+   if(x1 == x2 || y1 == y2) {
+      swapAlpha = false;
+   }
+
    color1 = c1;
    color2 = c2;
-   
-   if(swap) {
-      std::swap(color1, color2);
-   }
 }
 
 void Line::draw(SDL_Surface* surf) {
@@ -37,6 +41,9 @@ void Line::draw(SDL_Surface* surf) {
       std::swap(x1, x2);
       std::swap(y1, y2);
    }
+   
+   int ox = x1;
+   int oy = y1;
 
    int32_t dx = x2 - x1;
    int32_t dy = y2 - y1;
@@ -56,12 +63,8 @@ void Line::draw(SDL_Surface* surf) {
    dx = abs(dx);
 
    Uint32 erracc = 0;
-
-   // Draw the initial pixel in the foreground color
-   setBlendColor(surf, x1, y1, color1);
    
-   float length = sqrt(dx*dx + dy*dy);
-   float pos = 0;
+   double length = sqrt(dx*dx + dy*dy);
 
    if(dy > dx) {
       Uint32 erradj = ((dx << 16) / dy) << 16;
@@ -77,7 +80,12 @@ void Line::draw(SDL_Surface* surf) {
 
          y1++;
 
-         float f = pos++ / length;
+         double dist = sqrt(pow(x1-ox, 2) + pow(y1-oy, 2));
+         double f = dist / length;
+         if(!swapAlpha) {
+            f = 1.0 - f;
+         }
+         f = filter->filter(f);
          Color c = lerp(f, color1, color2);
          Uint32 wgt = (erracc >> 24) & 255;
          setBlendColor(surf, x1, y1, c, 255 - wgt);
@@ -97,28 +105,32 @@ void Line::draw(SDL_Surface* surf) {
          }
          x1 += xdir;
          
-         float f = pos++ / length;
+         double dist = sqrt(pow(x1-ox, 2) + pow(y1-oy, 2));
+         double f = dist / length;
+         if(!swapAlpha) {
+            f = 1.0 - f;
+         }
+         f = filter->filter(f);
          Color c = lerp(f, color1, color2);
          Uint32 wgt = (erracc >> 24) & 255;
          setBlendColor(surf, x1, y1, c, 255 - wgt);
          setBlendColor(surf, x1, y0p1, c, wgt);
       }
    }
-
-   setBlendColor(surf, x2, y2, color2);
 }
 
 void Line::horizontal(SDL_Surface* surf, int y) {
    if (x1 > x2) {
-      swap(x1, x2);
+      std::swap(x1, x2);
+      swapAlpha = true;
    }
 
-   x1 = max(x1, (int) surf->clip_rect.x);
-   x2 = min(x2, (int) (surf->clip_rect.x + surf->clip_rect.w - 1));
    float dx = x2 - x1;
 
    for (int x = x1; x <= x2; x++) {
       float f = (x - x1) / dx;
+      if(swapAlpha) f = 1.0 - f;
+      f = filter->filter(f);
       Color c = lerp(f, color1, color2);
       setBlendColor(surf, x, y, c);
    }
@@ -126,16 +138,16 @@ void Line::horizontal(SDL_Surface* surf, int y) {
 
 void Line::vertical(SDL_Surface * surf, int x) {
    if (y1 > y2) {
-      swap(y1, y2);
+      std::swap(y1, y2);
+      swapAlpha = true;
    }
-
-   y1 = max(y1, (int) surf->clip_rect.y);
-   y2 = min(y2, (int) (surf->clip_rect.y + surf->clip_rect.h - 1));
 
    float dy = y2 - y1;
 
    for (int y = y1; y <= y2; y++) {
       float f = (y - y1) / dy;
+      if(swapAlpha) f = 1.0 - f;
+      f = filter->filter(f);
       Color c = lerp(f, color1, color2);
       setBlendColor(surf, x, y, c);
    }
