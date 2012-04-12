@@ -1,4 +1,5 @@
 #include <SDL/SDL.h>
+#include <SDL_ttf/SDL_ttf.h>
 #include "Utility/SDL_Utility.h"
 #include "Shapes2D/ThickLine.h"
 #include "Shapes2D/Line.h"
@@ -8,6 +9,7 @@
 #include "Falloff/SmoothStepFilter.h"
 #include "Falloff/CosineFilter.h"
 #include <vector>
+#include <string>
 
 using namespace std;
 
@@ -23,11 +25,13 @@ Color color(0.1, 0.3, 0.8, 0);
 Color white(1, 1, 1, 1);
 
 typedef vector<Shape2D*>::const_iterator ShapeIter;
+typedef vector<string>::const_reverse_iterator TextIter;
 
 void run();
 int randomNoBetween(int x, int y);
 void light1();
 void light2();
+void drawText(SDL_Surface* screen, int size, vector<string> text);
 
 int randomNoBetween(int x, int y) {
    return (rand() % (y - x + 1)) + x;
@@ -51,6 +55,9 @@ void run() {
             break;
       }
    }
+   
+   TTF_Quit();
+   SDL_Quit();
 }
 
 void light1() {
@@ -124,10 +131,44 @@ void light2() {
    shapes.push_back(thick);
 }
 
+void drawText(SDL_Surface* screen, int size, vector<string> text) {
+   TTF_Font *font;
+   font = TTF_OpenFont("/Library/Fonts/Bank Gothic Medium BT.ttf", size);
+   if(!font) {
+      printf("TTF_OpenFont: %s\n", TTF_GetError());
+      return ;
+   }
+   
+   SDL_Color color = {255, 255, 255};
+   SDL_Rect dest;
+   dest.y = height;
+
+   for(TextIter it = text.rbegin(); it != text.rend(); ++it) {
+      SDL_Surface *text_surface;
+      if(!(text_surface=TTF_RenderText_Blended(font, (*it).c_str(), color))) {
+         printf("TTF_RenderText: %s\n", TTF_GetError());
+      } else {
+         dest.x = width - text_surface->w;
+         dest.y -= text_surface->h;
+         if(SDL_BlitSurface(text_surface, NULL, screen, &dest) == -1) {
+            printf("Error during blit: %s\n", SDL_GetError());
+         }
+         SDL_FreeSurface(text_surface);
+      }
+   }
+   
+   TTF_CloseFont(font);
+}
+
 int main(int argc, char **argv) {
    if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
       fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
       exit(1);
+   }
+
+   if(TTF_Init()==-1) {
+      printf("TTF_Init: %s\n", TTF_GetError());
+      exit(2);
    }
 
    srand(0);
@@ -139,12 +180,17 @@ int main(int argc, char **argv) {
    SDL_FillRect(surface, NULL, black);
 
    light2();
-
    for(ShapeIter it = shapes.begin(); it != shapes.end(); ++it) {
       (*it)->draw(surface);
    }
 
    SDL_BlitSurface(surface, NULL, screen, NULL);
+
+   vector<string> text;
+   text.push_back("Eric Saari ");
+   text.push_back("Presents ");
+   drawText(screen, 32, text);
+   
    SDL_Flip(screen);
 
    run();
