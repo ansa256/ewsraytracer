@@ -21,6 +21,7 @@ public:
 private:
    Color color;
    Vector3D direction;
+   int maxDistance;
    float* samples;
 };
 
