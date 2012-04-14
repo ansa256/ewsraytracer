@@ -77,7 +77,6 @@ void SDLApp::loadConfiguration(int argc, char** argv) {
    
    if(h->contains("animation")) {
       animation = new Animation(camera, surface);
-      camera->setSurface(surface);
       animation->setup(h->getString("animation"));
    }
 }
@@ -101,6 +100,42 @@ void SDLApp::run() {
             }
             else if(event.key.keysym.sym == 's') {
                saveImage(surface, "image.png");
+            }
+            else if(event.key.keysym.sym == SDLK_LEFT) {
+               if(event.key.keysym.mod == KMOD_LSHIFT) {
+                  camera->rotate(0, 1, 0);
+               }
+               else {
+                  camera->translate(-5, 0, 0);
+               }
+               camera->render();
+            }
+            else if(event.key.keysym.sym == SDLK_RIGHT) {
+               if(event.key.keysym.mod == KMOD_LSHIFT) {
+                  camera->rotate(0, -1, 0);
+               }
+               else {
+                  camera->translate(5, 0, 0);
+               }
+               camera->render();               
+            }
+            else if(event.key.keysym.sym == SDLK_UP) {
+               if(event.key.keysym.mod == KMOD_LSHIFT) {
+                  camera->rotate(1, 0, 0);
+               }
+               else {
+                  camera->translate(0, 5, 0);
+               }
+               camera->render();               
+            }
+            else if(event.key.keysym.sym == SDLK_DOWN) {
+               if(event.key.keysym.mod == KMOD_LSHIFT) {
+                  camera->rotate(-1, 0, 0);
+               }
+               else {
+                  camera->translate(0, -5, 0);
+               }
+               camera->render();               
             }
             break;
 
