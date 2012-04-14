@@ -4,7 +4,7 @@
 #include "Geometry/GeometryObject.h"
 #include "Storage/Storage.h"
 
-Direction::Direction() : Light(), color(), direction() {
+Direction::Direction() : Light(), color(), direction(0, 0, 1), maxDistance(numeric_limits<int>::max()) {
    samples = new float[2];
    samples[0] = samples[1] = 0.5;
 }
@@ -16,12 +16,30 @@ Direction::~Direction() {
 void Direction::setHash(Hash* hash) {
    color.set(hash->getValue("color")->getArray());
    color *= hash->getDouble("radiance");
-   direction.set(hash->getValue("direction")->getArray());
-   direction.normalize();
+   
+   if(hash->contains("direction")) {
+      direction.set(hash->getValue("direction")->getArray());
+      direction.normalize();
+   }
+   
+   if(hash->contains("rotate")) {
+      Array* a = hash->getValue("rotate")->getArray();
+      Matrix m;
+      m.rotateX(a->at(0)->getDouble());
+      m.rotateY(a->at(1)->getDouble());
+      m.rotateZ(a->at(2)->getDouble());
+      
+      direction = m * direction;
+      direction.normalize();
+   }
+   
+   if(hash->contains("maxDistance")) {
+      maxDistance = hash->getInteger("maxDistance");
+   }
 }
 
 bool Direction::inShadow(const Ray& ray, const ShadeRecord& sr) {
-   if(GeometryManager::instance().getStorage()->shadowHit(ray)) {
+   if(GeometryManager::instance().getStorage()->shadowHit(ray) && (ray.tHit < maxDistance)) {
       return true;
    }
    return false;
