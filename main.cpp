@@ -6,13 +6,19 @@
 
 using namespace std;
 
-const int width = 1024;
-const int height = 768;
+const int width = 960;
+const int height = 540;
 
-typedef vector<string>::const_reverse_iterator TextIter;
+const int inFrameOne = 15;
+const int inFrameTwo = 100;
+const int fadeFrames = 30;
+const int outFrame = 180;
+const int lastFrame = outFrame + fadeFrames + inFrameOne;
+
+typedef vector<string>::const_iterator TextIter;
 
 void run();
-void drawText(SDL_Surface* screen, int size, vector<string> text, SDL_Color color);
+void drawText(SDL_Surface* screen, int size, vector<string> text, SDL_Color color, SDL_Color color2, bool draw2 = false);
 
 void run() {
    SDL_Event event;
@@ -37,37 +43,52 @@ void run() {
    SDL_Quit();
 }
 
-void drawText(SDL_Surface* screen, int size, vector<string> text, SDL_Color color) {
+void drawText(SDL_Surface* screen, int size, vector<string> text, SDL_Color color, SDL_Color color2, bool draw2) {
    TTF_Font *font;
-//   font = TTF_OpenFont("/Library/Fonts/Bank Gothic Medium BT.ttf", size);
-   font = TTF_OpenFont("/home/saariew1/.fonts/bankgthd.ttf", size);
+   font = TTF_OpenFont("/Library/Fonts/Bank Gothic Medium BT.ttf", size);
+//   font = TTF_OpenFont("/home/saariew1/.fonts/bankgthd.ttf", size);
    if(!font) {
       printf("TTF_OpenFont: %s\n", TTF_GetError());
       return ;
    }
+   
+   vector<SDL_Surface*> surfaces;
+   int width = 0;
+   int height = 0;
+
+   for(TextIter it = text.begin(); it != text.end(); ++it) {
+      SDL_Surface* surf = TTF_RenderText_Blended(font, (*it).c_str(), color);
+      surfaces.push_back(surf);
+      width = max(width, surf->w);
+      height = surf->h;
+   }
 
    SDL_Rect dest;
-   dest.y = height;
+   dest.x = (screen->w - width) / 2;
+   dest.y = (screen->h - ((text.size() + 2) * height)) / 2;
 
-   for(TextIter it = text.rbegin(); it != text.rend(); ++it) {
-      SDL_Surface *text_surface;
-      if(!(text_surface = TTF_RenderText_Blended(font, (*it).c_str(), color))) {
-         printf("TTF_RenderText: %s\n", TTF_GetError());
-      } 
-      else {
-         setAlpha(text_surface, 255);
-         dest.x = width - text_surface->w;
-         dest.y -= text_surface->h;
-
-         if(SDL_BlitSurface(text_surface, NULL, screen, &dest) == -1) {
-            printf("Error during blit: %s\n", SDL_GetError());
-         }
-         
-         SDL_FreeSurface(text_surface);
+   for(vector<SDL_Surface*>::const_iterator it = surfaces.begin(); it != surfaces.end(); ++it) {
+      if(SDL_BlitSurface((*it), NULL, screen, &dest) == -1) {
+         printf("Error during blit: %s\n", SDL_GetError());
       }
+         
+      dest.y += (*it)->h;
+      SDL_FreeSurface(*it);
    }
-   
+
    TTF_CloseFont(font);
+
+   if(draw2) {
+      font = TTF_OpenFont("/Library/Fonts/Bank Gothic Medium BT.ttf", size * 0.80);
+   
+      SDL_Surface* surf = TTF_RenderText_Blended(font, "- STANLEY KUBRICK", color2);
+      dest.x = dest.x + width - surf->w;
+      dest.y += height;
+      SDL_BlitSurface(surf, NULL, screen, &dest);
+      SDL_FreeSurface(surf);
+   
+      TTF_CloseFont(font);
+   }
 }
 
 int main(int argc, char **argv) {
@@ -83,24 +104,99 @@ int main(int argc, char **argv) {
 
    srand(0);
 
-   SDL_Surface* screen = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
+   SDL_Surface* screen = SDL_SetVideoMode(width, height, 24, SDL_HWSURFACE | SDL_DOUBLEBUF);
 
    SDL_Surface* surface = createSurface(width, height);
    Uint32 black = SDL_MapRGBA(surface->format, 0, 0, 0, 0);
    SDL_FillRect(surface, NULL, black);
    
-//   You're free to speculate as you wish about the philosophical and allegorical meaning of the film (2001) ...
+//   You're free to speculate as you wish about the
+//   philosophical and allegorical meaning of the film (2001) ...
 
    SDL_BlitSurface(surface, NULL, screen, NULL);
+   SDL_UpdateRect(screen, 0, 0, 0, 0);
+   
+   char fname[512];
+   string outputDir = "/Users/esaari1/workspace/raytracer/output/title";
+   unsigned long frame = 0;
+   
+   while(frame < inFrameOne) {
+      sprintf(fname, "%s/image%05lu.png", outputDir.c_str(), frame);
+      saveImage(screen, fname);
+      frame++;
+   }
 
    vector<string> text;
-   text.push_back("Eric Saari ");
-//   text.push_back("Presents ");
-
-   SDL_Color color = {255, 255, 255};
-   drawText(screen, 50, text, color);
+   text.push_back("YOU'RE FREE TO SPECULATE AS YOU");
+   text.push_back("WISH ABOUT THE PHILISOPHICAL AND");
+   text.push_back("ALLEGORICAL MEANING OF THE FILM");
    
-   SDL_Flip(screen);
+   float denom = 1.f / fadeFrames;
+   while(frame < (inFrameOne + fadeFrames)) {
+      float p = (frame - inFrameOne) * denom;
+      int c = (int)(p * 255.f);
+      SDL_Color color = {c, c, c};
+
+      SDL_FillRect(screen, NULL, black);
+      drawText(screen, 30, text, color, color, false);
+      SDL_UpdateRect(screen, 0, 0, 0, 0);
+
+      sprintf(fname, "%s/image%05lu.png", outputDir.c_str(), frame);
+      saveImage(screen, fname);
+
+      frame++;
+   }
+   
+   while(frame < inFrameTwo) {
+      sprintf(fname, "%s/image%05lu.png", outputDir.c_str(), frame);
+      saveImage(screen, fname);
+      frame++;
+   }
+   
+   SDL_Color white = {255, 255, 255};
+   while(frame < (inFrameTwo + fadeFrames)) {
+      float p = (frame - inFrameTwo) * denom;
+      int c = (int)(p * 255.f);
+      SDL_Color color = {c, c, c};
+      
+      SDL_FillRect(screen, NULL, black);
+      drawText(screen, 30, text, white, color, true);
+      SDL_UpdateRect(screen, 0, 0, 0, 0);
+      
+      sprintf(fname, "%s/image%05lu.png", outputDir.c_str(), frame);
+      saveImage(screen, fname);
+      
+      frame++;
+   }
+   
+   while(frame < outFrame) {
+      sprintf(fname, "%s/image%05lu.png", outputDir.c_str(), frame);
+      saveImage(screen, fname);
+      frame++;
+   }
+   
+   while(frame < (outFrame + fadeFrames)) {
+      float p = 1.f - (frame - outFrame) * denom;
+      int c = (int)(p * 255.f);
+      SDL_Color color = {c, c, c};
+      
+      SDL_FillRect(screen, NULL, black);
+      drawText(screen, 30, text, color, color, true);
+      SDL_UpdateRect(screen, 0, 0, 0, 0);
+      
+      sprintf(fname, "%s/image%05lu.png", outputDir.c_str(), frame);
+      saveImage(screen, fname);
+      
+      frame++;
+   }
+   
+   while(frame < lastFrame) {
+      sprintf(fname, "%s/image%05lu.png", outputDir.c_str(), frame);
+      saveImage(screen, fname);
+      frame++;
+   }
+   
+   printf("Done\n");
 
    run();
 
