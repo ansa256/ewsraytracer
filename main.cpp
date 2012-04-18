@@ -30,6 +30,7 @@ void run();
 int randomNoBetween(int x, int y);
 void light1();
 void light2();
+void thickLines();
 void drawText(SDL_Surface* screen, int size, vector<string> text, SDL_Color color);
 
 int randomNoBetween(int x, int y) {
@@ -129,6 +130,14 @@ void light2() {
    shapes.push_back(thick);
 }
 
+void thickLines() {
+   int length = 700;
+   
+   for(float a = 0; a < 360; a += 45.f) {
+       shapes.push_back(new ThickLine(cx, cy, length, a, 50, white, white));  
+   }
+}
+
 int main(int argc, char **argv) {
    if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
       fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
@@ -143,7 +152,8 @@ int main(int argc, char **argv) {
    Uint32 black = SDL_MapRGBA(surface->format, 0, 0, 0, 0);
    SDL_FillRect(surface, NULL, black);
 
-   light2();
+//   light2();
+   thickLines();
    for(ShapeIter it = shapes.begin(); it != shapes.end(); ++it) {
       (*it)->draw(surface);
    }
