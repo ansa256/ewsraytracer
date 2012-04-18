@@ -4,19 +4,13 @@
 #include "Utility/Matrix2D.h"
 #include "Murphy.h"
 
-ThickLine::ThickLine(int _x1, int _y1, int _x2, int _y2, int w, const Color& c1, const Color& c2) :
-      x1(_x1), y1(_y1), x2(_x2), y2(_y2), color1(c1), color2(c2)
-{
-   hw = w / 2;
-}
-
-ThickLine::ThickLine(int x, int y, int length, float angle, int w, const Color& c1, const Color& c2) {
+ThickLine::ThickLine(int x, int y, int length, int angle, int w, const Color& c1, const Color& c2) {
    x1 = x;
    y1 = y;
    hw = w / 2;
    color1 = c1;
    color2 = c2;
-   
+
    if(angle > 360) {
       angle -= 360;
    }
@@ -24,9 +18,32 @@ ThickLine::ThickLine(int x, int y, int length, float angle, int w, const Color& 
       angle += 360;
    }
 
-   angle *= M_PI / 180.f;
-   x2 = (int)(length * cos(angle)) + x1;
-   y2 = (int)(-length * sin(angle)) + y1;
+   swapAlpha = false;
+   if(angle == 0) {
+      x2 = x + length;
+      y2 = y1;
+   }
+   else if(angle == 90) {
+      x2 = x1;
+      y2 = y1 - length;
+   }
+   else if(angle == 180) {
+      x2 = x - length;
+      y2 = y1;
+   }
+   else if(angle == 270) {
+      x2 = x1;
+      y2 = y1 + length;
+   }
+   else {
+      if(angle > 90 && angle < 270) {
+         swapAlpha = true;
+      }
+
+      double a = angle * M_PI / 180.f;
+      x2 = (int)(length * cos(a)) + x1;
+      y2 = (int)(-length * sin(a)) + y1;
+   }
 }
 
 void ThickLine::draw(SDL_Surface* surf) {
@@ -37,9 +54,8 @@ void ThickLine::draw(SDL_Surface* surf) {
       drawVertical(surf);
    }
    else {
-//      drawAngle(surf);
-      Murphy m(surf);
-      m.wideline(x1, y1, x2, y2, hw+2);
+      Murphy m(surf, color1, color2, swapAlpha);
+      m.wideline(x1, y1, x2, y2, hw*2);
    }
 }
 

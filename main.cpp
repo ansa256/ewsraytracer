@@ -14,8 +14,8 @@ using namespace std;
 
 const int width = 1024;
 const int height = 768;
-const int cx = 512;
-const int cy = 384;
+const int cx = 100;
+const int cy = 100;
 
 vector<Shape2D*> shapes;
 
@@ -55,7 +55,7 @@ void run() {
             break;
       }
    }
-   
+
    SDL_Quit();
 }
 
@@ -106,7 +106,7 @@ void light2() {
    float angle = 100;
    while(angle < 210) {
       int length = randomNoBetween(150, 250);
-      
+
       fan = new Fan(cx, cy, length, angle , 2, Color(1, 1, 1, 0.3), color);
       fan->setFilter(new SmoothStepFilter(0.5, 1.0));
       shapes.push_back(fan);
@@ -116,26 +116,24 @@ void light2() {
       shapes.push_back(fan);
       angle += randomNoBetween(5, 15);
    }
-   
-   ThickLine* thick = new ThickLine(cx, cy, cx + 600, (int)cy, 45, white, color);
-   shapes.push_back(thick);
-   shapes.push_back(new ThickLine(cx, cy, cx - 600, cy, 45, white, color));
-   
-   thick = new ThickLine(cx, cy, cx, cy + 400, 40, white, color);
-//   thick->setFilter(new SmoothStepFilter(0.1, 1.0));
-   shapes.push_back(thick);
 
-   thick = new ThickLine(cx, cy, cx, cy - 400, 40, color, white);
-//   thick->setFilter(new SmoothStepFilter(0.3, 1.0));
-   shapes.push_back(thick);
+   shapes.push_back(new ThickLine(cx, cy, cx + 600, (int)cy, 45, white, color));
+   shapes.push_back(new ThickLine(cx, cy, cx - 600, cy, 45, white, color));
+
+   shapes.push_back(new ThickLine(cx, cy, cx, cy + 400, 40, white, color));
+   shapes.push_back(new ThickLine(cx, cy, cx, cy - 400, 40, color, white));
 }
 
 void thickLines() {
-   int length = 700;
-   
-   for(float a = 0; a < 360; a += 45.f) {
-       shapes.push_back(new ThickLine(cx, cy, length, a, 50, white, white));  
+   int length = 400;
+
+   for(int a = 0; a < 360; a += 45) {
+      shapes.push_back(new ThickLine(cx, cy, length, a, 30, white, color));
    }
+
+   FilledEllipse* center = new FilledEllipse(cx, cy, 100, 100, white, color);
+   center->setFilter(new SmoothStepFilter(0.1, 1.0));
+   shapes.push_back(center);
 }
 
 int main(int argc, char **argv) {
@@ -159,7 +157,7 @@ int main(int argc, char **argv) {
    }
 
    SDL_BlitSurface(surface, NULL, screen, NULL);
-   
+
    SDL_Flip(screen);
 
    run();

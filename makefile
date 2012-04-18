@@ -5,7 +5,7 @@ OBJ_DIRS   := $(addsuffix .directory, $(dir $(OBJ_FILES)))
 
 INCLUDES = . /usr/include/
 LIB_DIRS = /usr/lib/
-LIBS = 	   SDLmain SDL 
+LIBS = 	   mingw32 SDLmain SDL 
 
 INCLUDE_ARGS  = $(addprefix -I, $(INCLUDES))
 LIB_DIRS_ARGS = $(addprefix -L, $(LIB_DIRS))
