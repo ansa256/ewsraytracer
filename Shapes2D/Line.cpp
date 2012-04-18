@@ -15,15 +15,15 @@ Line::Line(int _x1, int _y1, int _x2, int _y2, const Color& c1, const Color& c2)
 Line::Line(int x, int y, int length, float angle, const Color& c1, const Color& c2) {
    x1 = x;
    y1 = y;
-   
+
    if(angle > 360) {
       angle -= 360;
    }
    if(angle < 0) {
       angle += 360;
    }
-   
-   swapAlpha = (angle > 180);   
+
+   swapAlpha = (angle > 180);
    angle *= M_PI / 180.f;
    x2 = (int)(length * cos(angle)) + x1;
    y2 = (int)(-length * sin(angle)) + y1;
@@ -37,11 +37,6 @@ Line::Line(int x, int y, int length, float angle, const Color& c1, const Color& 
 }
 
 void Line::draw(SDL_Surface* surf) {
-   if(y1 > y2) {
-      std::swap(x1, x2);
-      std::swap(y1, y2);
-   }
-   
    int ox = x1;
    int oy = y1;
 
@@ -58,12 +53,17 @@ void Line::draw(SDL_Surface* surf) {
       return ;
    }
 
+   if(y1 > y2) {
+      std::swap(x1, x2);
+      std::swap(y1, y2);
+   }
+
    // Adjust for negative dx and set xdir
    int xdir = (dx >= 0) ? 1 : -1;
    dx = abs(dx);
 
    Uint32 erracc = 0;
-   
+
    double length = sqrt(dx*dx + dy*dy);
 
    if(dy > dx) {
@@ -104,7 +104,7 @@ void Line::draw(SDL_Surface* surf) {
             y0p1++;
          }
          x1 += xdir;
-         
+
          double dist = sqrt(pow(x1-ox, 2) + pow(y1-oy, 2));
          double f = dist / length;
          if(!swapAlpha) {
