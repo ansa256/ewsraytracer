@@ -98,14 +98,14 @@ double* CreateGaussianFilter(double piSigma, double piAlpha, int& lSize) {
 }
 
 SDL_Surface* Convolute(SDL_Surface* source, double* filter, int fSize) {
-   long lSizeX = width;
-   long lSizeY = height;
    SDL_Surface* dest = createSurface(width, height);
    Uint8 r, g, b, a;
+   const int halfSize = (int)floor(fSize / 2.0);
+   const double cf = 1.0 / 255.0;
 
    //for each pixel
-   for (int x = 0; x < lSizeX; x++) {
-      for (int y = 0; y < lSizeY; y++) {
+   for (int x = 0; x < width; x++) {
+      for (int y = 0; y < height; y++) {
          double SumR = 0;
          double SumG = 0;
          double SumB = 0;
@@ -114,35 +114,26 @@ SDL_Surface* Convolute(SDL_Surface* source, double* filter, int fSize) {
          //For each point of the filter.
          for (int i = 0; i < fSize; i++) {
             //This is to make our origin in the center of the filter								
-            int FakeI = i - int(floor(fSize / 2.0));
-            for (int j = 0; j < fSize; j++) {
-               int FakeJ = j - int(floor(fSize / 2.0));
-               double FactorR = 0;
-               double FactorG = 0;
-               double FactorB = 0;
-               double FactorA = 0;
+            int FakeI = i - halfSize;
 
-               if (x+FakeJ < lSizeX && y+FakeI < lSizeY && x+FakeJ >= 0 && y+FakeI >= 0) {
-                  Uint32 pixel = getPixel(source, x + FakeJ, y + FakeI);
-                  SDL_GetRGBA(pixel, source->format, &r, &g, &b, &a);
-                  FactorR = (double)r / 255.0;
-                  FactorG = (double)g / 255.0;
-                  FactorB = (double)b / 255.0;
-                  FactorA = (double)a / 255.0;
-//                  Factor = piImage.GetPixel((x+FakeJ), (y+FakeI));
+            if(y+FakeI < height && y+FakeI >= 0) {
+               for (int j = 0; j < fSize; j++) {
+                  int FakeJ = j - halfSize;
+
+                  if (x+FakeJ < width && x+FakeJ >= 0) {
+                     Uint32 pixel = getPixel(source, x + FakeJ, y + FakeI);
+                     SDL_GetRGBA(pixel, source->format, &r, &g, &b, &a);
+                     SumR += r * filter[i * fSize + j] * cf;
+                     SumG += g * filter[i * fSize + j] * cf;
+                     SumB += b * filter[i * fSize + j] * cf;
+                     SumA += a * filter[i * fSize + j] * cf;
+                  }
                }
-
-               SumR += FactorR * filter[i * fSize + j];
-               SumG += FactorG * filter[i * fSize + j];
-               SumB += FactorB * filter[i * fSize + j];
-               SumA += FactorA * filter[i * fSize + j];
-//               Sum += Factor * piFilter.GetPixel(j, i);
             }				
          }
 
          Uint32 pixel = SDL_MapRGBA(source->format, SumR * 255, SumG * 255, SumB * 255, SumA * 255);
          setPixel(dest, x, y, pixel);
-//         poResult.SetPixel(x,y,Sum);
       }
    }
    
