@@ -1,3 +1,4 @@
+UNAME      := $(shell uname)
 MAIN_FILES := main.cpp
 CPP_FILES  := $(filter-out $(MAIN_FILES), $(subst ./,, $(shell find . -name "*.cpp")))
 OBJ_FILES  := $(addprefix obj/,$(CPP_FILES:.cpp=.o))
@@ -5,7 +6,14 @@ OBJ_DIRS   := $(addsuffix .directory, $(dir $(OBJ_FILES)))
 
 INCLUDES = . /usr/include/
 LIB_DIRS = /usr/lib/
+
+ifeq ($(UNAME), Linux)
+LIBS = 	   SDLmain SDL 
+endif
+ifeq ($(UNAME), Windows)
 LIBS = 	   mingw32 SDLmain SDL 
+endif
+
 
 INCLUDE_ARGS  = $(addprefix -I, $(INCLUDES))
 LIB_DIRS_ARGS = $(addprefix -L, $(LIB_DIRS))
