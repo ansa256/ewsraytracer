@@ -2,7 +2,7 @@
 #include "Utility/SDL_Utility.h"
 #include "Shapes2D/ThickLine.h"
 #include "Shapes2D/FilledEllipse.h"
-#include "Falloff/SmoothStepFilter.h"
+#include "Falloff/FalloffFilter.h"
 #include <vector>
 #include <string>
 

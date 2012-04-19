@@ -1,5 +1,5 @@
 #include "Shape2D.h"
-#include "Falloff/LinearFilter.h"
+#include "Falloff/FalloffFilter.h"
 
 Shape2D::Shape2D() : filter(new LinearFilter()) {}
 
