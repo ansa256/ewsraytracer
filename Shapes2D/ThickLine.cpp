@@ -4,7 +4,7 @@
 #include "Utility/Matrix2D.h"
 #include "Murphy.h"
 
-ThickLine::ThickLine(int x, int y, int length, int angle, int w, const Color& c1, const Color& c2) {
+ThickLine::ThickLine(int x, int y, int length, float angle, int w, const Color& c1, const Color& c2) {
    x1 = x;
    y1 = y;
    hw = w / 2;
@@ -19,6 +19,7 @@ ThickLine::ThickLine(int x, int y, int length, int angle, int w, const Color& c1
    }
 
    swapAlpha = false;
+/*
    if(angle == 0) {
       x2 = x + length;
       y2 = y1;
@@ -36,6 +37,7 @@ ThickLine::ThickLine(int x, int y, int length, int angle, int w, const Color& c1
       y2 = y1 + length;
    }
    else {
+*/
       if(angle > 90 && angle < 270) {
          swapAlpha = true;
       }
@@ -43,7 +45,7 @@ ThickLine::ThickLine(int x, int y, int length, int angle, int w, const Color& c1
       double a = angle * M_PI / 180.f;
       x2 = (int)(length * cos(a)) + x1;
       y2 = (int)(-length * sin(a)) + y1;
-   }
+//   }
 }
 
 void ThickLine::draw(SDL_Surface* surf) {
