@@ -1,8 +1,7 @@
 #include "Line.h"
 #include "Utility/SDL_Utility.h"
 #include "Utility/Math.h"
-#include "Falloff/SmoothStepFilter.h"
-#include "Falloff/CosineFilter.h"
+#include "Falloff/FalloffFilter.h"
 #include <algorithm>
 #include <math.h>
 

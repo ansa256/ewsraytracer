@@ -1,7 +1,7 @@
 #include "FilledEllipse.h"
 #include "Utility/SDL_Utility.h"
 #include "Utility/Math.h"
-#include "Falloff/CosineFilter.h"
+#include "Falloff/FalloffFilter.h"
 #include <math.h>
 #include <algorithm>
 
