@@ -13,6 +13,9 @@ const int height = 540;
 const int cx = 200;
 const int cy = 150;
 
+const int COUNT = 12;
+const float START = 10;
+
 vector<Shape2D*> shapes;
 
 //Color color(0.1, 0.3, 0.8, 0);
@@ -23,7 +26,7 @@ typedef vector<Shape2D*>::const_iterator ShapeIter;
 typedef vector<string>::const_reverse_iterator TextIter;
 
 void run();
-void thickLines();
+void star(int numSpikes, float startAngle);
 double* CreateGaussianFilter(double piSigma, double piAlpha, int& lSize);
 SDL_Surface* Convolute(SDL_Surface* source, double* filter, int fSize);
 
@@ -49,12 +52,11 @@ void run() {
    SDL_Quit();
 }
 
-void thickLines() {
+void star(int numSpikes, float startAngle) {
    int length = 430;
-   
-   int start = 10;
+   float offset = 360.f / numSpikes;
 
-   for(int a = start; a < 360 + start; a += 30) {
+   for(float a = startAngle; a < 360 + startAngle; a += offset) {
       shapes.push_back(new ThickLine(cx, cy, length, a, 40, white, color));
    }
 
@@ -66,7 +68,6 @@ void thickLines() {
 double* CreateGaussianFilter(double piSigma, double piAlpha, int& lSize) {
    lSize = ((int)(piAlpha * piSigma) / 2)*2 + 1; //force odd-size filters
 	
-//	poFilter.ResetImage(lSize, lSize);
    double* filter = new double[lSize * lSize];
 
    for (int x = 0; x < lSize ; x++) {
@@ -75,7 +76,6 @@ double* CreateGaussianFilter(double piSigma, double piAlpha, int& lSize) {
          long FakeY = y - long(floor(lSize / 2.0));
          double k = 1.0 / (2.0 * M_PI * piSigma * piSigma);
          filter[y * lSize + x] = k * exp( (-1 * ((FakeX * FakeX) + (FakeY *FakeY))) / (2 * piSigma * piSigma));
-//         poFilter.SetPixel(x, y, k * exp( (-1 * ((FakeX * FakeX) + (FakeY *FakeY))) / (2 * piSigma * piSigma)));
       }
    }
    //normalise the filter
@@ -83,14 +83,12 @@ double* CreateGaussianFilter(double piSigma, double piAlpha, int& lSize) {
    for (long x = 0; x < lSize; x++) {
       for (long y = 0;y < lSize; y++) {
          lTotal += filter[y * lSize + x];
-//         lTotal += poFilter.GetPixel(x, y);
       }
    }
 	
    for (long x = 0;x < lSize; x++) {
       for (long y = 0;y < lSize; y++) {
          filter[y * lSize + x] /= lTotal;
-//         poFilter->SetPixel(x, y, poFilter.GetPixel(x, y) / lTotal);
       }
    }
    
@@ -152,7 +150,7 @@ int main(int argc, char **argv) {
    Uint32 black = SDL_MapRGBA(surface->format, 0, 0, 0, 0);
    SDL_FillRect(surface, NULL, black);
 
-   thickLines();
+   star(COUNT, START);
    for(ShapeIter it = shapes.begin(); it != shapes.end(); ++it) {
       (*it)->draw(surface);
    }
@@ -160,12 +158,14 @@ int main(int argc, char **argv) {
    int fSize;
    double* filter = CreateGaussianFilter(3, 6, fSize);
    SDL_Surface* dest = Convolute(surface, filter, fSize);
+   delete[] filter;
 
    SDL_BlitSurface(dest, NULL, screen, NULL);
-
    SDL_Flip(screen);
-
    run();
+   
+   SDL_FreeSurface(surface);
+   SDL_FreeSurface(dest);
 
    return 0;
 }
