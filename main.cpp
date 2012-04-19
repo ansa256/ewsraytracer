@@ -1,41 +1,31 @@
 #include <SDL/SDL.h>
 #include "Utility/SDL_Utility.h"
 #include "Shapes2D/ThickLine.h"
-#include "Shapes2D/Line.h"
 #include "Shapes2D/FilledEllipse.h"
-#include "Shapes2D/Ring.h"
-#include "Shapes2D/Fan.h"
 #include "Falloff/SmoothStepFilter.h"
-#include "Falloff/CosineFilter.h"
 #include <vector>
 #include <string>
 
 using namespace std;
 
-const int width = 1024;
-const int height = 768;
-const int cx = 100;
-const int cy = 100;
+const int width = 960;
+const int height = 540;
+const int cx = 200;
+const int cy = 150;
 
 vector<Shape2D*> shapes;
 
-Color color(0.1, 0.3, 0.8, 0);
-//Color color(1, 0.7, 0.1, 0);
+//Color color(0.1, 0.3, 0.8, 0);
+Color color(1, 0.7, 0.1, 0);
 Color white(1, 1, 1, 1);
 
 typedef vector<Shape2D*>::const_iterator ShapeIter;
 typedef vector<string>::const_reverse_iterator TextIter;
 
 void run();
-int randomNoBetween(int x, int y);
-void light1();
-void light2();
 void thickLines();
-void drawText(SDL_Surface* screen, int size, vector<string> text, SDL_Color color);
-
-int randomNoBetween(int x, int y) {
-   return (rand() % (y - x + 1)) + x;
-}
+double* CreateGaussianFilter(double piSigma, double piAlpha, int& lSize);
+SDL_Surface* Convolute(SDL_Surface* source, double* filter, int fSize);
 
 void run() {
    SDL_Event event;
@@ -59,81 +49,104 @@ void run() {
    SDL_Quit();
 }
 
-void light1() {
-   shapes.push_back(new ThickLine(cx, cy, min(cx + 400, width-1) , cy, 35, white, color));
-   shapes.push_back(new ThickLine(cx, cy, max(cx - 400, 0), cy, 35, color, white));
-
-   shapes.push_back(new ThickLine(cx, cy, cx, cy + 200, 25, white, color));
-   shapes.push_back(new ThickLine(cx, cy, cx, cy - 200, 25, color, white));
-
-   float angle = 100;
-   while(angle < 200) {
-      int length = randomNoBetween(100, 250);
-      shapes.push_back(new Line(cx, cy, length, angle, white, color));
-      shapes.push_back(new Line(cx, cy, length, angle + 180, white, color));
-      angle += randomNoBetween(1, 8);
-   }
-
-   FilledEllipse* ellipse = new FilledEllipse(cx, cy, 100, 85, white, color);
-   ellipse->setFilter(new CosineFilter());
-   shapes.push_back(ellipse);
-   shapes.push_back(new Ring(cx, cy, 200, 220, Color(.3, .6, .8, .2), Color(.3, .6, .8, 0)));
-}
-
-void light2() {
-   FilledEllipse* circle = new FilledEllipse(cx, cy, 250, 250, white, color);
-   circle->setFilter(new SmoothStepFilter(0.05, 1.0));
-   shapes.push_back(circle);
-
-   int spread = 15;
-
-   Fan* fan = new Fan(cx, cy, 320, 60, spread, Color(1, 1, 1, 0.3), color);
-   fan->setFilter(new SmoothStepFilter(0.1, 1.0));
-   shapes.push_back(fan);
-
-   fan = new Fan(cx, cy, 320, 120, spread, Color(1, 1, 1, 0.3), color);
-   fan->setFilter(new SmoothStepFilter(0.1, 1.0));
-   shapes.push_back(fan);
-
-   fan = new Fan(cx, cy, 320, 240, spread, Color(1, 1, 1, 0.3), color);
-   fan->setFilter(new SmoothStepFilter(0.1, 1.0));
-   shapes.push_back(fan);
-
-   fan = new Fan(cx, cy, 320, 300, spread, Color(1, 1, 1, 0.3), color);
-   fan->setFilter(new SmoothStepFilter(0.1, 1.0));
-   shapes.push_back(fan);
-
-   float angle = 100;
-   while(angle < 210) {
-      int length = randomNoBetween(150, 250);
-
-      fan = new Fan(cx, cy, length, angle , 2, Color(1, 1, 1, 0.3), color);
-      fan->setFilter(new SmoothStepFilter(0.5, 1.0));
-      shapes.push_back(fan);
-
-      fan = new Fan(cx, cy, length, angle + 180, 2, Color(1, 1, 1, 0.3), color);
-      fan->setFilter(new SmoothStepFilter(0.5, 1.0));
-      shapes.push_back(fan);
-      angle += randomNoBetween(5, 15);
-   }
-
-   shapes.push_back(new ThickLine(cx, cy, cx + 600, (int)cy, 45, white, color));
-   shapes.push_back(new ThickLine(cx, cy, cx - 600, cy, 45, white, color));
-
-   shapes.push_back(new ThickLine(cx, cy, cx, cy + 400, 40, white, color));
-   shapes.push_back(new ThickLine(cx, cy, cx, cy - 400, 40, color, white));
-}
-
 void thickLines() {
-   int length = 400;
+   int length = 430;
+   
+   int start = 10;
 
-   for(int a = 0; a < 360; a += 45) {
-      shapes.push_back(new ThickLine(cx, cy, length, a, 30, white, color));
+   for(int a = start; a < 360 + start; a += 30) {
+      shapes.push_back(new ThickLine(cx, cy, length, a, 40, white, color));
    }
 
-   FilledEllipse* center = new FilledEllipse(cx, cy, 100, 100, white, color);
-   center->setFilter(new SmoothStepFilter(0.1, 1.0));
+   FilledEllipse* center = new FilledEllipse(cx, cy, 200, 200, white, color);
+   center->setFilter(new SmoothStepFilter(0.05, 1.0));
    shapes.push_back(center);
+}
+
+double* CreateGaussianFilter(double piSigma, double piAlpha, int& lSize) {
+   lSize = ((int)(piAlpha * piSigma) / 2)*2 + 1; //force odd-size filters
+	
+//	poFilter.ResetImage(lSize, lSize);
+   double* filter = new double[lSize * lSize];
+
+   for (int x = 0; x < lSize ; x++) {
+      long FakeX = x - long(floor(lSize / 2.0));
+      for (int y = 0 ; y < lSize ; y++) {
+         long FakeY = y - long(floor(lSize / 2.0));
+         double k = 1.0 / (2.0 * M_PI * piSigma * piSigma);
+         filter[y * lSize + x] = k * exp( (-1 * ((FakeX * FakeX) + (FakeY *FakeY))) / (2 * piSigma * piSigma));
+//         poFilter.SetPixel(x, y, k * exp( (-1 * ((FakeX * FakeX) + (FakeY *FakeY))) / (2 * piSigma * piSigma)));
+      }
+   }
+   //normalise the filter
+   double lTotal=0;
+   for (long x = 0; x < lSize; x++) {
+      for (long y = 0;y < lSize; y++) {
+         lTotal += filter[y * lSize + x];
+//         lTotal += poFilter.GetPixel(x, y);
+      }
+   }
+	
+   for (long x = 0;x < lSize; x++) {
+      for (long y = 0;y < lSize; y++) {
+         filter[y * lSize + x] /= lTotal;
+//         poFilter->SetPixel(x, y, poFilter.GetPixel(x, y) / lTotal);
+      }
+   }
+   
+   return filter;
+}
+
+SDL_Surface* Convolute(SDL_Surface* source, double* filter, int fSize) {
+   long lSizeX = width;
+   long lSizeY = height;
+   SDL_Surface* dest = createSurface(width, height);
+   Uint8 r, g, b, a;
+
+   //for each pixel
+   for (int x = 0; x < lSizeX; x++) {
+      for (int y = 0; y < lSizeY; y++) {
+         double SumR = 0;
+         double SumG = 0;
+         double SumB = 0;
+         double SumA = 0;
+
+         //For each point of the filter.
+         for (int i = 0; i < fSize; i++) {
+            //This is to make our origin in the center of the filter								
+            int FakeI = i - int(floor(fSize / 2.0));
+            for (int j = 0; j < fSize; j++) {
+               int FakeJ = j - int(floor(fSize / 2.0));
+               double FactorR = 0;
+               double FactorG = 0;
+               double FactorB = 0;
+               double FactorA = 0;
+
+               if (x+FakeJ < lSizeX && y+FakeI < lSizeY && x+FakeJ >= 0 && y+FakeI >= 0) {
+                  Uint32 pixel = getPixel(source, x + FakeJ, y + FakeI);
+                  SDL_GetRGBA(pixel, source->format, &r, &g, &b, &a);
+                  FactorR = (double)r / 255.0;
+                  FactorG = (double)g / 255.0;
+                  FactorB = (double)b / 255.0;
+                  FactorA = (double)a / 255.0;
+//                  Factor = piImage.GetPixel((x+FakeJ), (y+FakeI));
+               }
+
+               SumR += FactorR * filter[i * fSize + j];
+               SumG += FactorG * filter[i * fSize + j];
+               SumB += FactorB * filter[i * fSize + j];
+               SumA += FactorA * filter[i * fSize + j];
+//               Sum += Factor * piFilter.GetPixel(j, i);
+            }				
+         }
+
+         Uint32 pixel = SDL_MapRGBA(source->format, SumR * 255, SumG * 255, SumB * 255, SumA * 255);
+         setPixel(dest, x, y, pixel);
+//         poResult.SetPixel(x,y,Sum);
+      }
+   }
+   
+   return dest;
 }
 
 int main(int argc, char **argv) {
@@ -142,21 +155,22 @@ int main(int argc, char **argv) {
       exit(1);
    }
 
-   srand(0);
-
    SDL_Surface* screen = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
 
    SDL_Surface* surface = createSurface(width, height);
    Uint32 black = SDL_MapRGBA(surface->format, 0, 0, 0, 0);
    SDL_FillRect(surface, NULL, black);
 
-//   light2();
    thickLines();
    for(ShapeIter it = shapes.begin(); it != shapes.end(); ++it) {
       (*it)->draw(surface);
    }
+   
+   int fSize;
+   double* filter = CreateGaussianFilter(3, 6, fSize);
+   SDL_Surface* dest = Convolute(surface, filter, fSize);
 
-   SDL_BlitSurface(surface, NULL, screen, NULL);
+   SDL_BlitSurface(dest, NULL, screen, NULL);
 
    SDL_Flip(screen);
 
