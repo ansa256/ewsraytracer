@@ -32,7 +32,8 @@ void ImageTexture::setHash(Hash* hash) {
       mapping = UV;
    }
    else {
-       exit(1);
+      fprintf(stderr, "Error: no texture mapping specified\n");
+      exit(1);
    }
 
    if(hash->contains("colorAsAlpha")) {
