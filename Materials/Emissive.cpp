@@ -13,8 +13,16 @@ Emissive::~Emissive() {
 }
 
 void Emissive::setHash(Hash* hash) {
-   ls = hash->getDouble("radiance");
-   color.set(hash->getValue("color")->getArray());
+   if(hash->contains("radiance")) {
+      ls = hash->getDouble("radiance");
+   }
+   if(hash->contains("color")) {
+      color.set(hash->getValue("color")->getArray());
+   }
+   
+   if(hash->contains("texture")) {
+      texture = Texture::createTexture(hash->getValue("texture")->getHash());
+   }
 }
 
 Color Emissive::shade(ShadeRecord& sr, const Ray& ray) {
