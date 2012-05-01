@@ -13,13 +13,13 @@ const int height = 540;
 const int cx = 200;
 const int cy = 150;
 
-const int COUNT = 12;
-const float START = 10;
+const int COUNT = 6;
+const float START = 20;
 
 vector<Shape2D*> shapes;
 
-//Color color(0.1, 0.3, 0.8, 0);
-Color color(1, 0.7, 0.1, 0);
+Color blue(0.1, 0.3, 0.8, 0);
+Color yellow(1, 0.7, 0.1, 0);
 Color white(1, 1, 1, 1);
 
 typedef vector<Shape2D*>::const_iterator ShapeIter;
@@ -53,16 +53,25 @@ void run() {
 }
 
 void star(int numSpikes, float startAngle) {
-   int length = 430;
+   int length = 300;
    float offset = 360.f / numSpikes;
 
    for(float a = startAngle; a < 360 + startAngle; a += offset) {
-      shapes.push_back(new ThickLine(cx, cy, length, a, 40, white, color));
+      shapes.push_back(new ThickLine(cx, cy, length, a, 40, white, yellow));
    }
+   
+   shapes.push_back(new ThickLine(cx, cy, 800, 0, 50, white, blue));
+   shapes.push_back(new ThickLine(cx, cy, 800, 180, 50, white, blue));
 
-   FilledEllipse* center = new FilledEllipse(cx, cy, 200, 200, white, color);
-   center->setFilter(new SmoothStepFilter(0.05, 1.0));
+   FilledEllipse* center = new FilledEllipse(cx, cy, 100, 100, white, yellow);
+   center->setFilter(new SmoothStepFilter(0.1, 1.0));
    shapes.push_back(center);
+   
+   Color h1(0.7, 0.5, 0.1, 0.1);
+   Color h2(0.7, 0.5, 0.1, 0.0);
+   FilledEllipse* outer = new FilledEllipse(cx, cy, 300, 300, h1, h2);
+   outer->setFilter(new SmoothStepFilter(0.75, 1.0));
+   shapes.push_back(outer);
 }
 
 double* CreateGaussianFilter(double piSigma, double piAlpha, int& lSize) {
