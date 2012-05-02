@@ -37,7 +37,7 @@ void* renderThread(void* arg) {
 }
 
 Camera::Camera(string fname, int w, int h) : eye(), u(), v(), w(), 
-   tracer(new Tracer), surface(NULL), film(new Film(w, h)), width(w), height(h)
+   tracer(new Tracer(w, h)), surface(NULL), film(new Film(w, h)), width(w), height(h)
 {
    pthread_mutex_init(&rectLock, NULL);
    threadCount = 1;
@@ -66,7 +66,7 @@ void Camera::setHash(Hash* h) {
    eye.set(h->getValue("eye")->getArray());
 
    float angle = h->getDouble("angle") / 2.0;
-   float viewPlaneDistance = width * 0.5 / tan(angle * DEG_TO_RAD);
+   viewPlaneDistance = width * 0.5 / tan(angle * DEG_TO_RAD);
 
    samplerHash = h->getValue("sampler")->getHash();
 
@@ -124,7 +124,8 @@ void Camera::render() {
    Uint32 end = SDL_GetTicks();
    printf("Render time = %f seconds\n", (end - start) / 1000.0);
    
-   film->generateImage(surface);
+   Matrix m(u, v, w);
+   film->generateImage(surface, eye, viewPlaneDistance, m);
 }
 
 void Camera::renderBounds(const SamplerBounds& bounds) {
@@ -147,7 +148,9 @@ void Camera::renderBounds(const SamplerBounds& bounds) {
          ray.direction = u * (x - lp.x) + v * (y - lp.y) - w * f;
          ray.direction.normalize();
          
-         film->addSample(samples[i].imageX, samples[i].imageY, tracer->traceRay(ray, 0));         
+         int sx = clamp((int) ceil(samples[i].imageX), 0, width-1);
+         int sy = clamp((int) ceil(samples[i].imageY), 0, height-1);
+         film->addSample(samples[i].imageX, samples[i].imageY, tracer->traceRay(ray, 0, sx, sy));
       }
    }
 }
@@ -204,16 +207,4 @@ void Camera::setRotation(double x, double y, double z) {
    u.normalize();
    v.normalize();
    w.normalize();
-}
-
-void Camera::rotate(double x, double y, double z) {
-   Matrix m(u, v, w);
-
-   m.rotateX(-x);
-   m.rotateY(-y);
-   m.rotateZ(-z);
-   
-   m.getRow(u, 0);
-   m.getRow(v, 1);
-   m.getRow(w, 2);
 }

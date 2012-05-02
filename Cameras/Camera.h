@@ -27,7 +27,6 @@ public:
    void setSurface(SDL_Surface* s) { surface = s; }
    void setThreadParameters(int tc, int w, int h);
    void translate(double x, double y, double z);
-   void rotate(double x, double y, double z);
 
    Hash* samplerHash;
 
@@ -45,7 +44,7 @@ private:
    int height;
    
    float lensRadius;
-   float f, fDivV;
+   float f, fDivV, viewPlaneDistance;
 
    int threadCount;
    int boxw;
