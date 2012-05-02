@@ -20,8 +20,8 @@ SkyTexture::~SkyTexture() {
 }
 
 void SkyTexture::setHash(Hash* hash) {
-   color1.set(0.1, 0.2, 0.8);
-   color2.set(1, 1, 1);   
+   color1.set(0.1, 0.2, 0.8, 1.f);
+   color2.set(1, 1, 1, 1);   
    noise = new CubicNoise(hash->getInteger("seed"));
    min = hash->getDouble("min");
    max = hash->getDouble("max");

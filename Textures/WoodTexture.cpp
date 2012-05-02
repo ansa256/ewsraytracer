@@ -5,8 +5,8 @@
 
 WoodTexture::WoodTexture() : Texture(), noise(NULL) {
 //   lightColor.set(0.92, 0.92, 0.575);
-lightColor.set(0.5, 0.2, 0.065);
-   darkColor.set(0.05, 0.05, 0.05); // 0.40, 0.28, 0.08);
+   lightColor.set(0.5, 0.2, 0.065, 1);
+   darkColor.set(0.05, 0.05, 0.05, 1); // 0.40, 0.28, 0.08);
    ringFreq = 1.8;
    ringUneveness = 0.25;
    ringNoise = 0.02;

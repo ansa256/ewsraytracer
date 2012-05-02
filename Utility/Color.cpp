@@ -5,6 +5,7 @@
 using namespace std;
 
 const Color BLACK;
+const Color WHITE(1, 1, 1, 1);
 
 float epsilon = 1.0 * pow(10, -6);
 
@@ -35,17 +36,23 @@ Color::Color(Array* a) {
    }
 }
 
-void Color::set(float r, float g, float b) {
+void Color::set(float r, float g, float b, float a) {
    red = r;
    green = g;
    blue = b;
+   alpha = a;
 }
 
 void Color::set(Array* a) {
    red = a->at(0)->getDouble();
    green = a->at(1)->getDouble();
    blue = a->at(2)->getDouble();
-   alpha = 1.0;
+   if(a->size() > 3) {
+      alpha = a->at(3)->getDouble();
+   }
+   else {
+      alpha = 1.0;
+   }
 }
 
 Color& Color::operator= (const Color& p) {
