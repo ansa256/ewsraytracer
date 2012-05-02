@@ -219,7 +219,8 @@ bool KdTree::hit(const Ray& ray, ShadeRecord& sr) const {
    boost::dynamic_bitset<> checked(objs.size());
 
    stack<NodeS> nodeStack;
-   nodeStack.push(NodeS(0, 0, HUGE_VALUE));
+   nodeStack.push(NodeS(0, 0, ray.tHit));
+   bool hit = false;
 
    while(!nodeStack.empty()) {
       int node = nodeStack.top().node;
@@ -255,7 +256,7 @@ bool KdTree::hit(const Ray& ray, ShadeRecord& sr) const {
       for(uint32_t i = 0; i < nodes[node].nPrimitives(); i++) {
          int idx = nodes[node].idxs[i];
          if(!checked[idx]) {
-            objs[idx]->hit(ray, sr);
+            hit = objs[idx]->hit(ray, sr);
             checked[idx] = 1;
          }
       }
@@ -265,7 +266,7 @@ bool KdTree::hit(const Ray& ray, ShadeRecord& sr) const {
       }
    }
 
-   return ray.tHit < HUGE_VALUE;
+   return hit; // ray.tHit < HUGE_VALUE;
 /*
 stack.push(root,sceneMin,sceneMax)
 tHit=infinity
