@@ -476,11 +476,11 @@ void M3DSParser::readColor(Color* color) {
    unsigned char g = readChar(in);
    unsigned char b = readChar(in);
    
-   color->set((float) r / 255.0f, (float) g / 255.0f, (float) b / 255.0f);
+   color->set((float) r / 255.0f, (float) g / 255.0f, (float) b / 255.0f, 1.f);
 }
 
 void M3DSParser::readFloatColor(Color* color) {
-   color->set(readFloatLE(in) / 255.0f, readFloatLE(in) / 255.0f, readFloatLE(in) / 255.0f);
+   color->set(readFloatLE(in) / 255.0f, readFloatLE(in) / 255.0f, readFloatLE(in) / 255.0f, 1.f);
 }
 
 void M3DSParser::skipBytes(size_t count) {
