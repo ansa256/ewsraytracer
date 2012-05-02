@@ -138,3 +138,44 @@ void saveImage(SDL_Surface* surface, const char* fname) {
    png_destroy_write_struct(&png_ptr, &info_ptr);
    fclose(fp);
 }
+
+void setBlendColor(SDL_Surface *surf, int x, int y, const Color& c) {
+   SDL_Rect rect = surf->clip_rect;
+   if(x < 0 || x >= rect.w) {
+      return;
+   }
+   if(y < 0 || y >= rect.h) {
+      return;
+   }
+   Uint32 *pixel = (Uint32 *) surf->pixels + y * surf->pitch / 4 + x;
+   setBlendColor(surf, pixel, c);
+}
+
+void setBlendColor(SDL_Surface* surf, Uint32* pixel, const Color& c) {
+   Uint8 r, g, b, a;
+   SDL_GetRGBA(*pixel, surf->format, &r, &g, &b, &a);
+   float dr = r / 255.f;
+   float dg = g / 255.f;
+   float db = b / 255.f;
+   float da = a / 255.f;
+   
+   float sa = c.alpha;
+   
+   float ao = sa + da * (1.f - sa);
+   float ro = (c.red * sa + dr * da * (1.f - sa)) / ao;
+   float go = (c.green * sa + dg * da * (1.f - sa)) / ao;
+   float bo = (c.blue * sa + db * da * (1.f - sa)) / ao;
+   
+   r = ro * 255;
+   g = go * 255;
+   b = bo * 255;
+   a = ao * 255;
+   
+   *pixel = SDL_MapRGBA(surf->format, r, g, b, a);
+}
+
+void setBlendColor(SDL_Surface * surf, int x, int y, const Color& c, int weight) {
+   int alpha = ((c.getAlpha() * weight) >> 8);
+   Color color(c.red, c.green, c.blue, alpha / 255.f);
+   setBlendColor(surf, x, y, color);
+}
