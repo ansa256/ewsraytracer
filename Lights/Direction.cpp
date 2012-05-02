@@ -3,6 +3,9 @@
 #include "Geometry/GeometryManager.h"
 #include "Geometry/GeometryObject.h"
 #include "Storage/Storage.h"
+#include <limits>
+
+using namespace std;
 
 Direction::Direction() : Light(), color(), direction(0, 0, 1), maxDistance(numeric_limits<int>::max()) {
    samples = new float[2];
