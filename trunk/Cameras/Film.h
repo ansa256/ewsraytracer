@@ -3,6 +3,8 @@
 
 #include "Utility/Color.h"
 #include "Math/Point2D.h"
+#include "Math/Point3D.h"
+#include "Math/Matrix.h"
 
 class SDL_Surface;
 class Filter;
@@ -23,7 +25,7 @@ public:
    ~Film();
 
    void addSample(double sx, double sy, const Color& c);
-   void generateImage(SDL_Surface* surf);
+   void generateImage(SDL_Surface* surf, const Point3D& eye, float viewPlaneDist, const Matrix& m);
    void reset();
    
 private:
