@@ -5,6 +5,7 @@
 #include "Lights/LightManager.h"
 #include "Geometry/GeometryManager.h"
 #include "Geometry/Mesh/MeshManager.h"
+#include "Overlays/OverlayManager.h"
 #include "Utility/Animation.h"
 #include <math.h>
 #include <fstream>
@@ -53,7 +54,7 @@ void SDLApp::loadConfiguration(int argc, char** argv) {
    int boxw = h->getInteger("boxWidth");
    int boxh = h->getInteger("boxHeight");
 
-   surface = SDL_SetVideoMode(width, height, 24, SDL_HWSURFACE | SDL_DOUBLEBUF);
+   surface = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
    if (surface == NULL) {
 		fprintf(stderr, "Couldn't set video mode: %s\n", SDL_GetError());
 		SDL_Quit();
@@ -70,6 +71,10 @@ void SDLApp::loadConfiguration(int argc, char** argv) {
 
    LightManager::instance().loadLights(h->getString("lights"));
    GeometryManager::instance().loadObjects(h->getString("objects"));
+   
+   if(h->contains("overlays")) {
+      OverlayManager::instance().loadOverlays(h->getString("overlays"));
+   }
    
    camera = new Camera(h->getString("camera"), width, height);
    camera->setSurface(surface);
@@ -100,42 +105,6 @@ void SDLApp::run() {
             }
             else if(event.key.keysym.sym == 's') {
                saveImage(surface, "image.png");
-            }
-            else if(event.key.keysym.sym == SDLK_LEFT) {
-               if(event.key.keysym.mod == KMOD_LSHIFT) {
-                  camera->rotate(0, 1, 0);
-               }
-               else {
-                  camera->translate(-5, 0, 0);
-               }
-               camera->render();
-            }
-            else if(event.key.keysym.sym == SDLK_RIGHT) {
-               if(event.key.keysym.mod == KMOD_LSHIFT) {
-                  camera->rotate(0, -1, 0);
-               }
-               else {
-                  camera->translate(5, 0, 0);
-               }
-               camera->render();               
-            }
-            else if(event.key.keysym.sym == SDLK_UP) {
-               if(event.key.keysym.mod == KMOD_LSHIFT) {
-                  camera->rotate(1, 0, 0);
-               }
-               else {
-                  camera->translate(0, 5, 0);
-               }
-               camera->render();               
-            }
-            else if(event.key.keysym.sym == SDLK_DOWN) {
-               if(event.key.keysym.mod == KMOD_LSHIFT) {
-                  camera->rotate(-1, 0, 0);
-               }
-               else {
-                  camera->translate(0, -5, 0);
-               }
-               camera->render();               
             }
             break;
 
