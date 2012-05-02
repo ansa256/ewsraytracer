@@ -3,6 +3,8 @@
 #include "Utility/atomics.h"
 #include "Filters/MitchellFilter.h"
 #include "Filters/BoxFilter.h"
+#include "Overlays/OverlayManager.h"
+#include "Math/Ray.h"
 #include <SDL.h>
 #include <math.h>
 
@@ -50,12 +52,28 @@ void Film::addSample(double sx, double sy, const Color& c) {
    }
 }
 
-void Film::generateImage(SDL_Surface* surf) {
+void Film::generateImage(SDL_Surface* surf, const Point3D& eye, float viewPlaneDist, const Matrix& m) {
    for(int w = 0; w < width; w++) {
       for(int h = 0; h < height; h++) {
          setPixel(surf, w, height - h - 1, pixels[width * h + w].getColor());     
       }
    }
+
+   for(OverlayIter it = OverlayManager::instance().begin(); it != OverlayManager::instance().end(); ++it) {
+      Vector3D v = (*it)->position - eye;
+      Vector3D d = m * v;
+
+      double x = viewPlaneDist * d.x / -d.z;
+      x = width * 0.5 + x;
+      double y = viewPlaneDist * d.y / d.z;
+      y = height * 0.5 + y;
+
+      int l = (int)(x - (*it)->surface->w * 0.5);
+      int t = (int)(y - (*it)->surface->h * 0.5);
+      SDL_Rect dst = {l, t, 0, 0};
+      SDL_BlitSurface((*it)->surface, NULL, surf, &dst);
+   }
+   
    SDL_UpdateRect(surf, 0, 0, 0, 0);
 }
 
