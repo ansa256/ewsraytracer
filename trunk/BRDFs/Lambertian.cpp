@@ -12,7 +12,7 @@ Lambertian::~Lambertian() {
 }
 
 void Lambertian::setColor(float r, float g, float b) {
-   color.set(r, g, b);
+   color.set(r, g, b, 1);
 }
 
 Color Lambertian::f(const ShadeRecord& sr, const Vector3D& wo, const Vector3D& wi) const {
