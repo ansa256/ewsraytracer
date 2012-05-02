@@ -2,6 +2,9 @@
 #define _STARBOX_H_
 
 #include "Materials/Emissive.h"
+#include <string>
+
+using namespace std;
 
 class Hash;
 
@@ -16,9 +19,13 @@ public:
 private:
    void createBoxSide(string name, const Vector3D& translate, const Vector3D& rotate);
 
-   int count;
+   string yzNegX;
+   string yzPosX;
+   string xyNegZ;
+   string xyPosZ;
+   string xzNegY;
+   string xzPosY;
    int halfSize;
-   int size;   
 };
 
 #endif
