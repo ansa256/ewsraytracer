@@ -48,7 +48,7 @@ bool Triangle::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    
    tmin = t;
    sr.normal = normal;
-   sr.localHitPoint = ray.origin + ray.direction * t;
+   sr.localHitPoint = sr.hitPoint = ray(t);
    return true;
 }
 
