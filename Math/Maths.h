@@ -77,6 +77,14 @@ inline double smoothPulseTrain(double e0, double e1, double e2, double e3, doubl
    return smoothPulse(e0, e1, e2, e3, mod(x, period));
 }
 
+template<class T>
+T smootherstep(T edge0, T edge1, T x) {
+   // Scale, and clamp x to 0..1 range
+   x = clamp((x - edge0)/(edge1 - edge0), 0.0, 1.0);
+   // Evaluate polynomial
+   return x*x*x*(x*(x*6 - 15) + 10);
+}
+
 float radicalInverse(int n, int base);
 
 template<class T>
