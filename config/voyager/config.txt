@@ -1,12 +1,13 @@
 config {
    width       960
    height      540
-   threads     3
+   threads     8
    boxWidth    60
-   boxHeight   45
-   camera      "config/voyager/camera.txt"
-   lights      "config/voyager/lights.txt"
-   objects     "config/voyager/objects.txt"
-   mesh        "config/voyager/mesh.txt"
-#   animation   "config/voyager/animation.txt"
+   boxHeight   60
+   camera      "config/scene1/camera.txt"
+   lights      "config/scene1/lights.txt"
+   objects     "config/scene1/objects.txt"
+   overlays    "config/scene1/overlays.txt"
+#   mesh        "config/scene1/mesh.txt"
+#   animation   "config/scene1/animation.txt"
 }
