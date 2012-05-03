@@ -37,7 +37,7 @@ void* renderThread(void* arg) {
 }
 
 Camera::Camera(string fname, int w, int h) : eye(), u(), v(), w(), 
-   tracer(new Tracer(w, h)), surface(NULL), film(new Film(w, h)), width(w), height(h)
+   tracer(new Tracer()), surface(NULL), film(new Film(w, h)), width(w), height(h)
 {
    pthread_mutex_init(&rectLock, NULL);
    threadCount = 1;
@@ -148,9 +148,7 @@ void Camera::renderBounds(const SamplerBounds& bounds) {
          ray.direction = u * (x - lp.x) + v * (y - lp.y) - w * f;
          ray.direction.normalize();
          
-         int sx = clamp((int) ceil(samples[i].imageX), 0, width-1);
-         int sy = clamp((int) ceil(samples[i].imageY), 0, height-1);
-         film->addSample(samples[i].imageX, samples[i].imageY, tracer->traceRay(ray, 0, sx, sy));
+         film->addSample(samples[i].imageX, samples[i].imageY, tracer->traceRay(ray, 0));
       }
    }
 }
