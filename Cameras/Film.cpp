@@ -5,7 +5,7 @@
 #include "Filters/BoxFilter.h"
 #include "Overlays/OverlayManager.h"
 #include "Math/Ray.h"
-#include <SDL.h>
+#include <SDL/SDL.h>
 #include <math.h>
 
 Pixel::Pixel() : r(0), g(0), b(0), weightSum(0) {}
@@ -39,7 +39,7 @@ void Film::addSample(double sx, double sy, const Color& c) {
    int x1 = min(width-1, (int) floor(sx + filter->xWidth));
    int y0 = max(0, (int) ceil(sy - filter->yWidth));
    int y1 = min(height-1, (int) floor(sy + filter->yWidth));
-   
+
    for(int y = y0; y < y1; y++) {
       for(int x = x0; x < x1; x++) {
          double weight = filter->evaluate(x - sx, y - sy);
@@ -55,7 +55,7 @@ void Film::addSample(double sx, double sy, const Color& c) {
 void Film::generateImage(SDL_Surface* surf, const Point3D& eye, float viewPlaneDist, const Matrix& m) {
    for(int w = 0; w < width; w++) {
       for(int h = 0; h < height; h++) {
-         setPixel(surf, w, height - h - 1, pixels[width * h + w].getColor());     
+         setPixel(surf, w, height - h - 1, pixels[width * h + w].getColor());
       }
    }
 
@@ -73,7 +73,7 @@ void Film::generateImage(SDL_Surface* surf, const Point3D& eye, float viewPlaneD
       SDL_Rect dst = {l, t, 0, 0};
       SDL_BlitSurface((*it)->surface, NULL, surf, &dst);
    }
-   
+
    SDL_UpdateRect(surf, 0, 0, 0, 0);
 }
 

@@ -9,7 +9,7 @@
 #include "Utility/Animation.h"
 #include <math.h>
 #include <fstream>
-#include <SDL_image.h>
+#include <SDL/SDL_image.h>
 #include "Utility/SDL_Utility.h"
 
 SDLApp::SDLApp(int argc, char** argv) :stopApp(false), surface(NULL), camera(NULL), animation(NULL) {
@@ -56,10 +56,10 @@ void SDLApp::loadConfiguration(int argc, char** argv) {
 
    surface = SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
    if (surface == NULL) {
-		fprintf(stderr, "Couldn't set video mode: %s\n", SDL_GetError());
-		SDL_Quit();
-		exit(2);
-	}
+      fprintf(stderr, "Couldn't set video mode: %s\n", SDL_GetError());
+      SDL_Quit();
+      exit(2);
+   }
 
    if(h->contains("mesh")) {
       MeshManager::instance().loadMeshes(h->getString("mesh"));
@@ -71,15 +71,15 @@ void SDLApp::loadConfiguration(int argc, char** argv) {
 
    LightManager::instance().loadLights(h->getString("lights"));
    GeometryManager::instance().loadObjects(h->getString("objects"));
-   
+
    if(h->contains("overlays")) {
       OverlayManager::instance().loadOverlays(h->getString("overlays"));
    }
-   
+
    camera = new Camera(h->getString("camera"), width, height);
    camera->setSurface(surface);
    camera->setThreadParameters(threadCount, boxw, boxh);
-   
+
    if(h->contains("animation")) {
       animation = new Animation(camera, surface);
       animation->setup(h->getString("animation"));

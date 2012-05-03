@@ -79,12 +79,12 @@ void user_warning_fn(png_structp ctx, png_const_charp str) {
 int png_colortype_from_surface(SDL_Surface *surface) {
    int colortype = PNG_COLOR_MASK_COLOR; /* grayscale not supported */
 
-	if (surface->format->palette)
-		colortype |= PNG_COLOR_MASK_PALETTE;
-	else if (surface->format->Amask)
-		colortype |= PNG_COLOR_MASK_ALPHA;
+   if (surface->format->palette)
+      colortype |= PNG_COLOR_MASK_PALETTE;
+   else if (surface->format->Amask)
+      colortype |= PNG_COLOR_MASK_ALPHA;
 
-	return colortype;
+   return colortype;
 }
 
 void saveImage(SDL_Surface* surface, const char* fname) {
@@ -158,19 +158,19 @@ void setBlendColor(SDL_Surface* surf, Uint32* pixel, const Color& c) {
    float dg = g / 255.f;
    float db = b / 255.f;
    float da = a / 255.f;
-   
+
    float sa = c.alpha;
-   
+
    float ao = sa + da * (1.f - sa);
    float ro = (c.red * sa + dr * da * (1.f - sa)) / ao;
    float go = (c.green * sa + dg * da * (1.f - sa)) / ao;
    float bo = (c.blue * sa + db * da * (1.f - sa)) / ao;
-   
+
    r = ro * 255;
    g = go * 255;
    b = bo * 255;
    a = ao * 255;
-   
+
    *pixel = SDL_MapRGBA(surf->format, r, g, b, a);
 }
 
