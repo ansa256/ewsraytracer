@@ -1,12 +1,149 @@
-sphere {
-   name   "sphere"
-   center [ 0.0 0.0 0.0 ]
-   radius 6.0
+#sphere {
+#   name   "sphere"
+#   center [ 0.0 0.0 0.0 ]
+#   radius 6.0
+#   
+#   material {
+#      type  "matte"
+#      ka 0.25
+#      kd 1.0
+#      color [ 1.0 1.0 1.0 ]
+#   }
+#}
+
+instance {
+   transforms [
+      "scale"     [ 2000.0 2000.0 1.0 ]
+      "rotate"    [ 0.0 90.0 0.0 ]
+      "translate" [ -2000.0 0.0 0.0 ]
+   ]
    
-   material {
-      type  "matte"
-      ka 0.25
-      kd 1.0
-      color [ 1.0 1.0 1.0 ]
+   object {
+      type     "rectangle"
+      material {
+         type  "emissive"
+         radiance 1.0
+         color    [ 1.0 1.0 1.0 ]
+         
+         texture {
+            type  "image"
+            filename "resources/images/star-cube-sides/stars0000.png"
+            mapping  "uv"
+         }
+      }
+   }
+}
+
+instance {
+   transforms [
+      "scale"     [ 2000.0 2000.0 1.0 ]
+      "rotate"    [ 0.0 -90.0 0.0 ]
+      "translate" [ 2000.0 0.0 0.0 ]
+   ]
+   
+   object {
+      type     "rectangle"
+      material {
+         type  "emissive"
+         radiance 1.0
+         color    [ 1.0 1.0 1.0 ]
+         
+         texture {
+            type  "image"
+            filename "resources/images/star-cube-sides/stars0001.png"
+            mapping  "uv"
+         }
+      }
+   }
+}
+
+instance {
+   transforms [
+      "scale"     [ 2000.0 2000.0 1.0 ]
+      "translate" [ 0.0 0.0 -2000.0 ]
+   ]
+   
+   object {
+      type     "rectangle"
+      material {
+         type  "emissive"
+         radiance 1.0
+         color    [ 1.0 1.0 1.0 ]
+         
+         texture {
+            type  "image"
+            filename "resources/images/star-cube-sides/stars0002.png"
+            mapping  "uv"
+         }
+      }
+   }
+}
+
+instance {
+   transforms [
+      "scale"     [ 2000.0 2000.0 1.0 ]
+      "rotate"    [ 0.0 180.0 0.0 ]
+      "translate" [ 0.0 0.0 2000.0 ]
+   ]
+   
+   object {
+      type     "rectangle"
+      material {
+         type  "emissive"
+         radiance 1.0
+         color    [ 1.0 1.0 1.0 ]
+         
+         texture {
+            type  "image"
+            filename "resources/images/star-cube-sides/stars0003.png"
+            mapping  "uv"
+         }
+      }
+   }
+}
+
+instance {
+   transforms [
+      "scale"     [ 2000.0 2000.0 1.0 ]
+      "rotate"    [ -90.0 0.0 0.0 ]
+      "translate" [ 0.0 -2000.0 0.0 ]
+   ]
+   
+   object {
+      type     "rectangle"
+      material {
+         type  "emissive"
+         radiance 1.0
+         color    [ 1.0 1.0 1.0 ]
+         
+         texture {
+            type  "image"
+            filename "resources/images/star-cube-sides/stars0004.png"
+            mapping  "uv"
+         }
+      }
+   }
+}
+
+instance {
+   transforms [
+      "scale"     [ 2000.0 2000.0 1.0 ]
+      "rotate"    [ 90.0 0.0 0.0 ]
+      "translate" [ 0.0 2000.0 0.0 ]
+   ]
+   
+   object {
+      type     "rectangle"
+      material {
+         type  "emissive"
+         radiance 1.0
+         color    [ 1.0 1.0 1.0 ]
+         
+         texture {
+            type  "image"
+            filename "resources/images/star-cube-sides/stars0005.png"
+            mapping  "uv"
+         }
+      }
    }
 }

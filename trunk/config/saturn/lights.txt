@@ -1,5 +1,5 @@
 ambient {
-   radiance       0.2
+   radiance       0.3
    color          [ 1.0 1.0 1.0 ]
    minColor       [ 0.0 0.0 0.0 ]
    numSamples     10
@@ -8,5 +8,5 @@ ambient {
 position {
    location       [ 10.0 0.0 4.0 ]
    color          [ 1.0 1.0 1.0 ]
-   radiance       3.0
+   radiance       3.5
 }

@@ -26,7 +26,6 @@ object {
             filename "resources/earth2/world3.png"
             mapping  "sphere"
          }
-      }
 
       normalMap {
          type     "tinstance"
@@ -47,10 +46,11 @@ object {
             "rotate"   [ 0.0 115.0 20.0 ]
          ]
 
-         texture {
-            type     "image"
-            filename "resources/earth/8081_earthspec4k-2.jpg"
-            mapping  "sphere"
+            texture {
+               type     "image"
+               filename "resources/earth/8081_earthspec4k-2.jpg"
+               mapping  "sphere"
+            }
          }
       }
    }
@@ -103,6 +103,15 @@ object {
       color [ 0.161 0.384 0.498 ]
    }
 } 
+
+   object {
+      type  "sphere"
+      material {
+         type  "atmosphere"
+         color [ 0.161 0.384 0.498 ]
+      }
+   } 
+}
 
 starBox {
    name     "stars"
