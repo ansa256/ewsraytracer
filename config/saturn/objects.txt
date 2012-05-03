@@ -1,14 +1,13 @@
 sphere {
-   center [ 0.0 0.0 0.0 ]
-   radius 1.0
-   
    material {
       type  "matte"
       kd 1.0
 
       texture {
          type   "tinstance"
-         rotate [ 9.0 0.0 345.0 ]
+         transforms [
+            "rotate" [ 9.0 0.0 345.0 ]
+         ]
 
          texture {
             type     "image"
@@ -39,7 +38,9 @@ instance {
       }
    }
    
-   rotate   [ 9.0 0.0 -15.0 ]
+   transforms [
+      "rotate"   [ 9.0 0.0 -15.0 ]
+   ]
 }
 
 starBox {
