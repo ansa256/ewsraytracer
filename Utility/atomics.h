@@ -23,7 +23,7 @@ inline bool AtomicCompareAndSwap(int32_t oldVal, int32_t newVal, AtomicInt32* th
 #elif defined(_WIN32) || defined(_WIN64)
    return InterlockedCompareExchange(theVal, newVal, oldVal) == oldVal;
 #else
-#error "Implemnt this"
+   return __sync_bool_compare_and_swap(theVal, oldVal, newVal);
 #endif
 }
 
@@ -33,7 +33,7 @@ inline int AtomicAdd(AtomicInt32* val, int32_t delta) {
 #elif defined(_WIN32) || defined(_WIN64)
    return InterlockedExchangeAdd (val, delta);
 #else
-#error "Implement this"
+   return __sync_fetch_and_and(val, delta);
 #endif
 }
 
