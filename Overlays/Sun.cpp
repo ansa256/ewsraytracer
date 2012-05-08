@@ -32,13 +32,13 @@ void Sun::create() {
    float offset = 360.f / numSpikes;
 
    for(float a = startAngle; a < 360 + startAngle; a += offset) {
-      ThickLine line(cx, cy, spikeLength, a, 40, WHITE, color);
+      ThickLine line(cx, cy, spikeLength, a, radius/2-10, WHITE, color);
       line.draw(surf);
    }
    
-   ThickLine blue1(cx, cy, 800, 0, 50, WHITE, blue);
+   ThickLine blue1(cx, cy, 800, 0, radius/2, WHITE, blue);
    blue1.draw(surf);
-   ThickLine blue2(cx, cy, 800, 180, 50, WHITE, blue);
+   ThickLine blue2(cx, cy, 800, 180, radius/2, WHITE, blue);
    blue2.draw(surf);
 
    Ellipse center(cx, cy, radius, radius, WHITE, color);
