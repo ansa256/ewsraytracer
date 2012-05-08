@@ -37,7 +37,7 @@ void Matte::setHash(Hash* hash) {
       ambientBRDF->setColor(Color(hash->getValue("ambientColor")->getArray()));
    }
 }
-
+/*
 Color Matte::shade(ShadeRecord& sr, const Ray& ray) {
    if(normalMap != NULL) applyNormalMap(sr);
    Vector3D wo = ray.direction * -1;
@@ -59,7 +59,7 @@ Color Matte::shade(ShadeRecord& sr, const Ray& ray) {
             Ray shadowRay(sr.hitPoint, wi);
             bool inShadow = (*it)->inShadow(shadowRay, sr);
             if(!inShadow) {
-               power += c * (*it)->G(sr) * ndotwi / pdf;
+               power += c * ndotwi / pdf;
             }
          }
       }
@@ -71,6 +71,45 @@ Color Matte::shade(ShadeRecord& sr, const Ray& ray) {
 
    L.alpha = diffuseBRDF->getAlpha(sr) * kd + ambientBRDF->getAlpha(sr) * (1.f - kd);
    return L;
+}
+*/
+Color Matte::shade(ShadeRecord& sr, const Ray& ray) {
+   Color L;
+   if(normalMap != NULL) applyNormalMap(sr);
+   Vector3D wo = ray.direction * -1;
+
+   for(LightIter it = LightManager::instance().begin(); it != LightManager::instance().end(); it++) {
+      Color Ld;
+      float* samples = (*it)->getSamples();
+      for(int s = 0; s < (*it)->getNumLightSamples(); s++) {
+         Ld += estimateDirect(sr, *it, wo, samples, s);
+      }
+      L += Ld / (*it)->getNumLightSamples();
+   }
+   L.alpha = diffuseBRDF->getAlpha(sr) * kd + ambientBRDF->getAlpha(sr) * (1.f - kd);
+   return L;
+}
+
+Color Matte::estimateDirect(ShadeRecord& sr, Light* light, const Vector3D& wo, float* samples, int s) {
+   Color Ld;
+   Vector3D wi;
+   float pdf;
+   
+   Color Li = light->Sample_L(sr, samples[s * 2], samples[s * 2 + 1], wi, pdf);
+   if(pdf > 0 && !Li.isBlack()) {
+      Color f = diffuseBRDF->f(sr, wo, wi);
+      if(!f.isBlack()) {
+         float ndotwi = sr.normal.dot(wi);
+         if(ndotwi > 0) {
+            Ray shadowRay(sr.hitPoint, wi);
+            bool inShadow = light->inShadow(shadowRay, sr);
+            if(!inShadow) {
+               Ld += f * Li * ndotwi/ pdf;
+            }
+         }
+      }
+   }
+   return Ld;
 }
 
 float Matte::getAlpha(const ShadeRecord& sr, const Ray& ray) const {
