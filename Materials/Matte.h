@@ -5,6 +5,7 @@
 
 class Lambertian;
 class Texture;
+class Light;
 
 /**
  * Hash values:
@@ -28,6 +29,7 @@ public:
 
 private:   
    void setTexture(string texture);
+   Color estimateDirect(ShadeRecord& sr, Light* light, const Vector3D& wo, float* samples, int s);
 
    Lambertian* ambientBRDF;
    Lambertian* diffuseBRDF;

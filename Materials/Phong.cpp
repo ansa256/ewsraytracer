@@ -75,7 +75,7 @@ Color Phong::shade(ShadeRecord& sr, const Ray& ray) {
             Ray shadowRay(sr.hitPoint, wi);
             bool inShadow = (*it)->inShadow(shadowRay, sr);
             if(!inShadow) {
-               power += c * (*it)->G(sr) * ndotwi / pdf;
+               power += c * ndotwi / pdf;
             }
          }
       }
