@@ -52,6 +52,7 @@ private:
    bool applyNormalMap;
    ifstream in;
    map<string, Material*> materials;
+   vector<string> excludes;
 };
 
 #endif
