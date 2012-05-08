@@ -9,11 +9,12 @@
 #include "Storage/KdTree.h"
 #include "Storage/Grid.h"
 #include "Storage/ObjectList.h"
+#include <sstream>
 
 // Include this line to see output of unprocessed chunks
 //#define PRINT_UNPROCESSED
 
-M3DSParser::M3DSParser() : scale(1.0), textureDir(""), storage(NULL), reverse(false), applyNormalMap(false) {
+M3DSParser::M3DSParser() : scale(1.0), textureDir(""), storage(NULL), reverse(false), applyNormalMap(false), excludes() {
 }
 
 M3DSParser::~M3DSParser() {
@@ -54,6 +55,14 @@ void M3DSParser::setHash(Hash* h) {
       string s = h->getString("applyNormalMap");
       if(s == "true") {
          applyNormalMap = true;
+      }
+   }
+   
+   if(h->contains("excludes")) {
+      stringstream strstr(h->getString("excludes"));
+      string s;
+      while (getline(strstr, s, ',')) {
+         excludes.push_back(s);
       }
    }
 }
@@ -122,7 +131,9 @@ void M3DSParser::processSceneChunk(int nBytes) {
 
       if (chunkType == M3DCHUNK_NAMED_OBJECT) {
          string name = readString(in);
-         processModelChunk(contentSize - (name.length() + 1), name);
+         if(find(excludes.begin(), excludes.end(), name) == excludes.end()) {
+            processModelChunk(contentSize - (name.length() + 1), name);
+         }
       }
       else if (chunkType == M3DCHUNK_MATERIAL_ENTRY) {
          processMaterialChunk(contentSize);
