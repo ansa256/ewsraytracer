@@ -118,3 +118,7 @@ void Color::normalize() {
    green = min(green, 1.0f);
    blue = min(blue, 1.0f);
 }
+
+bool Color::isBlack() const { 
+   return *this == BLACK; 
+}
