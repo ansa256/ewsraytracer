@@ -11,7 +11,6 @@ public:
    Emissive();
    virtual ~Emissive();
 
-   virtual Color shade(ShadeRecord& sr, const Ray& ray);
    virtual void setHash(Hash* hash);
    virtual Color getLe(const ShadeRecord& sr) const;
 
