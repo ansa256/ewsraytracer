@@ -6,6 +6,7 @@ using namespace std;
 
 const Color BLACK;
 const Color WHITE(1, 1, 1, 1);
+const Color ZERO(0, 0, 0, 0);
 
 float epsilon = 1.0 * pow(10, -6);
 

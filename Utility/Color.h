@@ -63,5 +63,6 @@ inline Color Color::operator-(const Color& c) const {
 
 extern const Color BLACK;
 extern const Color WHITE;
+extern const Color ZERO;
 
 #endif
