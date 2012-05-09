@@ -23,7 +23,8 @@ Color Tracer::traceRay(const Ray& ray, const int depth) {
    
    if(GeometryManager::instance().getStorage()->hit(ray, sr)) {
       sr.depth = depth;
-      Color c = sr.material->shade(sr, ray);
+//      Color c = sr.material->shade(sr, ray);
+      Color c = integrator.shade(sr, ray);
       
       if(c.getAlphaF() < 1.0) {
          Ray newRay(sr.hitPoint, ray.direction);
