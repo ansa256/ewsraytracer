@@ -23,17 +23,7 @@ public:
    Matte();
    virtual ~Matte();
 
-   virtual Color shade(ShadeRecord& sr, const Ray& ray);
    virtual void setHash(Hash* hash);
-   virtual float getAlpha(const ShadeRecord& sr, const Ray& ray) const;
-
-private:   
-   void setTexture(string texture);
-   Color estimateDirect(ShadeRecord& sr, Light* light, const Vector3D& wo, float* samples, int s);
-
-   Lambertian* ambientBRDF;
-   Lambertian* diffuseBRDF;
-   float kd;
 };
 
 #endif

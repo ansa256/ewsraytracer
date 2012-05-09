@@ -4,9 +4,13 @@
 #include "Utility/Color.h"
 #include "Utility/ShadeRecord.h"
 #include "Math/Ray.h"
+#include "BRDFs/BSDF.h"
 
 class Hash;
 class Texture;
+class BSDF;
+class Lambertian;
+class Light;
 
 /**
  * Hash values:
@@ -25,14 +29,17 @@ public:
 
    static Material* createMaterial(Hash* hash);
 
-   virtual Color shade(ShadeRecord& sr, const Ray& ray) { return BLACK; }
+   virtual Color shade(ShadeRecord& sr, const Ray& ray);
    virtual void setHash(Hash* hash) = 0;
    virtual Color getLe(const ShadeRecord& sr) const { return BLACK; }
-   virtual float getAlpha(const ShadeRecord& sr, const Ray& ray) const { return 1.0; }
+   virtual float getAlpha(const ShadeRecord& sr, const Ray& ray) const;
 
    void applyNormalMap(ShadeRecord& sr);
 
 protected:
+   Color estimateDirect(ShadeRecord& sr, Light* light, const Vector3D& wo, float* samples, int s);
+   BSDF bsdf;
+   Lambertian* ambientBRDF;
    Texture* normalMap;
 };
 
