@@ -5,6 +5,7 @@
 #include "Utility/ShadeRecord.h"
 #include "Math/Ray.h"
 #include "Textures/Texture.h"
+#include "DirectIntegrator.h"
 
 class Tracer {
 
@@ -22,6 +23,7 @@ protected:
    Color bgColor;
    Texture* texture;
    int maxDepth;
+   DirectIntegrator integrator;
 };
 
 #endif
