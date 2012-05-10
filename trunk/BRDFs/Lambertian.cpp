@@ -2,7 +2,7 @@
 #include "Math/Maths.h"
 #include "Textures/Texture.h"
 
-Lambertian::Lambertian() : BRDF(), color(1, 1, 1), texture(NULL) {
+Lambertian::Lambertian() : BRDF(BxDFType(DIFFUSE | REFLECT)), color(1, 1, 1), texture(NULL) {
 }
 
 Lambertian::~Lambertian() {

@@ -1,4 +1,5 @@
 #include "BSDF.h"
+#include "Math/Maths.h"
 
 typedef vector<BRDF*>::const_iterator BRDFIter;
 
@@ -21,6 +22,23 @@ Color BSDF::f(const ShadeRecord& sr, const Vector3D& wo, const Vector3D& wi) con
    return f;
 }
 
+Color BSDF::sample_f(const ShadeRecord& sr, const Vector3D& wo, Vector3D& wi, float& pdf, BxDFType flags) const {
+   vector<BRDF*> matches = getMatches(flags);
+   if(matches.size() == 0) {
+      return BLACK;
+   }
+   
+   int which = rand_int(0, matches.size()-1);
+   BRDF* brdf = matches[which];
+   
+   Color f = brdf->sample_f(sr, wo, wi, pdf);
+   if(pdf == 0) {
+      return BLACK;
+   }
+   
+   return f;
+}
+
 Color BSDF::rho(const ShadeRecord& sr, const Vector3D& wo) const {
    Color rho;
    for(BRDFIter it = brdfs.begin(); it != brdfs.end(); ++it) {
@@ -35,4 +53,14 @@ float BSDF::getAlpha(const ShadeRecord& sr) const {
       a *= (*it)->getAlpha(sr);
    }
    return a;
+}
+
+vector<BRDF*> BSDF::getMatches(BxDFType flags) const {
+   vector<BRDF*> matches;
+   for(BRDFIter it = brdfs.begin(); it != brdfs.end(); ++it) {
+      if((*it)->matches(flags)) {
+         matches.push_back(*it);
+      }
+   }
+   return matches;
 }

@@ -13,7 +13,7 @@ public:
    PerfectSpecular();
    ~PerfectSpecular() {}
 
-   Color sample_f(const ShadeRecord& sr, const Vector3D& wo, Vector3D& wi) const;
+   virtual Color sample_f(const ShadeRecord& sr, const Vector3D& wo, Vector3D& wi, float& pdf) const;
    
    void setKr(const float k);
    void setColor(const Color& c) { color = c; }

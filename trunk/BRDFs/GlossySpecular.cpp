@@ -2,7 +2,7 @@
 #include "Textures/Texture.h"
 #include <math.h>
 
-GlossySpecular::GlossySpecular() : exp(0), color(1, 1, 1), specularMask(NULL) {
+GlossySpecular::GlossySpecular() : BRDF(BxDFType(REFLECT | GLOSSY)), exp(0), color(1, 1, 1), specularMask(NULL) {
 }
 
 GlossySpecular::~GlossySpecular() {
