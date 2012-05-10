@@ -4,6 +4,8 @@
 #include "BRDF.h"
 #include "Math/Vector3D.h"
 
+class Fresnel;
+
 class PerfectSpecular: public BRDF 
 {
 
@@ -13,12 +15,13 @@ public:
 
    Color sample_f(const ShadeRecord& sr, const Vector3D& wo, Vector3D& wi) const;
    
-   void setKr(const float k) { kr = k; }
+   void setKr(const float k);
    void setColor(const Color& c) { color = c; }
    
 private:
    float kr;
    Color color;
+   Fresnel* fresnel;
 };
 
 #endif
