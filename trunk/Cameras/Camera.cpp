@@ -148,7 +148,7 @@ void Camera::renderBounds(const SamplerBounds& bounds) {
          ray.direction = u * (x - lp.x) + v * (y - lp.y) - w * f;
          ray.direction.normalize();
          
-         film->addSample(samples[i].imageX, samples[i].imageY, tracer->traceRay(ray, 0));
+         film->addSample(samples[i].imageX, samples[i].imageY, tracer->traceRay(ray));
       }
    }
 }
