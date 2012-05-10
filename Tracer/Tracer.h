@@ -13,16 +13,14 @@ public:
    Tracer();
    ~Tracer();
 
-   Color traceRay(const Ray& ray, const int depth);
+   Color traceRay(const Ray& ray);
 
    void setBackgroundColor(const Color& c) { bgColor = c; }
    void setBackgroundTexture(Texture* t) { texture = t; }
-   void setMaxDepth(int d) { maxDepth = d; }
 
 protected:
    Color bgColor;
    Texture* texture;
-   int maxDepth;
    DirectIntegrator integrator;
 };
 
