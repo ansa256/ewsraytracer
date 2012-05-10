@@ -14,7 +14,9 @@ void Reflective::setHash(Hash* hash) {
    Phong::setHash(hash);
 
    psBRDF->setKr(hash->getDouble("kr"));
-   psBRDF->setColor(hash->getValue("reflectColor")->getArray());
+   psBRDF->setColor(hash->getValue("color")->getArray());
+   
+   bsdf.addBRDF(psBRDF);
 }
 /*
 Color Reflective::shade(ShadeRecord& sr, const Ray& ray) {
