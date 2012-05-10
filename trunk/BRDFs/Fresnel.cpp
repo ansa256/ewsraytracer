@@ -21,7 +21,7 @@ float FresnelDielectric::evaluate(float cosi) const {
 
    float parallel = ((etat * cosi) - (etai * cost)) / ((etat * cosi) + (etai * cost));
    float perp = ((etai * cosi) - (etat * cost)) / ((etai * cosi) + (etat * cost));
-   return (parallel + perp) * 0.5f;
+   return (parallel*parallel + perp*perp) * 0.5f;
 }
 
 FresnelConductor::FresnelConductor(float _eta, float _k) : eta(_eta), k(_k) {}
