@@ -20,7 +20,6 @@ public:
    Point3D samplePoint;
 
    double tu, tv;
-   int depth;
 };
 
 #endif

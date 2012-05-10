@@ -7,8 +7,7 @@ ShadeRecord::ShadeRecord() :
    material(NULL),
    samplePoint(),
    tu(0),
-   tv(0),
-   depth(0)
+   tv(0)
 {
 }
 
@@ -20,5 +19,4 @@ ShadeRecord::ShadeRecord(const ShadeRecord& other) {
    samplePoint = other.samplePoint;
    tu = other.tu;
    tv = other.tv;
-   depth = other.depth;
 }
