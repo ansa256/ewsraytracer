@@ -4,7 +4,7 @@
 #include "Storage/Storage.h"
 #include "Materials/Material.h"
 
-Tracer::Tracer() : bgColor(), texture(NULL), maxDepth(10) {
+Tracer::Tracer() : bgColor(), texture(NULL) {
 }
 
 Tracer::~Tracer() {
@@ -13,22 +13,17 @@ Tracer::~Tracer() {
    }
 }
 
-Color Tracer::traceRay(const Ray& ray, const int depth) {
-   if(depth > maxDepth) {
-      return BLACK;
-   }
-   
+Color Tracer::traceRay(const Ray& ray) {
    ShadeRecord sr;
    ray.tHit = HUGE_VALUE;
    
    if(GeometryManager::instance().getStorage()->hit(ray, sr)) {
-      sr.depth = depth;
 //      Color c = sr.material->shade(sr, ray);
-      Color c = integrator.shade(sr, ray);
+      Color c = integrator.shade(sr, ray, this);
       
       if(c.getAlphaF() < 1.0) {
          Ray newRay(sr.hitPoint, ray.direction);
-         Color newColor = traceRay(newRay, depth);
+         Color newColor = traceRay(newRay);
          return c * c.alpha + newColor * (1.0 - c.alpha);
       }
       return c;
