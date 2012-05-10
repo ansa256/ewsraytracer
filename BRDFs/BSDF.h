@@ -6,16 +6,19 @@
 
 using namespace std;
 
-class BSDF : public BRDF {
+class BSDF {
 
 public:
    virtual ~BSDF();
    
    void addBRDF(BRDF* brdf);
 
-   virtual Color f(const ShadeRecord& sr, const Vector3D& wo, const Vector3D& wi) const;
-   virtual Color rho(const ShadeRecord& sr, const Vector3D& wo) const;
-   virtual float getAlpha(const ShadeRecord& sr) const;
+   Color f(const ShadeRecord& sr, const Vector3D& wo, const Vector3D& wi) const;
+   Color sample_f(const ShadeRecord& sr, const Vector3D& wo, Vector3D& wi, float& pdf, BxDFType flags) const;
+   Color rho(const ShadeRecord& sr, const Vector3D& wo) const;
+   float getAlpha(const ShadeRecord& sr) const;
+
+   vector<BRDF*> getMatches(BxDFType flags) const;
 
 private:
    vector<BRDF*> brdfs;

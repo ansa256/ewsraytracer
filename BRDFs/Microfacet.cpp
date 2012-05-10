@@ -20,7 +20,7 @@ float Blinn::D(const Vector3D& normal, const Vector3D& wh, float m) const {
 }
 
 Microfacet::Microfacet(Fresnel* f, MicrofacetDistribution* d) : 
-   color(1, 1, 1), fresnel(f), distribution(d)
+   BRDF(BxDFType(REFLECT)), color(1, 1, 1), fresnel(f), distribution(d)
 {
 }
 
