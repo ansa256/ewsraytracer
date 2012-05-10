@@ -6,16 +6,18 @@
 #include "Math/Ray.h"
 
 class Light;
+class Tracer;
 
 class DirectIntegrator {
 
 public:
    DirectIntegrator();
 
-   Color shade(ShadeRecord& sr, const Ray& ray);
+   Color shade(ShadeRecord& sr, const Ray& ray, Tracer* tracer);
 
 private:
    Color estimateDirect(ShadeRecord& sr, Light* light, const Vector3D& wo, float* samples, int s);
+   Color specularReflect(ShadeRecord& sr, const Ray& ray, Tracer* tracer);
 };
 
 #endif
