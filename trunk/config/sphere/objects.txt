@@ -1,13 +1,41 @@
-sphere {
-   name   "sphere"
-   center [ 0.0 0.0 0.0 ]
-   radius 6.0
+instance {
+   name   "sphere1"
+   transforms [
+      "translate" [ -2.0 0.0 0.0 ]
+   ]
    
-   material {
-      type  "phong"
-      exp   50.0
-      ks    0.1
-      color [ 1.0 1.0 1.0 ]
+   object {
+      type   "sphere"
+      name   "sphere1"
+   
+      material {
+         type  "reflective"
+         exp   10.0
+         ks    0.1
+         kr    1.0
+         color [ 1.0 1.0 1.0 ]
+      }
+   }
+}
+
+
+instance {
+   name "sphere2"
+   transforms [
+      "translate" [ 1.0 0.0 2.0 ]
+   ]
+   
+   object {
+      type   "sphere"
+      name   "sphere2"
+   
+      material {
+         type  "reflective"
+         exp   10.0
+         ks    0.1
+         kr    1.0
+         color [ 1.0 0.0 1.0 ]
+      }
    }
 }
 
