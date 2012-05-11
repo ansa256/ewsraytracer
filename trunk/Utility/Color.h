@@ -25,6 +25,7 @@ public:
    Color operator/(const float a) const;
    Color operator+(const Color& c) const;
    Color operator-(const Color& c) const;
+   Color operator-(const float a) const;
    
    bool isBlack() const;
    
@@ -59,6 +60,10 @@ inline Color Color::operator+(const Color& c) const {
 
 inline Color Color::operator-(const Color& c) const {
    return Color(red - c.red, green - c.green, blue - c.blue, alpha - c.alpha);
+}
+
+inline Color Color::operator-(const float a) const {
+   return Color(red - a, green - a, blue - a, alpha - a);
 }
 
 extern const Color BLACK;
