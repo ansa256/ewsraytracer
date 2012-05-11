@@ -28,7 +28,7 @@ Color BSDF::sample_f(const ShadeRecord& sr, const Vector3D& wo, Vector3D& wi, fl
       return BLACK;
    }
    
-   int which = rand_int(0, matches.size()-1);
+   int which = matches.size() > 1 ? rand_int(0, (int)matches.size()-1) : 0;
    BRDF* brdf = matches[which];
    
    Color f = brdf->sample_f(sr, wo, wi, pdf);
