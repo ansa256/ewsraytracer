@@ -7,6 +7,7 @@
 #include "Reflective.h"
 #include "Atmosphere.h"
 #include "Emissive.h"
+#include "Glass.h"
 #include "BRDFs/Lambertian.h"
 #include "Lights/LightManager.h"
 #include "Lights/Light.h"
@@ -35,6 +36,9 @@ Material* Material::createMaterial(Hash* hash) {
    }
    else if(type == "emissive") {
       material = new Emissive();
+   }
+   else if(type == "glass") {
+      material = new Glass();
    }
    else {
       // Matte is the default type
