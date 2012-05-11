@@ -1,12 +1,13 @@
 camera {
-   type                 "pinhole"
-   angle                49.134
-   eye                  [ 0.0 0.0 8.0 ]
-   rotate               [ 0.0 0.0 0.0 ]
+   angle                35.0 #49.134
+   eye                  [ -5.0 1.5 6.0 ]
+   lookat               [ -0.3 -0.2 0.0 ]
+   lensRadius           0.02
+   focusPlaneDistance   6.0
 
    sampler {
       type  "stratified"
-      strataX 1
-      strataY 2
+      strataX 7
+      strataY 7
    }
 }
