@@ -26,6 +26,7 @@ Color DirectIntegrator::shade(ShadeRecord& sr, const Ray& ray, Tracer* tracer) {
 
    if (ray.depth + 1 < maxDepth) {
       L += specularReflect(sr, ray, tracer);
+      L += specularTransmit(sr, ray, tracer);
    }
    return L;
 }
@@ -71,5 +72,25 @@ Color DirectIntegrator::specularReflect(ShadeRecord& sr, const Ray& ray, Tracer*
       Color Li = tracer->traceRay(rd);
       L = f * Li * widotn / pdf;
    }
+   return L;
+}
+
+Color DirectIntegrator::specularTransmit(ShadeRecord& sr, const Ray &ray, Tracer* tracer) {
+   Vector3D wo = -ray.direction;
+   Vector3D wi;
+   float pdf;
+   const Point3D& p = sr.hitPoint;
+   const Vector3D& n = sr.normal;
+   Color f = sr.material->bsdf.sample_f(sr, wo, wi, pdf, BxDFType(TRANSMIT | SPECULAR));
+   Color L = ZERO;
+ 
+   float widotn = fabs(wi.dot(n));  
+   if (pdf > 0.f && !f.isBlack() && widotn != 0.f) {
+      Ray rd(p, wi, ray.depth + 1);
+      
+      Color Li = tracer->traceRay(rd);
+      L = f * Li * widotn / pdf;
+   }
+
    return L;
 }
