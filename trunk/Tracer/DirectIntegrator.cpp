@@ -45,6 +45,8 @@ Color DirectIntegrator::estimateDirect(ShadeRecord& sr, Light* light, const Vect
             bool inShadow = light->inShadow(shadowRay, sr);
             if(!inShadow) {
                Ld += f * Li * ndotwi/ pdf;
+            } else {
+               Ld.set(0.15, 0.15, 0.15, 1.0);
             }
          }
       }
@@ -61,13 +63,12 @@ Color DirectIntegrator::specularReflect(ShadeRecord& sr, const Ray& ray, Tracer*
    Color f = sr.material->bsdf.sample_f(sr, wo, wi, pdf, BxDFType(REFLECT | SPECULAR));
    Color L = ZERO;
 
-   float widotn = abs(wi.dot(n));
+   float widotn = fabs(wi.dot(n));
    if (pdf > 0.f && !f.isBlack() && widotn != 0.f) {
       // Compute ray differential _rd_ for specular reflection
       Ray rd(p, wi, ray.depth + 1);
  
       Color Li = tracer->traceRay(rd);
-//      Color Li = renderer->Li(scene, rd, sample, rng, arena);
       L = f * Li * widotn / pdf;
    }
    return L;
