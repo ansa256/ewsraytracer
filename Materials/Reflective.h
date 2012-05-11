@@ -22,7 +22,6 @@ public:
    Reflective();
    virtual ~Reflective();
 
-//   virtual Color shade(ShadeRecord& sr, const Ray& ray);
    virtual void setHash(Hash* hash);
 
 private:
