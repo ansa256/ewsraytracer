@@ -14,20 +14,7 @@ void Reflective::setHash(Hash* hash) {
    Phong::setHash(hash);
 
    psBRDF->setKr(hash->getDouble("kr"));
-   psBRDF->setColor(hash->getValue("color")->getArray());
+   psBRDF->setColor(hash->getValue("reflectColor")->getArray());
    
    bsdf.addBRDF(psBRDF);
 }
-/*
-Color Reflective::shade(ShadeRecord& sr, const Ray& ray) {
-   Color L(Phong::shade(sr, ray));
-
-   Vector3D wo = -ray.direction;
-   Vector3D wi;
-   Color fr = psBRDF->sample_f(sr, wo, wi);
-   Ray reflectedRay(sr.hitPoint, wi);
-
-//   L += fr * sr.tracer->traceRay(reflectedRay, sr.depth+1) * sr.normal.dot(wi);
-   return L;
-}
-*/
