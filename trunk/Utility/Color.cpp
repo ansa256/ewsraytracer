@@ -115,9 +115,21 @@ Array* Color::toArray() const {
 }
 
 void Color::normalize() {
-   red = min(red, 1.0f);
-   green = min(green, 1.0f);
-   blue = min(blue, 1.0f);
+//   red = min(red, 1.0f);
+//   green = min(green, 1.0f);
+//   blue = min(blue, 1.0f);
+   static float g = 1.f / 2.2f;
+
+   float f = max(red, max(green, blue));
+   if(f > 1.f) {
+      red /= f;
+      green /= f;
+      blue /= f;
+   }
+   
+   red = pow(red, g);
+   green = pow(green, g);
+   blue = pow(blue, g);
 }
 
 bool Color::isBlack() const { 
