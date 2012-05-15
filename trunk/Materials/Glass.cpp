@@ -9,6 +9,6 @@ Glass::~Glass() {
 
 void Glass::setHash(Hash* hash) {
    Phong::setHash(hash);
-   stBRDF = new SpecularTransmission(WHITE, 1.5, 1.0);
+   stBRDF = new SpecularTransmission(WHITE, 1.6, 1.0);
    bsdf.addBRDF(stBRDF);
 }
