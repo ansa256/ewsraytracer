@@ -1,7 +1,8 @@
 instance {
    name   "sphere1"
    transforms [
-      "translate" [ -1.5 0.0 0.0 ]
+      "translate" [ 2.0 2.0 -3.0 ]
+      "scale"		[ 3.0 3.0 3.0 ]
    ]
    
    object {
@@ -10,10 +11,10 @@ instance {
    
       material {
          type  "reflective"
-         exp   10.0
-         ks    0.1
-         kr    1.0
-         color [ 1.0 1.0 1.0 ]
+         exp   2000.0
+         ks    0.2
+         kr    0.25
+         color [ 1.0 0.0 0.0 ]
          reflectColor   [ 1.0 1.0 1.0 ]
       }
    }
@@ -23,7 +24,8 @@ instance {
 instance {
    name "sphere2"
    transforms [
-      "translate" [ 1.5 0.0 0.0 ]
+      "translate" [ 0.0 2.25 0.0 ]
+      "scale"		[ 3.0 3.0 3.0 ]
    ]
    
    object {
@@ -31,26 +33,46 @@ instance {
       name   "sphere2"
    
       material {
-         type  "reflective"
-         exp   10.0
-         ks    0.1
-         kr    1.0
-         color [ 1.0 0.0 1.0 ]
+         type  "glass"
+         exp   2000.0
+         ks    0.2
+         kr    0.1
+         color [ 1.0 1.0 1.0 ]
          reflectColor   [ 1.0 1.0 1.0 ]
       }
    }
 }
 
-plane {
-   point    [ 0.0 -1.0 0.0 ]
-   normal   [ 0.0 1.0 0.0 ]
-   material {
-      type  "matte"
-      texture {
-         type  "planeChecker"
-         color1   [ 1.0 1.0 1.0 ]
-         color2   [ 0.0 0.0 0.0 ]
-         size     2.0 
-      }
-   }
+instance {
+	name	"checker"
+	transforms [
+#		"translate" 	[ -10.0 0.0 -50.0 ]
+		"scale"			[ 40.0 120.0 1.0 ]
+		"rotate"			[ -90.0 0.0 0.0 ]
+		"translate"		[ -10.0 0.0 0.0 ]
+	]
+	
+	object {
+		type		"rectangle"
+		point    [ 0.0 -0.001 0.0 ]
+		normal   [ 0.0 1.0 0.0 ]
+		material {
+			type  "matte"
+			
+			texture {
+				type	"tinstance"
+				transforms [
+#					"scale"			[ 0.04 1.0 0.04 ]
+					"rotate"			[ -90.0 0.0 0.0 ]
+				]
+			
+				texture {
+					type  "planeChecker"
+					color1   [ 1.0 1.0 1.0 ]
+					color2   [ 0.0 0.0 0.0 ]
+					size     0.1
+				}
+			}
+		}
+	}
 }
