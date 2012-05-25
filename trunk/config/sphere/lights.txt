@@ -6,7 +6,19 @@
 #}
 
 direction {
-   direction   [ 1.0 1.0 1.0 ]
+   direction   [ -1.0 0.0 0.0 ]
    color       [ 1.0 1.0 1.0 ]
-   radiance    3.0
+   radiance    1.0
+}
+
+position {
+	location		[ 40.0 50.0 0.0 ]
+	color			[ 1.0 1.0 1.0 ]
+	radiance		1.0
+}
+
+position {
+	location		[ -10.0 20.0 10.0 ]
+	color			[ 1.0 1.0 1.0 ]
+	radiance		1.0
 }
