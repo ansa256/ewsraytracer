@@ -1,8 +1,7 @@
 instance {
    name   "sphere1"
    transforms [
-      "translate" [ 2.0 2.0 -3.0 ]
-      "scale"		[ 3.0 3.0 3.0 ]
+      "translate" [ 0.0 0.85 1.0 ]
    ]
    
    object {
@@ -24,8 +23,7 @@ instance {
 instance {
    name "sphere2"
    transforms [
-      "translate" [ 0.0 2.25 0.0 ]
-      "scale"		[ 3.0 3.0 3.0 ]
+      "translate" [ 2.5 -0.75 1.0 ]
    ]
    
    object {
@@ -33,7 +31,7 @@ instance {
       name   "sphere2"
    
       material {
-         type  "glass"
+         type  "reflective"
          exp   2000.0
          ks    0.2
          kr    0.1
@@ -46,32 +44,23 @@ instance {
 instance {
 	name	"checker"
 	transforms [
-#		"translate" 	[ -10.0 0.0 -50.0 ]
-		"scale"			[ 40.0 120.0 1.0 ]
-		"rotate"			[ -90.0 0.0 0.0 ]
-		"translate"		[ -10.0 0.0 0.0 ]
+		"scale"			[ 5.0 5.0 1.0 ]
 	]
 	
 	object {
 		type		"rectangle"
-		point    [ 0.0 -0.001 0.0 ]
-		normal   [ 0.0 1.0 0.0 ]
+		point    [ 0.0 0.0 0.0 ]
+		normal   [ 0.0 0.0 1.0 ]
 		material {
 			type  "matte"
-			
-			texture {
-				type	"tinstance"
-				transforms [
-#					"scale"			[ 0.04 1.0 0.04 ]
-					"rotate"			[ -90.0 0.0 0.0 ]
-				]
-			
-				texture {
-					type  "planeChecker"
-					color1   [ 1.0 1.0 1.0 ]
-					color2   [ 0.0 0.0 0.0 ]
-					size     0.1
-				}
+			color [ 1.0 1.0 1.0 ]
+         texture {
+            type  "marbleChecker"
+				color1   [ 1.0 1.0 1.0 ]
+				vein1   [ 0.0 0.0 0.0 ]
+            color2   [ 0.0 0.0 0.0 ]
+            vein2    [ 1.0 1.0 1.0 ]
+				size     0.25
 			}
 		}
 	}

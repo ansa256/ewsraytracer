@@ -1,15 +1,15 @@
 camera {
-   angle                15.0
-   eye                  [ -8.0 5.5 40.0 ]
-   lookat               [ 1.0 4.8 0.0 ]
+   angle                49.134
+   eye                  [ 7.5 0.0 1.874 ]
+   rotate               [ 80.218 0.0 90.0 ]
 #   lensRadius           0.02
 #   focusPlaneDistance   6.0
 
    sampler {
       type  "stratified"
-      strataX 3
-      strataY 3
+      strataX 2
+      strataY 2
    }
    
-   bgColor		[ 0.0 0.3 0.25 ]
+   bgColor		[ 0.5 0.5 0.5 ]
 }
