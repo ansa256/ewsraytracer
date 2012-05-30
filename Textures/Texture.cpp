@@ -1,6 +1,7 @@
 #include "Texture.h"
 #include "Parser/Hash.h"
 #include "PlaneChecker.h"
+#include "MarbleChecker.h"
 #include "NoiseTexture.h"
 #include "SkyTexture.h"
 #include "WoodTexture.h"
@@ -15,6 +16,9 @@ Texture* Texture::createTexture(Hash* hash) {
 
    if(type == "planeChecker") {
       texture = new PlaneChecker();
+   }
+   else if(type == "marbleChecker") {
+      texture = new MarbleChecker();
    }
    else if(type == "noise") {
       texture = new NoiseTexture();
