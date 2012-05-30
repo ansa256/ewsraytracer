@@ -13,7 +13,7 @@ Color SpecularTransmission::sample_f(const ShadeRecord& sr, const Vector3D& wo, 
    float ndotwo = sr.normal.dot(wo);
    Vector3D n = sr.normal;
 
-   float eta = 1.5f;
+   float eta = etai / etat;
    if(ndotwo < 0) {
       eta = 1.f / eta;
       n = -n;
