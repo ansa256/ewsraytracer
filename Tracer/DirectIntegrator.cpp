@@ -12,7 +12,7 @@ Color DirectIntegrator::shade(ShadeRecord& sr, const Ray& ray, Tracer* tracer) {
    int maxDepth = 10;
    sr.material->applyNormalMap(sr);
    Vector3D wo = ray.direction * -1;
-   Color L = sr.material->ambientBRDF->rho(sr, wo) * LightManager::instance().getAmbientLight(sr);
+   Color L;// = sr.material->ambientBRDF->rho(sr, wo) * LightManager::instance().getAmbientLight(sr);
 
    for(LightIter it = LightManager::instance().begin(); it != LightManager::instance().end(); it++) {
       Color Ld;
@@ -47,7 +47,7 @@ Color DirectIntegrator::estimateDirect(ShadeRecord& sr, Light* light, const Vect
             if(!inShadow) {
                Ld += f * Li * ndotwi/ pdf;
             } else {
-               Ld.set(0.15, 0.15, 0.15, 1.0);
+               Ld += sr.material->ambientBRDF->rho(sr, wo) * LightManager::instance().getAmbientLight(sr);
             }
          }
       }
