@@ -16,7 +16,7 @@ PlaneChecker::PlaneChecker() : color1(), color2(), size(1), borderColor(), borde
 
 Color PlaneChecker::getColor(const ShadeRecord& sr) const {
    float x = sr.localHitPoint.x;
-   float z = sr.localHitPoint.z;
+   float z = sr.localHitPoint.y;
    int ix = (int) floor(x / size);
    int iz = (int) floor(z / size);
    
