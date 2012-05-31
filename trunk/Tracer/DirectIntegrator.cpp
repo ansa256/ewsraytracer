@@ -62,14 +62,14 @@ Color DirectIntegrator::specularReflect(ShadeRecord& sr, const Ray& ray, Tracer*
    const Point3D& p = sr.hitPoint;
    const Vector3D& n = sr.normal;
    Color f = sr.material->bsdf.sample_f(sr, wo, wi, pdf, BxDFType(REFLECT | SPECULAR));
-   Color L = ZERO;
+   Color L = BLACK;
 
    float widotn = fabs(wi.dot(n));
    if (pdf > 0.f && !f.isBlack() && widotn != 0.f) {
       // Compute ray differential _rd_ for specular reflection
       Ray rd(p, wi, ray.depth + 1);
  
-      Color Li = tracer->traceRay(rd);
+      Color Li = tracer->traceRay(rd, false);
       L = f * Li * widotn / pdf;
    }
    return L;
