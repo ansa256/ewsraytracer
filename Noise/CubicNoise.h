@@ -6,9 +6,9 @@
 class CubicNoise : public LatticeNoise {
 
 public:
-   CubicNoise(int seed = 253);
+   CubicNoise();
    virtual ~CubicNoise();
-   
+
 protected:
    virtual float valueNoise(const Point3D& p) const;
    virtual Vector3D vectorNoise(const Point3D& p) const;

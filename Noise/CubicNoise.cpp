@@ -2,7 +2,7 @@
 #include "Math/Maths.h"
 #include <math.h>
 
-CubicNoise::CubicNoise(int seed) : LatticeNoise(seed){
+CubicNoise::CubicNoise() : LatticeNoise() {
 }
 
 CubicNoise::~CubicNoise() {
@@ -13,13 +13,13 @@ float CubicNoise::valueNoise(const Point3D& p) const {
 
    int ix = (int) floor(p.x);
    float fx = p.x - ix;
-   
+
    int iy = (int) floor(p.y);
    float fy = p.y - iy;
-   
+
    int iz = (int) floor(p.z);
    float fz = p.z - iz;
-   
+
    for(int k = -1; k <= 2; k++) {
       for(int j = -1; j <= 2; j++) {
          for(int i = -1; i <= 2; i++) {
@@ -38,7 +38,7 @@ Vector3D CubicNoise::vectorNoise(const Point3D& p) const {
 
    int ix = (int) floor(p.x);
    float fx = p.x - ix;
-   
+
    int iy = (int) floor(p.y);
    float fy = p.y - iy;
 
