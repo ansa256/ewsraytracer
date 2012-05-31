@@ -16,6 +16,6 @@ Color GraniteTexture::getColor(const ShadeRecord& sr) const {
 }
 
 void GraniteTexture::setHash(Hash* hash) {
-   noise = new CubicNoise(hash->getInteger("seed"));
+   noise = new CubicNoise();
    noise->setHash(hash);
 }

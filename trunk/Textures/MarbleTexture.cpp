@@ -17,7 +17,7 @@ Color MarbleTexture::getColor(const ShadeRecord& sr) const {
 }
 
 void MarbleTexture::setHash(Hash* hash) {
-   noise = new CubicNoise(hash->getInteger("seed"));
+   noise = new CubicNoise();
    noise->setHash(hash);
    mainColor.set(hash->getValue("mainColor")->getArray());
    veinColor.set(hash->getValue("veinColor")->getArray());

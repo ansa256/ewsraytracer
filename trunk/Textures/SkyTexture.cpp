@@ -21,19 +21,19 @@ SkyTexture::~SkyTexture() {
 
 void SkyTexture::setHash(Hash* hash) {
    color1.set(0.1, 0.2, 0.8, 1.f);
-   color2.set(1, 1, 1, 1);   
-   noise = new CubicNoise(hash->getInteger("seed"));
+   color2.set(1, 1, 1, 1);
+   noise = new CubicNoise();
    min = hash->getDouble("min");
    max = hash->getDouble("max");
-   
+
    noise->setHash(hash);
 }
 
 Color SkyTexture::getColor(const ShadeRecord& sr) const {
    float value = noise->fractalSum(sr.localHitPoint);
-   
+
    value = min + (max - min) * value;
    value = clamp(value, 0.0, 1.0);
-   
+
    return color1 * (1.0 - value) + color2 * value;
 }
