@@ -13,7 +13,7 @@ Tracer::~Tracer() {
    }
 }
 
-Color Tracer::traceRay(const Ray& ray) {
+Color Tracer::traceRay(const Ray& ray, bool useBackground) {
    ShadeRecord sr;
    ray.tHit = HUGE_VALUE;
    
@@ -29,6 +29,9 @@ Color Tracer::traceRay(const Ray& ray) {
       return c;
    }
    else {
+      if(!useBackground) {
+         return BLACK;
+      }
       if(texture != NULL) {
          sr.localHitPoint.set(ray.direction.x, ray.direction.y, ray.direction.z);
          return texture->getColor(sr);

@@ -12,7 +12,6 @@ instance {
          type  "reflective"
          exp   2000.0
          ks    0.2
-         kr    0.25
          color [ 1.0 0.0 0.0 ]
          reflectColor   [ 1.0 1.0 1.0 ]
       }
@@ -34,7 +33,6 @@ instance {
          type  "reflective"
          exp   2000.0
          ks    0.2
-         kr    0.1
          color [ 1.0 1.0 1.0 ]
          reflectColor   [ 1.0 1.0 1.0 ]
       }
@@ -52,15 +50,23 @@ instance {
 		point    [ 0.0 0.0 0.0 ]
 		normal   [ 0.0 0.0 1.0 ]
 		material {
-			type  "matte"
-			color [ 1.0 1.0 1.0 ]
+         type  "reflective"
+         exp   2000.0
+         ks    0.2
+         reflectColor   [ 1.0 1.0 1.0 ]
          texture {
-            type  "marbleChecker"
-				color1   [ 1.0 1.0 1.0 ]
-				vein1   [ 0.0 0.0 0.0 ]
-            color2   [ 0.0 0.0 0.0 ]
-            vein2    [ 1.0 1.0 1.0 ]
-				size     0.25
+            type "tinstance"
+            transforms [
+               "scale"  [ 0.5 0.5 0.5 ]
+            ]
+            texture {
+               type  "marble"
+				   mainColor   [ 0.9 0.89 0.847 ]
+				   veinColor   [ 0.45 0.44 0.42 ]
+				   numOctaves 8
+				   gain 0.5
+				   lacunarity 2.0
+			   }
 			}
 		}
 	}

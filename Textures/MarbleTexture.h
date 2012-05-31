@@ -27,6 +27,7 @@ public:
 private:
    Color mainColor;
    Color veinColor;
+   Color lineColor;
    LatticeNoise* noise;
 };
 

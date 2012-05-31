@@ -13,7 +13,7 @@ public:
    Tracer();
    ~Tracer();
 
-   Color traceRay(const Ray& ray);
+   Color traceRay(const Ray& ray, bool useBackground = true);
 
    void setBackgroundColor(const Color& c) { bgColor = c; }
    void setBackgroundTexture(Texture* t) { texture = t; }

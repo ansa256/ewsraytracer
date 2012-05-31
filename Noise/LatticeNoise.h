@@ -1,7 +1,7 @@
 #ifndef _LATTICE_NOISE_H_
 #define _LATTICE_NOISE_H_
 
-#define PERM(x) permutations[(x)& 255]
+#define PERM(x) permutations[(x) & 255]
 #define INDEX(ix,iy,iz) PERM((ix)+PERM((iy)+PERM(iz)))
 
 #include "Math/Point3D.h"

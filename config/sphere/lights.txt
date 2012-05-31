@@ -6,5 +6,5 @@ position {
 
 ambient {
    color       [ 1.0 1.0 1.0 ]
-   radiance    0.1
+   radiance    0.3
 }
