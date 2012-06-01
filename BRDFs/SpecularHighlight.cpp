@@ -1,17 +1,17 @@
-#include "GlossySpecular.h"
+#include "SpecularHighlight.h"
 #include "Textures/Texture.h"
 #include <math.h>
 
-GlossySpecular::GlossySpecular() : BRDF(BxDFType(REFLECT | GLOSSY)), exp(0), color(1, 1, 1), specularMask(NULL) {
+SpecularHighlight::SpecularHighlight() : BRDF(BxDFType(REFLECT | GLOSSY)), exp(0), color(1, 1, 1), specularMask(NULL) {
 }
 
-GlossySpecular::~GlossySpecular() {
+SpecularHighlight::~SpecularHighlight() {
    if(specularMask != NULL) {
       delete specularMask;
    }
 }
 
-Color GlossySpecular::f(const ShadeRecord& sr, const Vector3D& wo, const Vector3D& wi) const {
+Color SpecularHighlight::f(const ShadeRecord& sr, const Vector3D& wo, const Vector3D& wi) const {
    if(specularMask != NULL) {
       Color c = specularMask->getColor(sr);
       if(c == BLACK) {
@@ -30,6 +30,6 @@ Color GlossySpecular::f(const ShadeRecord& sr, const Vector3D& wo, const Vector3
    return BLACK;
 }
 
-Color GlossySpecular::rho(const ShadeRecord& sr, const Vector3D& wo) const {
+Color SpecularHighlight::rho(const ShadeRecord& sr, const Vector3D& wo) const {
    return BLACK;
 }
