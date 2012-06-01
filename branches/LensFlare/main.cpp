@@ -67,11 +67,11 @@ void star(int numSpikes, float startAngle) {
    center->setFilter(new SmoothStepFilter(0.1, 1.0));
    shapes.push_back(center);
    
-   Color h1(0.7, 0.5, 0.1, 0.1);
-   Color h2(0.7, 0.5, 0.1, 0.0);
-   FilledEllipse* outer = new FilledEllipse(cx, cy, 300, 300, h1, h2);
-   outer->setFilter(new SmoothStepFilter(0.75, 1.0));
-   shapes.push_back(outer);
+//   Color h1(0.7, 0.5, 0.1, 0.1);
+//   Color h2(0.7, 0.5, 0.1, 0.0);
+//   FilledEllipse* outer = new FilledEllipse(cx, cy, 300, 300, h1, h2);
+//   outer->setFilter(new SmoothStepFilter(0.75, 1.0));
+//   shapes.push_back(outer);
 }
 
 double* CreateGaussianFilter(double piSigma, double piAlpha, int& lSize) {
@@ -104,11 +104,25 @@ double* CreateGaussianFilter(double piSigma, double piAlpha, int& lSize) {
    return filter;
 }
 
+struct RGBA {
+   Uint8 r, g, b, a;
+};
+
 SDL_Surface* Convolute(SDL_Surface* source, double* filter, int fSize) {
    SDL_Surface* dest = createSurface(width, height);
-   Uint8 r, g, b, a;
    const int halfSize = (int)floor(fSize / 2.0);
    const double cf = 1.0 / 255.0;
+   
+   RGBA* cs = new RGBA[width * height];
+
+   int idx = 0;
+   for (int y = 0; y < height; y++) {
+      for (int x = 0; x < width; x++) {
+         Uint32 pixel = getPixel(source, x, y);
+         SDL_GetRGBA(pixel, source->format, &cs[idx].r, &cs[idx].g, &cs[idx].b, &cs[idx].a);
+         idx++;
+      }
+   }
 
    //for each pixel
    for (int x = 0; x < width; x++) {
@@ -128,12 +142,11 @@ SDL_Surface* Convolute(SDL_Surface* source, double* filter, int fSize) {
                   int FakeJ = j - halfSize;
 
                   if (x+FakeJ < width && x+FakeJ >= 0) {
-                     Uint32 pixel = getPixel(source, x + FakeJ, y + FakeI);
-                     SDL_GetRGBA(pixel, source->format, &r, &g, &b, &a);
-                     SumR += r * filter[i * fSize + j] * cf;
-                     SumG += g * filter[i * fSize + j] * cf;
-                     SumB += b * filter[i * fSize + j] * cf;
-                     SumA += a * filter[i * fSize + j] * cf;
+                     int idx = (y + FakeI) * width + (x + FakeJ);
+                     SumR += cs[idx].r * filter[i * fSize + j] * cf;
+                     SumG += cs[idx].g * filter[i * fSize + j] * cf;
+                     SumB += cs[idx].b * filter[i * fSize + j] * cf;
+                     SumA += cs[idx].a * filter[i * fSize + j] * cf;
                   }
                }
             }				
@@ -143,6 +156,8 @@ SDL_Surface* Convolute(SDL_Surface* source, double* filter, int fSize) {
          setPixel(dest, x, y, pixel);
       }
    }
+
+   delete[] cs;
    
    return dest;
 }
