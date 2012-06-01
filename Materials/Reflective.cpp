@@ -1,9 +1,9 @@
 #include "Reflective.h"
-#include "BRDFs/PerfectSpecular.h"
+#include "BRDFs/SpecularReflection.h"
 #include "Tracer/Tracer.h"
 #include "Parser/Hash.h"
 
-Reflective::Reflective() : psBRDF(new PerfectSpecular) {
+Reflective::Reflective() : psBRDF(new SpecularReflection) {
 }
 
 Reflective::~Reflective() {
