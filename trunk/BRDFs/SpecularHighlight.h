@@ -5,11 +5,11 @@
 
 class Texture;
 
-class GlossySpecular : public BRDF {
+class SpecularHighlight : public BRDF {
 
 public:
-   GlossySpecular();
-   virtual ~GlossySpecular();
+   SpecularHighlight();
+   virtual ~SpecularHighlight();
 
    virtual Color f(const ShadeRecord& sr, const Vector3D& wo, const Vector3D& wi) const;
    virtual Color rho(const ShadeRecord& sr, const Vector3D& wo) const;

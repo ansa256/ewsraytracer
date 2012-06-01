@@ -3,7 +3,7 @@
 #include "Lights/LightManager.h"
 #include "Lights/Light.h"
 #include "BRDFs/Lambertian.h"
-#include "BRDFs/GlossySpecular.h"
+#include "BRDFs/SpecularHighlight.h"
 #include "Textures/Texture.h"
 #include "Parser/Hash.h"
 #include "Textures/ImageTexture.h"
@@ -17,7 +17,7 @@ Phong::~Phong() {
 
 void Phong::setHash(Hash* hash) {
    Lambertian* diffuseBRDF = new Lambertian();
-   GlossySpecular* specularBRDF = new GlossySpecular();
+   SpecularHighlight* specularBRDF = new SpecularHighlight();
 
    if(hash->contains("texture")) {
       ambientBRDF->setTexture(Texture::createTexture(hash->getValue("texture")->getHash()));
