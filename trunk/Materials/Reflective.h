@@ -3,7 +3,7 @@
 
 #include "Phong.h"
 
-class PerfectSpecular;
+class SpecularReflection;
 class Hash;
 
 /**
@@ -25,7 +25,7 @@ public:
    virtual void setHash(Hash* hash);
 
 private:
-   PerfectSpecular* psBRDF;
+   SpecularReflection* psBRDF;
 };
 
 #endif

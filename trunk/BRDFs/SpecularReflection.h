@@ -1,17 +1,17 @@
-#ifndef __PERFECT_SPECULAR__
-#define __PERFECT_SPECULAR__
+#ifndef __SPECULAR_REFLECTION_H__
+#define __SPECULAR_REFLECTION_H__
 
 #include "BRDF.h"
 #include "Math/Vector3D.h"
 
 class Fresnel;
 
-class PerfectSpecular: public BRDF 
+class SpecularReflection: public BRDF 
 {
 
 public:
-   PerfectSpecular();
-   ~PerfectSpecular() {}
+   SpecularReflection();
+   ~SpecularReflection() {}
 
    virtual Color sample_f(const ShadeRecord& sr, const Vector3D& wo, Vector3D& wi, float& pdf) const;
    void setColor(const Color& c) { color = c; }
