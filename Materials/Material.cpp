@@ -8,6 +8,7 @@
 #include "Atmosphere.h"
 #include "Emissive.h"
 #include "Glass.h"
+#include "Marble.h"
 #include "BRDFs/Lambertian.h"
 #include "Lights/LightManager.h"
 #include "Lights/Light.h"
@@ -39,6 +40,9 @@ Material* Material::createMaterial(Hash* hash) {
    }
    else if(type == "glass") {
       material = new Glass();
+   }
+   else if(type == "marble") {
+      material = new Marble();
    }
    else {
       // Matte is the default type
