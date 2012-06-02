@@ -242,18 +242,15 @@ void WavefrontParser::loadMaterials(string fname) {
       else if(strncmp(line.c_str(), "Kd", 2) == 0) {
          Color c;
          strstr >> s >> c.red >> c.green >> c.blue;
-         Value* v = new Value(c.toArray());
-         props->addValue("color", *v);
+         props->addValue("color", new Value(c.toArray()));
       }
       else if(strncmp(line.c_str(), "Ka", 2) == 0) {
          Color c;
          strstr >> s >> c.red >> c.green >> c.blue;
-         Value* v = new Value(c.toArray());
-         props->addValue("ambientColor", *v);
+         props->addValue("ambientColor", new Value(c.toArray()));
       }
       else if(strncmp(line.c_str(), "map_Kd", 6) == 0) {
-         Value* v = new Value(textureDir + line.substr(7));
-         props->addValue("textureFile", *v);
+         props->addValue("textureFile", new Value(textureDir + line.substr(7)));
       }
 
       done = line.empty();

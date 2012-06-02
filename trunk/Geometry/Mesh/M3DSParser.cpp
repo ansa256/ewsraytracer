@@ -238,20 +238,17 @@ void M3DSParser::processMaterialChunk(size_t nBytes) {
       }
       else if (chunkType == M3DCHUNK_MATERIAL_AMBIENT) {
          Color c = processColorChunk(contentSize);
-         Value* v = new Value(c.toArray());
-         props->addValue("ambientColor", *v);
+         props->addValue("ambientColor", new Value(c.toArray()));
       }
       else if (chunkType == M3DCHUNK_MATERIAL_DIFFUSE) {
          Color c = processColorChunk(contentSize);
-         Value* v = new Value(c.toArray());
-         props->addValue("color", *v);
+         props->addValue("color", new Value(c.toArray()));
       }
       else if (chunkType == M3DCHUNK_MATERIAL_SPECULAR) {
          specColor = processColorChunk(contentSize);
       }
       else if (chunkType == M3DCHUNK_MATERIAL_SHININESS) {
-         Value* v = new Value(processPercentageChunk(contentSize));
-         props->addValue("exp", *v);
+         props->addValue("exp", new Value(processPercentageChunk(contentSize)));
       }
       else if (chunkType == M3DCHUNK_MATERIAL_SHIN2PCT) {
          highlightPercent = processPercentageChunk(contentSize);
@@ -261,8 +258,7 @@ void M3DSParser::processMaterialChunk(size_t nBytes) {
       }
       else if (chunkType == M3DCHUNK_MATERIAL_TEXMAP) {
          string texture = processTexmapChunk(contentSize);
-         Value* v = new Value(texture);
-         props->addValue("textureFile", *v);
+         props->addValue("textureFile", new Value(texture));
          
          checkForNormalMap(props, texture);
       }
@@ -279,8 +275,7 @@ void M3DSParser::processMaterialChunk(size_t nBytes) {
    }
    
    specColor *= highlightPercent;
-   Value v(specColor.toArray());
-   props->addValue("specColor", v);
+   props->addValue("specColor", new Value(specColor.toArray()));
    
    Material* material;
 
@@ -309,8 +304,7 @@ void M3DSParser::checkForNormalMap(Hash* props, string texMap) const {
       inp.open(normalMap.c_str(), ifstream::in);
       if(!inp.fail()) {
          inp.close();
-         Value v(normalMap);
-         props->addValue("normalMapFile", v);
+         props->addValue("normalMapFile", new Value(normalMap));
       }
       inp.clear(ios::failbit);
    }
