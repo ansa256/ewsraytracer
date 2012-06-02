@@ -20,8 +20,8 @@ Hash::~Hash() {
    data.clear();
 }
 
-void Hash::addValue(string key, Value &value) {
-   data.insert(map<string, Value*>::value_type(key, &value));
+void Hash::addValue(string key, Value* value) {
+   data.insert(map<string, Value*>::value_type(key, value));
 }
 
 Value* Hash::getValue(const string &key) const {
