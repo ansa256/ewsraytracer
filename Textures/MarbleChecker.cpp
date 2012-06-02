@@ -46,23 +46,11 @@ void MarbleChecker::setHash(Hash* hash) {
 
 Hash* MarbleChecker::createHash(const Color& c, const Color& v, int seed) {
    Hash* h = new Hash();
-   Value* val = new Value(seed);
-   h->addValue("seed", *val);
-   
-   Value* val2 = new Value(c.toArray());
-   h->addValue("mainColor", *val2);
-   
-   Value* val3 = new Value(v.toArray());
-   h->addValue("veinColor", *val3);
-   
-   Value* val4 = new Value(8);
-   h->addValue("numOctaves", *val4);
-
-   Value* val5 = new Value(2.0);
-   h->addValue("gain", *val5);
-
-   Value* val6 = new Value(2.0);
-   h->addValue("lacunarity", *val6);
-
+   h->addValue("seed", new Value(seed));   
+   h->addValue("mainColor", new Value(c.toArray()));
+   h->addValue("veinColor", new Value(v.toArray()));
+   h->addValue("numOctaves", new Value(8));
+   h->addValue("gain", new Value(0.5));
+   h->addValue("lacunarity", new Value(2.0));
    return h;
 }

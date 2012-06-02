@@ -9,17 +9,10 @@ Marble::Marble() {
 }
 
 void Marble::setHash(Hash* hash) {
-   Value* type = new Value("marble");
-   hash->addValue("type", *type);
-
-   Value* val1 = new Value(8);
-   hash->addValue("numOctaves", *val1);
-   
-   Value* val2 = new Value(0.5);
-   hash->addValue("gain", *val2);
-
-   Value* val3 = new Value(2.0);
-   hash->addValue("lacunarity", *val3);
+   hash->addValue("type", new Value("marble"));
+   hash->addValue("numOctaves", new Value(8));
+   hash->addValue("gain", new Value(0.5));
+   hash->addValue("lacunarity", new Value(2.0));
 
    ambientBRDF->setTexture(Texture::createTexture(hash));
 
