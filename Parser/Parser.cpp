@@ -52,7 +52,7 @@ Hash* Parser::readHash() {
          return NULL;
       }
         
-      hash->addValue(name, *value);
+      hash->addValue(name, value);
       tok = tokenizer->nextToken();
    }
 

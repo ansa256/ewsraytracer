@@ -25,7 +25,7 @@ public:
    Hash();
    ~Hash();
 
-   void addValue(string key, Value &value);
+   void addValue(string key, Value* value);
    Value *getValue(const string &key) const;
 
    int getInteger(const string &key, int def = 0) const;
