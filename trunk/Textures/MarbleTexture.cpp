@@ -12,7 +12,7 @@ MarbleTexture::~MarbleTexture() {
 
 Color MarbleTexture::getColor(const ShadeRecord& sr) const {
    float value = noise->fbm(sr.localHitPoint);
-   float y = sr.localHitPoint.y + 30.0 * value;
+   float y = sr.localHitPoint.y + 40.0 * value;
    float u = (1.0 + sin(y)) * 0.5;
    
    static float threshold = 0.995;
@@ -28,5 +28,5 @@ void MarbleTexture::setHash(Hash* hash) {
    noise->setHash(hash);
    mainColor.set(hash->getValue("mainColor")->getArray());
    veinColor.set(hash->getValue("veinColor")->getArray());
-   lineColor = veinColor * 0.75;
+   lineColor = veinColor * 0.50;
 }
