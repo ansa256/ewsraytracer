@@ -26,7 +26,7 @@ inline float rand_float(int l, float h)  {
 
 /** Generate a random int in the range [l, h] */
 inline int rand_int(int l, int h) {
-	return ((int) (rand_float(0, h - l + 1) + l));
+	return (rand() % (h-l+1)) + l;
 }
 
 inline float clamp(const float x, const float min, const float max) {
