@@ -21,7 +21,7 @@ void Marble::setHash(Hash* hash) {
 
    SpecularHighlight* specularBRDF = new SpecularHighlight();
    specularBRDF->setColor(Color(0.2, 0.2, 0.2));
-   specularBRDF->setExp(2000.0);
+   specularBRDF->setExp(10.0);
 
    SpecularReflection* psBRDF = new SpecularReflection();
    psBRDF->setColor(Color(0.1, 0.1, 0.1, 1.0));

@@ -13,5 +13,6 @@ Color SpecularReflection::sample_f(const ShadeRecord& sr, const Vector3D& wo, Ve
    wi = -wo + sr.normal * 2.0 * ndotwo;
    
    float ndotwi = fabs(sr.normal.dot(wi));
-   return color * fresnel->evaluate(ndotwo) / ndotwi;
+//   return color * fresnel->evaluate(ndotwo) / ndotwi;
+   return color / ndotwi;
 }

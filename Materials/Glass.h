@@ -1,20 +1,13 @@
 #ifndef _GLASS_H_
 #define _GLASS_H_
 
-#include "Phong.h"
+#include "Material.h"
 
-class SpecularTransmission;
-
-class Glass : public Phong {
+class Glass : public Material {
 
 public:
    Glass();
-   virtual ~Glass();
-
    virtual void setHash(Hash* hash);
-
-private:
-   SpecularTransmission* stBRDF;
 };
 
 #endif
