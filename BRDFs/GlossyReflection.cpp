@@ -1,8 +1,8 @@
 #include "GlossyReflection.h"
 #include "Samplers/Sampler.h"
 
-GlossyReflection::GlossyReflection(uint32_t ns) : BRDF(BxDFType(REFLECT | SPECULAR)), color(WHITE), exp(0), nSamples(ns), idx(0) {
-   samples = new float[nSamples];
+GlossyReflection::GlossyReflection(uint32_t ns) : BRDF(BxDFType(REFLECT | GLOSSY)), color(WHITE), exp(0), nSamples(ns), idx(0) {
+   samples = new float[nSamples * 2];
    Sampler::LatinHyperCube(samples, nSamples, 2);
 }
 
