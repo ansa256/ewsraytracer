@@ -9,7 +9,7 @@ DirectIntegrator::DirectIntegrator() {
 }
 
 Color DirectIntegrator::shade(ShadeRecord& sr, const Ray& ray, Tracer* tracer) {
-   int maxDepth = 10;
+   int maxDepth = 5;
    sr.material->applyNormalMap(sr);
    Vector3D wo = ray.direction * -1;
    Color L;// = sr.material->ambientBRDF->rho(sr, wo) * LightManager::instance().getAmbientLight(sr);
@@ -26,6 +26,7 @@ Color DirectIntegrator::shade(ShadeRecord& sr, const Ray& ray, Tracer* tracer) {
 
    if (ray.depth + 1 < maxDepth) {
       L += specularReflect(sr, ray, tracer);
+      L += glossyReflect(sr, ray, tracer);
       L += specularTransmit(sr, ray, tracer);
    }
    return L;
@@ -71,6 +72,30 @@ Color DirectIntegrator::specularReflect(ShadeRecord& sr, const Ray& ray, Tracer*
  
       Color Li = tracer->traceRay(rd, false);
       L = f * Li * widotn / pdf;
+   }
+   return L;
+}
+
+
+Color DirectIntegrator::glossyReflect(ShadeRecord& sr, const Ray& ray, Tracer* tracer) {
+   Vector3D wo = -ray.direction;
+   Vector3D wi;
+   float pdf;
+   const Point3D& p = sr.hitPoint;
+   const Vector3D& n = sr.normal;
+   Color L = BLACK;   
+
+   for(int i = 0; i < 10; i++) {   
+      Color f = sr.material->bsdf.sample_f(sr, wo, wi, pdf, BxDFType(REFLECT | GLOSSY));
+
+      float widotn = fabs(wi.dot(n));
+      if (pdf > 0.f && !f.isBlack() && widotn != 0.f) {
+         // Compute ray differential _rd_ for specular reflection
+         Ray rd(p, wi, ray.depth + 1);
+    
+         Color Li = tracer->traceRay(rd, false);
+         L = f * Li * widotn / pdf;
+      }
    }
    return L;
 }
