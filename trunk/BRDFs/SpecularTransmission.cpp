@@ -1,8 +1,8 @@
 #include "SpecularTransmission.h"
 
-SpecularTransmission::SpecularTransmission(const Color& c, float ei, float et) :
+SpecularTransmission::SpecularTransmission(float ei, float et) :
    BRDF(BxDFType(TRANSMIT | SPECULAR)),
-   color(c),
+   color(WHITE),
    etai(ei),
    etat(et),
    fresnel(ei, et)
@@ -21,6 +21,10 @@ Color SpecularTransmission::sample_f(const ShadeRecord& sr, const Vector3D& wo, 
    }
 
    float temp = 1.f - (1.f - ndotwo * ndotwo) / (eta * eta);
+   if(temp < 0.0) {
+      // total internal reflection has occured, so there is no transmission
+      return BLACK;
+   }
    float cosTheta2 = sqrtf(temp);
    wi = -wo / eta - n * (cosTheta2 - ndotwo / eta);
 
