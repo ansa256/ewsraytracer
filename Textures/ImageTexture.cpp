@@ -1,8 +1,8 @@
 #include "ImageTexture.h"
 #include "Parser/Hash.h"
 #include <string>
-#include <SDL/SDL_Image.h>
-#include "utility/SDL_Utility.h"
+#include <SDL/SDL_image.h>
+#include "Utility/SDL_Utility.h"
 
 using namespace std;
 
@@ -16,7 +16,7 @@ ImageTexture::~ImageTexture() {
 void ImageTexture::setTextureFile(string fname) {
    surf = IMG_Load(fname.c_str());
    if(!surf) {
-      printf("IMG_Load: %s\n", IMG_GetError());
+      printf("IMG_Load: %s, %s\n", IMG_GetError(), fname.c_str());
       exit(1);
    }
 }
