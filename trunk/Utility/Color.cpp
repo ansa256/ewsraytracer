@@ -37,6 +37,13 @@ Color::Color(Array* a) {
    }
 }
 
+Color::Color(const float rgb[3]) {
+   red = rgb[0];
+   green = rgb[1];
+   blue = rgb[2];
+   alpha = 1;
+}
+
 void Color::set(float r, float g, float b, float a) {
    red = r;
    green = g;
@@ -134,4 +141,8 @@ void Color::normalize() {
 
 bool Color::isBlack() const { 
    return *this == BLACK; 
+}
+
+Color operator*(const float a, const Color& c) {
+   return Color(a * c.red, a * c.green, a * c.blue, c.alpha);
 }

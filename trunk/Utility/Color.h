@@ -10,6 +10,7 @@ public:
    Color(float _r = 0, float _g = 0, float _b = 0, float _a = 1);
    Color(const Color& c);
    Color(Array* a);
+   Color(const float rgb[3]);
 
    void set(float r, float b, float g, float a);
    void set(Array* a);
@@ -41,6 +42,8 @@ public:
 
    float red, green, blue, alpha;
 };
+
+Color operator*(const float a, const Color& c);
 
 inline Color Color::operator*(const float a) const {
    return Color(red * a, green * a, blue * a, alpha * a);
