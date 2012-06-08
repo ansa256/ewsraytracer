@@ -4,6 +4,7 @@
 #include "Texture.h"
 
 class LatticeNoise;
+class SDL_Surface;
 
 /**
  * Hash values:
@@ -28,7 +29,9 @@ private:
    Color mainColor;
    Color veinColor;
    Color lineColor;
+   SDL_Surface* surf;
    LatticeNoise* noise;
+   float a;
 };
 
 #endif
