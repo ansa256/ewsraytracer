@@ -1,5 +1,5 @@
 sun {
-   radius      100
+   radius      70
    numSpikes   6
    spikeLength 300
    startAngle  20.0

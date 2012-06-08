@@ -6,7 +6,7 @@ camera {
 #rotate [ 0.0 0.0 0.0 ]
    sampler {
       type	"stratified"
-      strataX   1
-      strataY   1
+      strataX   2
+      strataY   2
    }
 }

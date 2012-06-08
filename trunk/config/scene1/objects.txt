@@ -30,6 +30,10 @@ instance {
    }
 }
 
+mesh {
+   name  "bomb"
+}
+
 starBox {
    name  "stars"
    halfSize 2000
