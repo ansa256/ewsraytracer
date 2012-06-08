@@ -18,13 +18,15 @@ Instance::~Instance() {
 }
 
 void Instance::setHash(Hash* hash) {
-   Hash* objHash = hash->getValue("object")->getHash();
-   string type = objHash->getString("type");
+   if(object == NULL) {
+      Hash* objHash = hash->getValue("object")->getHash();
+      string type = objHash->getString("type");
 
-   object = GeometryManager::instance().createObject(type, objHash, false);
+      object = GeometryManager::instance().createObject(type, objHash, false);
+   }
 
    if(hash->contains("material")) {
-      material = Material::createMaterial(hash->getValue("material")->getHash());
+      setMaterial(Material::createMaterial(hash->getValue("material")->getHash()));
    }
    else {
       material = object->getMaterial();
@@ -34,7 +36,7 @@ void Instance::setHash(Hash* hash) {
       Array* transforms = hash->getValue("transforms")->getArray();
       unsigned int idx = 0;
       while(idx < transforms->size()) {
-         type = transforms->at(idx)->getString();
+         string type = transforms->at(idx)->getString();
          idx++;
 
          if(type == "translate") {
