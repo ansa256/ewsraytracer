@@ -1,7 +1,7 @@
  m3ds {
-   name     "voyager"
-   filename "resources/voyager/voyager.3ds"
-   textureDir  "resources/voyager/"
+   name     "bomb"
+   filename "resources/2001_Bomb5.3ds"
+   excludes "Cylinder.1"
    
    storage {
       type  "kdtree"
