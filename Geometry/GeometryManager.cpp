@@ -12,6 +12,7 @@
 #include "StarBox.h"
 #include "Compound/Wedge.h"
 #include "Compound/WedgeRing.h"
+#include "Compound/MarbleCheckerBoard.h"
 #include "Instance.h"
 #include "Parser/Parser.h"
 #include "Materials/Matte.h"
@@ -91,6 +92,9 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addT
    }
    else if(type == "wedgeRing") {
       obj = new WedgeRing();
+   }
+   else if(type == "marbleCheckerBoard") {
+      obj = new MarbleCheckerBoard();
    }
    else if(type == "instance") {
       obj = new Instance();
