@@ -200,11 +200,11 @@ void flare(SDL_Surface* surface) {
    // center dot
    color1.set(1, 1, 1, 1);
    color2.set(.6, .7, .9, 0);
-   FilledEllipse circle10(width/2, height/2, 3, 3, color1, color2);
+   FilledEllipse circle10(width/2, height/2, 6, 6, color1, color2);
    circle10.draw(surface);
 
    // other dot
-   FilledEllipse circle11(getFarX(0.3), getFarY(0.3), 5, 5, color1, color2);
+   FilledEllipse circle11(getFarX(0.3), getFarY(0.3), 7, 7, color1, color2);
    circle11.draw(surface);
 
    // white
