@@ -2,11 +2,9 @@
 #include "Utility/SDL_Utility.h"
 #include "Shapes2D/ThickLine.h"
 #include "Shapes2D/FilledEllipse.h"
+#include "Shapes2D/Ring.h"
 #include "Falloff/FalloffFilter.h"
-#include <vector>
 #include <string>
-
-using namespace std;
 
 const int width = 960;
 const int height = 540;
@@ -16,17 +14,12 @@ const int cy = 150;
 const int COUNT = 6;
 const float START = 20;
 
-vector<Shape2D*> shapes;
-
 Color blue(0.1, 0.3, 0.8, 0);
 Color yellow(1, 0.7, 0.1, 0);
 Color white(1, 1, 1, 1);
 
-typedef vector<Shape2D*>::const_iterator ShapeIter;
-typedef vector<string>::const_reverse_iterator TextIter;
-
 void run();
-void star(int numSpikes, float startAngle);
+void star(SDL_Surface* surface, int numSpikes, float startAngle);
 double* CreateGaussianFilter(double piSigma, double piAlpha, int& lSize);
 SDL_Surface* Convolute(SDL_Surface* source, double* filter, int fSize);
 
@@ -52,31 +45,180 @@ void run() {
    SDL_Quit();
 }
 
-void star(int numSpikes, float startAngle) {
+void star(SDL_Surface* surface, int numSpikes, float startAngle) {
    int length = 300;
    float offset = 360.f / numSpikes;
 
    for(float a = startAngle; a < 360 + startAngle; a += offset) {
-      shapes.push_back(new ThickLine(cx, cy, length, a, 40, white, yellow));
+      ThickLine line(cx, cy, length, a, 40, white, yellow);
+      line.draw(surface);
    }
-   
-   shapes.push_back(new ThickLine(cx, cy, 800, 0, 50, white, blue));
-   shapes.push_back(new ThickLine(cx, cy, 800, 180, 50, white, blue));
 
-   FilledEllipse* center = new FilledEllipse(cx, cy, 100, 100, white, yellow);
-   center->setFilter(new SmoothStepFilter(0.1, 1.0));
-   shapes.push_back(center);
-   
-//   Color h1(0.7, 0.5, 0.1, 0.1);
-//   Color h2(0.7, 0.5, 0.1, 0.0);
-//   FilledEllipse* outer = new FilledEllipse(cx, cy, 300, 300, h1, h2);
-//   outer->setFilter(new SmoothStepFilter(0.75, 1.0));
-//   shapes.push_back(outer);
+   ThickLine line1(cx, cy, 800, 0, 50, white, blue);
+   line1.draw(surface);
+   ThickLine line2(cx, cy, 800, 180, 50, white, blue);
+   line2.draw(surface);
+
+   FilledEllipse center(cx, cy, 100, 100, white, yellow);
+   center.setFilter(new SmoothStepFilter(0.1, 1.0));
+   center.draw(surface);
+}
+
+int getFarX(float percent) {
+   static int centerX = width / 2;
+
+   int x = abs((width-cx) - centerX) * percent;
+   if(cx < centerX) {
+      x += centerX;
+   }
+   else {
+      x = centerX - x;
+   }
+   return x;
+}
+
+int getNearX(float percent) {
+   static int centerX = width / 2;
+
+   int x = abs((width-cx) - centerX) * percent;
+   if(cx < centerX) {
+      x = centerX - x;
+   }
+   else {
+      x += centerX;
+   }
+   return x;
+}
+
+int getFarY(float percent) {
+   static int centerY = height / 2;
+
+   int y = abs((height-cy) - centerY) * percent;
+   if(cy < centerY) {
+      y += centerY;
+   }
+   else {
+      y = centerY - y;
+   }
+   return y;
+}
+
+int getNearY(float percent) {
+   static int centerY = height / 2;
+
+   int y = abs((height-cy) - centerY) * percent;
+   if(cy < centerY) {
+      y = centerY - y;
+   }
+   else {
+      y += centerY;
+   }
+   return y;
+}
+
+void rainbow(SDL_Surface* surface, int x, int y, int r, int t) {
+   Color black(0, 0, 0, 0);
+   Color color(0.35, 0, 0, 0.35);
+   FilledEllipse r1(x, y, r, r, black, color);
+   r1.setFilter(new SmoothStepFilter(0.8, 1.0));
+   r1.draw(surface);
+
+   r -= t;
+   color.set(0.35, 0.35, 0, 0.35);
+   FilledEllipse r2(x, y, r, r, black, color);
+   r2.setFilter(new SmoothStepFilter(0.8, 1.0));
+   r2.draw(surface);
+
+   r -= t;
+   color.set(0, 0.35, 0, 0.35);
+   FilledEllipse r3(x, y, r, r, black, color);
+   r3.setFilter(new SmoothStepFilter(0.8, 1.0));
+   r3.draw(surface);
+
+   r -= t;
+   color.set(0, 0, 0.35, 0.35);
+   FilledEllipse r4(x, y, r, r, black, color);
+   r4.setFilter(new SmoothStepFilter(0.8, 1.0));
+   r4.draw(surface);
+
+   r -= t;
+   color.set(0.0, 0.0, 0.0, 0.35);
+   FilledEllipse r5(x, y, r, r, black, color);
+   r5.setFilter(new SmoothStepFilter(0.8, 1.0));
+   r5.draw(surface);
+}
+
+void flare(SDL_Surface* surface) {
+   // big green
+   Color color1(0, 0, 0, 0);
+   Color color2(0.20, 0.45, 0, 0.35);
+   FilledEllipse circle1(width - cx, height - cy, 60, 60, color1, color2);
+   circle1.draw(surface);
+
+   // small green
+   color1.set(0.20, 0.45, 0.2, 0.35);
+   color2.set(0.20, 0.45, 0.2, 0.35);
+   FilledEllipse circle2(getFarX(0.65), getFarY(0.65), 20, 20, color1, color2);
+   circle2.draw(surface);
+
+   // big orange
+   color1.set(0, 0, 0, 0);
+   color2.set(0.47, 0.27, 0, 0.35);
+   int x = getFarX(0.45);
+   int y = getFarY(0.45);
+
+   FilledEllipse circle3(x, y, 45, 45, color1, color2);
+   circle3.draw(surface);
+
+   // small orange
+   color1.set(0.47, 0.27, 0, 0.35);
+   FilledEllipse circle4(x, y, 10, 10, color1, color2);
+   circle4.draw(surface);
+
+   // medium orange
+   FilledEllipse circle5(getFarX(0.4), getFarY(0.4), 20, 20, color1, color2);
+   circle5.draw(surface);
+
+   // small orange 2
+   FilledEllipse circle9(getNearX(0.1), getNearY(0.1), 20, 20, color1, color2);
+   circle9.draw(surface);
+
+   // big blue
+   color1.set(0.13, 0.22, 0.36, 0.35);
+   color2.set(0.13, 0.22, 0.36, 0.35);
+   FilledEllipse circle6(getNearX(0.4), getNearY(0.4), 35, 35, color1, color2);
+   circle6.draw(surface);
+
+   // small blue 1
+   FilledEllipse circle7(getNearX(0.37), getNearY(0.37), 15, 15, color1, color2);
+   circle7.draw(surface);
+
+   // small blue 2
+   FilledEllipse circle8(getNearX(0.44), getNearY(0.44), 12, 12, color1, color2);
+   circle8.draw(surface);
+
+   // center dot
+   color1.set(1, 1, 1, 1);
+   color2.set(.6, .7, .9, 0);
+   FilledEllipse circle10(width/2, height/2, 3, 3, color1, color2);
+   circle10.draw(surface);
+
+   // other dot
+   FilledEllipse circle11(getFarX(0.3), getFarY(0.3), 5, 5, color1, color2);
+   circle11.draw(surface);
+
+   // white
+   color1.set(0, 0, 0, 0);
+   color2.set(0.59, 0.52, 0.42, 0.35);
+   FilledEllipse circle12(getNearX(1.5), getNearY(1.5), 35, 35, color1, color2);
+   circle12.draw(surface);
+
+   rainbow(surface, getFarX(1.4), getFarY(1.4), 200, 3);
 }
 
 double* CreateGaussianFilter(double piSigma, double piAlpha, int& lSize) {
    lSize = ((int)(piAlpha * piSigma) / 2)*2 + 1; //force odd-size filters
-	
+
    double* filter = new double[lSize * lSize];
 
    for (int x = 0; x < lSize ; x++) {
@@ -94,13 +236,13 @@ double* CreateGaussianFilter(double piSigma, double piAlpha, int& lSize) {
          lTotal += filter[y * lSize + x];
       }
    }
-	
+
    for (long x = 0;x < lSize; x++) {
       for (long y = 0;y < lSize; y++) {
          filter[y * lSize + x] /= lTotal;
       }
    }
-   
+
    return filter;
 }
 
@@ -112,7 +254,7 @@ SDL_Surface* Convolute(SDL_Surface* source, double* filter, int fSize) {
    SDL_Surface* dest = createSurface(width, height);
    const int halfSize = (int)floor(fSize / 2.0);
    const double cf = 1.0 / 255.0;
-   
+
    RGBA* cs = new RGBA[width * height];
 
    int idx = 0;
@@ -134,7 +276,7 @@ SDL_Surface* Convolute(SDL_Surface* source, double* filter, int fSize) {
 
          //For each point of the filter.
          for (int i = 0; i < fSize; i++) {
-            //This is to make our origin in the center of the filter								
+            //This is to make our origin in the center of the filter
             int FakeI = i - halfSize;
 
             if(y+FakeI < height && y+FakeI >= 0) {
@@ -149,7 +291,7 @@ SDL_Surface* Convolute(SDL_Surface* source, double* filter, int fSize) {
                      SumA += cs[idx].a * filter[i * fSize + j] * cf;
                   }
                }
-            }				
+            }
          }
 
          Uint32 pixel = SDL_MapRGBA(source->format, SumR * 255, SumG * 255, SumB * 255, SumA * 255);
@@ -158,7 +300,7 @@ SDL_Surface* Convolute(SDL_Surface* source, double* filter, int fSize) {
    }
 
    delete[] cs;
-   
+
    return dest;
 }
 
@@ -174,11 +316,9 @@ int main(int argc, char **argv) {
    Uint32 black = SDL_MapRGBA(surface->format, 0, 0, 0, 0);
    SDL_FillRect(surface, NULL, black);
 
-   star(COUNT, START);
-   for(ShapeIter it = shapes.begin(); it != shapes.end(); ++it) {
-      (*it)->draw(surface);
-   }
-   
+   flare(surface);
+   star(surface, COUNT, START);
+
    int fSize;
    double* filter = CreateGaussianFilter(3, 6, fSize);
    SDL_Surface* dest = Convolute(surface, filter, fSize);
@@ -187,7 +327,7 @@ int main(int argc, char **argv) {
    SDL_BlitSurface(dest, NULL, screen, NULL);
    SDL_Flip(screen);
    run();
-   
+
    SDL_FreeSurface(surface);
    SDL_FreeSurface(dest);
 
