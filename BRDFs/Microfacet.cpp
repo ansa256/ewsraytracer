@@ -25,9 +25,6 @@ Microfacet::Microfacet(Fresnel* f, MicrofacetDistribution* d) :
 }
 
 Microfacet::~Microfacet() {
-   if(texture != NULL) {
-      delete texture;
-   }
 }
 
 Color Microfacet::f(const ShadeRecord& sr, const Vector3D& wo, const Vector3D& wi) const {

@@ -2,17 +2,11 @@
 #include "Math/Maths.h"
 #include "Textures/Texture.h"
 
-Lambertian::Lambertian() : BRDF(BxDFType(DIFFUSE)), color(1, 1, 1), texture(NULL) {
-}
-
-Lambertian::~Lambertian() {
-   if(texture != NULL) {
-      delete texture;
-   }
+Lambertian::Lambertian() : BRDF(BxDFType(DIFFUSE)), color(1, 1, 1) {
 }
 
 void Lambertian::setColor(float r, float g, float b) {
-   color.set(r, g, b, 1);
+   color.set(r, g, b);
 }
 
 Color Lambertian::f(const ShadeRecord& sr, const Vector3D& wo, const Vector3D& wi) const {
@@ -28,11 +22,4 @@ Color Lambertian::rho(const ShadeRecord& sr, const Vector3D& wo) const {
       return texture->getColor(sr) * color;
    }
    return color;
-}
-
-float Lambertian::getAlpha(const ShadeRecord& sr) const {
-   if(texture != NULL) {
-      return texture->getAlpha(sr);
-   }
-   return color.alpha;
 }

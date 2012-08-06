@@ -39,11 +39,9 @@ public:
    virtual Color rho(const ShadeRecord& sr, const Vector3D& wo) const;
    
    void setColor(const Color& c) { color = c; }
-   void setTexture(Texture* tex) { texture = tex; }
    
 private:
    Color color;
-   Texture* texture;
    Fresnel* fresnel;
    MicrofacetDistribution* distribution;
 };
