@@ -170,7 +170,7 @@ int LightWaveParser::parseSurface() {
          float b = readFloatBE(in);
          float g = readFloatBE(in);
          readShortBE(in);
-         color.set(r, g, b, 1.f);
+         color.set(r, g, b);
       }
       else if(subName == "DIFF") {
          diffuse = readFloatBE(in);
