@@ -149,6 +149,7 @@ GeometryObject* GeometryManager::createSphere(double cx, double cy, double cz, d
    Instance* instance = new Instance(new Sphere());
    instance->scale(r, r, r);
    instance->translate(cx, cy, cz);
+   instance->computeBBox();
    return instance;
 }
 
@@ -157,6 +158,7 @@ GeometryObject* GeometryManager::createRectangle(const Vector3D& translate, doub
    instance->scale(scalex, scaley, 1);
    instance->rotate(rotation.x, rotation.y, rotation.z);
    instance->translate(translate.x, translate.y, translate.z);
+   instance->computeBBox();
    return instance;
 }
 
@@ -165,5 +167,6 @@ GeometryObject* GeometryManager::createDisk(const Vector3D& translate, double sc
    instance->scale(scalex, scaley, 1);
    instance->rotate(rotation.x, rotation.y, rotation.z);
    instance->translate(translate.x, translate.y, translate.z);
+   instance->computeBBox();
    return instance;
 }
