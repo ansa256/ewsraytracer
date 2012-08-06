@@ -18,15 +18,7 @@ Color Tracer::traceRay(const Ray& ray, bool useBackground) {
    ray.tHit = HUGE_VALUE;
    
    if(GeometryManager::instance().getStorage()->hit(ray, sr)) {
-//      Color c = sr.material->shade(sr, ray);
-      Color c = integrator.shade(sr, ray, this);
-      
-      if(c.getAlphaF() < 1.0) {
-         Ray newRay(sr.hitPoint, ray.direction);
-         Color newColor = traceRay(newRay);
-         return c * c.alpha + newColor * (1.0 - c.alpha);
-      }
-      return c;
+      return integrator.shade(sr, ray, this);
    }
    else {
       if(!useBackground) {

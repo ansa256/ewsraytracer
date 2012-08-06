@@ -18,8 +18,8 @@ public:
 private:
    Color estimateDirect(ShadeRecord& sr, Light* light, const Vector3D& wo, float* samples, int s);
    Color specularReflect(ShadeRecord& sr, const Ray& ray, Tracer* tracer);
-   Color glossyReflect(ShadeRecord& sr, const Ray& ray, Tracer* tracer);
    Color specularTransmit(ShadeRecord& sr, const Ray &ray, Tracer* tracer);
+   Color transparency(ShadeRecord& sr, const Ray &ray, Tracer* tracer, Color& L);
 };
 
 #endif
