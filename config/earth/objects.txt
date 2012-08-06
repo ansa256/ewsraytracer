@@ -2,7 +2,7 @@ instance {
 
 transforms [
    "scale"    [ 6.37814 6.37814 6.37814 ]
-   "rotate"   [ 30.0 0.0 0.0 ]
+#   "rotate"   [ 30.0 0.0 0.0 ]
 ]
 
 object {
@@ -23,7 +23,7 @@ object {
 
          texture {
             type     "image"
-            filename "resources/earth2/world3.png"
+            filename "resources/earth/world3.png"
             mapping  "sphere"
          }
 
@@ -68,8 +68,9 @@ object {
    name   "clouds"
    
    material {
-      type  "matte"
+      type  "alphaBlend"
       kd 1.0
+      alphaThreshold 0.5
 
       texture {
          type     "tinstance"
@@ -79,7 +80,7 @@ object {
 
          texture {
             type     "image"
-            filename "resources/earth2/clouds.png"
+            filename "resources/earth/clouds.png"
             mapping  "sphere"
 	         colorAsAlpha 1
          }
@@ -88,34 +89,13 @@ object {
 }
 }
 
-instance {
-
-transforms [
-   "scale"  [ 6.45 6.45 6.45 ]
-]
-
-object {
-   type  "sphere"
-   name   "atmosphere"
-   
-   material {
-      type  "atmosphere"
-      color [ 0.161 0.384 0.498 ]
-   }
-} 
-
-   object {
-      type  "sphere"
-      material {
-         type  "atmosphere"
-         color [ 0.161 0.384 0.498 ]
-      }
-   } 
-}
-
 starBox {
-   name     "stars"
-   count    10000
-   halfSize 1000
-}
+   name  "stars"
+   halfSize 2000
+   yzNegX  "resources/images/star-cube-sides/stars0000.png"
+   yzPosX  "resources/images/star-cube-sides/stars0001.png"
+   xyNegZ  "resources/images/star-cube-sides/stars0002.png"
+   xyPosZ  "resources/images/star-cube-sides/stars0003.png"
+   xzNegY  "resources/images/star-cube-sides/stars0004.png"
+   xzPosY  "resources/images/star-cube-sides/stars0005.png"
 }

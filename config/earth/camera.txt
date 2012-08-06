@@ -1,9 +1,11 @@
 camera {
    sampler {
-      type  "regular"
+      type  "stratified"
+      strataX  2
+      strataY  2
    }
    angle                49.134
    eye                  [ 0.0 0.0 30.0 ]
    lookat               [ 0.0 0.0 0.0 ]
-   up                   [ 0.25 1.0 0.0 ]
+   up                   [ 0.0 1.0 0.0 ]
 }
