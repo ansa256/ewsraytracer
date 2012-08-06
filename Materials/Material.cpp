@@ -5,10 +5,10 @@
 #include "Matte.h"
 #include "Phong.h"
 #include "Reflective.h"
-#include "Atmosphere.h"
 #include "Emissive.h"
 #include "Glass.h"
 #include "Marble.h"
+#include "AlphaBlend.h"
 #include "BRDFs/Lambertian.h"
 #include "Lights/LightManager.h"
 #include "Lights/Light.h"
@@ -26,14 +26,14 @@ Material* Material::createMaterial(Hash* hash) {
    string type = hash->getString("type");
 
    Material* material;
-   if(type == "phong") {
+   if(type == "matte") {
+      material = new Matte();
+   }
+   else if(type == "phong") {
       material = new Phong();
    }
    else if(type == "reflective") {
       material = new Reflective();
-   }
-   else if(type == "atmosphere") {
-      material = new Atmosphere();
    }
    else if(type == "emissive") {
       material = new Emissive();
@@ -44,9 +44,12 @@ Material* Material::createMaterial(Hash* hash) {
    else if(type == "marble") {
       material = new Marble();
    }
+   else if(type == "alphaBlend") {
+      material = new AlphaBlend();
+   }
    else {
-      // Matte is the default type
-      material = new Matte();
+      fprintf(stderr, "Unknown material type %s\n", type.c_str());
+      exit(1);
    }
 
    material->setHash(hash);
@@ -85,6 +88,3 @@ void Material::applyNormalMap(ShadeRecord& sr) {
    sr.normal = tangentMatrix * mapNormal;
 }
 
-float Material::getAlpha(const ShadeRecord& sr, const Ray& ray) const {
-   return bsdf.getAlpha(sr);
-}
