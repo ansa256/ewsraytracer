@@ -30,10 +30,10 @@ public:
    static Material* createMaterial(Hash* hash);
 
    virtual void setHash(Hash* hash) = 0;
-   virtual Color getLe(const ShadeRecord& sr) const { return ZERO; }
-   virtual float getAlpha(const ShadeRecord& sr, const Ray& ray) const;
+   virtual Color getLe(const ShadeRecord& sr) const { return BLACK; }
 
    void applyNormalMap(ShadeRecord& sr);
+   virtual bool shadowHit(ShadeRecord& sr) { return true; }
    
    Lambertian* ambientBRDF;
    BSDF bsdf;
