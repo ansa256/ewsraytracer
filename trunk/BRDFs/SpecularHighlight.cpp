@@ -2,18 +2,12 @@
 #include "Textures/Texture.h"
 #include <math.h>
 
-SpecularHighlight::SpecularHighlight() : BRDF(BxDFType(GLOSSY)), exp(0), color(1, 1, 1), specularMask(NULL) {
-}
-
-SpecularHighlight::~SpecularHighlight() {
-   if(specularMask != NULL) {
-      delete specularMask;
-   }
+SpecularHighlight::SpecularHighlight() : BRDF(BxDFType(GLOSSY)), exp(0), color(1, 1, 1) {
 }
 
 Color SpecularHighlight::f(const ShadeRecord& sr, const Vector3D& wo, const Vector3D& wi) const {
-   if(specularMask != NULL) {
-      Color c = specularMask->getColor(sr);
+   if(texture != NULL) {
+      Color c = texture->getColor(sr);
       if(c == BLACK) {
          return BLACK;
       }
@@ -27,9 +21,5 @@ Color SpecularHighlight::f(const ShadeRecord& sr, const Vector3D& wo, const Vect
       return color * pow(rdotwo, exp);
    }
 
-   return BLACK;
-}
-
-Color SpecularHighlight::rho(const ShadeRecord& sr, const Vector3D& wo) const {
    return BLACK;
 }
