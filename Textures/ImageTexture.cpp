@@ -1,7 +1,7 @@
 #include "ImageTexture.h"
 #include "Parser/Hash.h"
 #include <string>
-#include <SDL/SDL_image.h>
+#include <SDL_image.h>
 #include "Utility/SDL_Utility.h"
 
 using namespace std;
@@ -70,7 +70,7 @@ Color ImageTexture::getColor(const ShadeRecord& sr) const {
    if(colorAsAlpha) {
       a = r;
    }
-   return Color(r/255.0, g/255.0, b/255.0, a/255.0);
+   return Color(r/255.0, g/255.0, b/255.0);
 }
 
 float ImageTexture::getAlpha(const ShadeRecord& sr) const {
