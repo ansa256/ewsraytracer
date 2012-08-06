@@ -9,10 +9,13 @@
 #include "Textures/ImageTexture.h"
 #include "Samplers/Sampler.h"
 
-Phong::Phong() {
+Phong::Phong() : texture(NULL) {
 }
 
 Phong::~Phong() {
+   if(texture != NULL) {
+      delete texture;
+   }
 }
 
 void Phong::setHash(Hash* hash) {
@@ -20,18 +23,15 @@ void Phong::setHash(Hash* hash) {
    SpecularHighlight* specularBRDF = new SpecularHighlight();
 
    if(hash->contains("texture")) {
-      ambientBRDF->setTexture(Texture::createTexture(hash->getValue("texture")->getHash()));
-      diffuseBRDF->setTexture(Texture::createTexture(hash->getValue("texture")->getHash()));
+      texture = Texture::createTexture(hash->getValue("texture")->getHash());
+      ambientBRDF->setTexture(texture, false);
+      diffuseBRDF->setTexture(texture, false);
    }
    else if(hash->contains("textureFile")) {
-      string texture = hash->getString("textureFile");
-      ImageTexture* tex = new ImageTexture();
-      tex->setTextureFile(texture);
-      ambientBRDF->setTexture(tex);
-
-      tex = new ImageTexture();
-      tex->setTextureFile(texture);
-      diffuseBRDF->setTexture(tex);
+      texture = new ImageTexture();
+      ((ImageTexture*) texture)->setTextureFile(hash->getString("textureFile"));
+      ambientBRDF->setTexture(texture, false);
+      diffuseBRDF->setTexture(texture, false);
    }
 
    if(hash->contains("color")) {
@@ -54,7 +54,7 @@ void Phong::setHash(Hash* hash) {
    specularBRDF->setExp(hash->getDouble("exp"));
 
    if(hash->contains("specularMask")) {
-      specularBRDF->setSpecularMask(Texture::createTexture(hash->getValue("specularMask")->getHash()));
+      specularBRDF->setTexture(Texture::createTexture(hash->getValue("specularMask")->getHash()), true);
    }
    
    bsdf.addBRDF(diffuseBRDF);

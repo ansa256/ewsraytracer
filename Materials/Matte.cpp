@@ -8,28 +8,28 @@
 #include "Lights/Light.h"
 #include "Samplers/Sampler.h"
 
-Matte::Matte() {
+Matte::Matte() : texture(NULL) {
 }
 
 Matte::~Matte() {
+   if(texture != NULL) {
+      delete texture;
+   }
 }
 
 void Matte::setHash(Hash* hash) {
    Lambertian* diffuseBRDF = new Lambertian();
 
    if(hash->contains("texture")) {
-      ambientBRDF->setTexture(Texture::createTexture(hash->getValue("texture")->getHash()));
-      diffuseBRDF->setTexture(Texture::createTexture(hash->getValue("texture")->getHash()));
+      texture = Texture::createTexture(hash->getValue("texture")->getHash());
+      ambientBRDF->setTexture(texture, false);
+      diffuseBRDF->setTexture(texture, false);
    }
    else if(hash->contains("textureFile")) {
-      string texture = hash->getString("textureFile");
-      ImageTexture* tex = new ImageTexture();
-      tex->setTextureFile(texture);
-      ambientBRDF->setTexture(tex);
-
-      tex = new ImageTexture();
-      tex->setTextureFile(texture);
-      diffuseBRDF->setTexture(tex);
+      texture = new ImageTexture();
+      ((ImageTexture*) texture)->setTextureFile(hash->getString("textureFile"));
+      ambientBRDF->setTexture(texture, false);
+      diffuseBRDF->setTexture(texture, false);
    }
 
    if(hash->contains("color")) {
@@ -39,6 +39,12 @@ void Matte::setHash(Hash* hash) {
 
    if(hash->contains("ambientColor")) {
       ambientBRDF->setColor(Color(hash->getValue("ambientColor")->getArray()));
+   }
+   
+   if(hash->contains("kd")) {
+      double kd = hash->getDouble("kd");
+      diffuseBRDF->setColor(kd, kd, kd);
+      ambientBRDF->setColor(1.0 - kd, 1.0 - kd, 1.0 - kd);
    }
    
    bsdf.addBRDF(diffuseBRDF);

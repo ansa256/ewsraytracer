@@ -3,9 +3,7 @@
 
 #include "Material.h"
 
-class Lambertian;
 class Texture;
-class Light;
 
 /**
  * Hash values:
@@ -24,6 +22,9 @@ public:
    virtual ~Matte();
 
    virtual void setHash(Hash* hash);
+   
+private:
+   Texture* texture;
 };
 
 #endif

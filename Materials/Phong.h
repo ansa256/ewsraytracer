@@ -3,8 +3,7 @@
 
 #include "Material.h"
 
-class Lambertian;
-class GlossySpecular;
+class Texture;
 
 class Phong : public Material {
 
@@ -13,6 +12,9 @@ public:
    virtual ~Phong();
 
    virtual void setHash(Hash* hash);
+   
+private:
+   Texture* texture;
 };
 
 #endif
