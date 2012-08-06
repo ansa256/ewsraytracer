@@ -96,9 +96,8 @@ bool Sphere::shadowHit(const Ray& ray) const {
    if(t > epsilon && partCheck(ray, t)) {
       ShadeRecord sr;
       sr.localHitPoint = ray(t);
-      float alpha = material->getAlpha(sr, ray);
-
-      if(alpha > 0.5) {
+      
+      if(material->shadowHit(sr)) {
          ray.tHit = t;
          return true;
       }
@@ -108,9 +107,8 @@ bool Sphere::shadowHit(const Ray& ray) const {
    if(t > epsilon && partCheck(ray, t)) {
       ShadeRecord sr;
       sr.localHitPoint = ray(t);
-      float alpha = material->getAlpha(sr, ray);
-
-      if(alpha > 0.5) {
+      
+      if(material->shadowHit(sr)) {
          ray.tHit = t;
          return true;
       }
