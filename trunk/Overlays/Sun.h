@@ -17,7 +17,7 @@ private:
    int spikeLength;
    int numSpikes;
    float startAngle;
-   Color color;
+   RGBAColor color;
 };
 
 #endif

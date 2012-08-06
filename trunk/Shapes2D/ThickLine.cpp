@@ -3,7 +3,7 @@
 #include "Line.h"
 #include "Murphy.h"
 
-ThickLine::ThickLine(int x, int y, int length, float angle, int w, const Color& c1, const Color& c2) {
+ThickLine::ThickLine(int x, int y, int length, float angle, int w, const RGBAColor& c1, const RGBAColor& c2) {
    x1 = x;
    y1 = y;
    hw = w / 2;

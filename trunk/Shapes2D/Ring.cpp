@@ -3,7 +3,7 @@
 #include "Math/Maths.h"
 #include <math.h>
 
-Ring::Ring(int x, int y, int i, int o, const Color& c1, const Color& c2) :
+Ring::Ring(int x, int y, int i, int o, const RGBAColor& c1, const RGBAColor& c2) :
    cx(x), cy(y), iradius(i), oradius(o), innerC(c1), outerC(c2)
 {
 }
@@ -30,7 +30,7 @@ void Ring::draw(SDL_Surface* surf) {
          double dist = getDistance(x, y);
          if(dist > ir) {
             double f = (dist < cr) ? (dist - ir) / dr : 1.0 - (dist - cr) / dr;
-            Color c = lerp(f, outerC, innerC);
+            RGBAColor c = lerp(f, outerC, innerC);
             setBlendColor(surf, (Uint32*) target_pixel_a, c);
             setBlendColor(surf, (Uint32*) target_pixel_b, c);
          }

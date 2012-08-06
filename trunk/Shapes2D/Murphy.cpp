@@ -8,7 +8,7 @@ using namespace std;
 
 #define HYPOT(x,y) sqrt((double)(x)*(double)(x)+(double)(y)*(double)(y))
 
-Murphy::Murphy(SDL_Surface* s, const Color& c1, const Color& c2, bool sa) :
+Murphy::Murphy(SDL_Surface* s, const RGBAColor& c1, const RGBAColor& c2, bool sa) :
    surf(s), color1(c1), color2(c2), swapAlpha(sa)
 {
 }
@@ -179,7 +179,7 @@ void Murphy::murphyParaline(Sint16 x, Sint16 y, int d1) {
          f = 1.0 - f;
       }
 
-      Color color = lerp(f, color1, color2);
+      RGBAColor color = lerp(f, color1, color2);
 
       setBlendColor(surf, x, y, color);
 
