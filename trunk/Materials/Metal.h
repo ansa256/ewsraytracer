@@ -3,8 +3,7 @@
 
 #include "Material.h"
 
-class Microfacet;
-class Lambertian;
+class Texture;
 
 class Metal : public Material {
 
@@ -12,17 +11,10 @@ public:
    Metal();
    virtual ~Metal();
    
-   virtual Color shade(ShadeRecord& sr, const Ray& ray);
    virtual void setHash(Hash* hash);
-   virtual float getAlpha(const ShadeRecord& sr, const Ray& ray) const;
 
 private:
-   void setTexture(string texture);
-
-   Microfacet* microfacet;
-   Lambertian* ambient;
-   Lambertian* diffuse;
-   double kd;
+   Texture* texture;
 };
 
 #endif
