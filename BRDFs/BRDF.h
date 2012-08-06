@@ -18,7 +18,8 @@ enum BxDFType {
 class BRDF {
 
 public:
-   BRDF(BxDFType t) : type(t) {}
+   BRDF(BxDFType t) : type(t), texture(NULL) {}
+
    virtual ~BRDF() {
       if(texture != NULL && deleteTexture) {
          delete texture;
@@ -29,15 +30,15 @@ public:
    virtual Color sample_f(const ShadeRecord& sr, const Vector3D& wo, Vector3D& wi, float& pdf) const { return BLACK; }
    virtual Color rho(const ShadeRecord& sr, const Vector3D& wo) const { return BLACK; }
    virtual double getAlpha(const ShadeRecord& sr) const { return 1.0; }
-   
+
    bool matches(BxDFType flags) const { return (type & flags) == type; }
    void setTexture(Texture* t, bool dt) { texture = t; deleteTexture = dt; }
 
    const BxDFType type;
-   
+
 protected:
    Texture* texture;
-   
+
 private:
    bool deleteTexture;
 };
