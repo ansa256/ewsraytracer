@@ -5,69 +5,51 @@
 using namespace std;
 
 const Color BLACK;
-const Color WHITE(1, 1, 1, 1);
-const Color ZERO(0, 0, 0, 0);
+const Color WHITE(1, 1, 1);
+const RGBAColor RGBA_WHITE(1, 1, 1, 1);
 
 float epsilon = 1.0 * pow(10, -6);
 
-Color::Color(float _r, float _g, float _b, float _a) {
+Color::Color(float _r, float _g, float _b) {
    red = _r;
    green = _g;
    blue = _b;
-   alpha = _a;
 }
 
 Color::Color(const Color& c) {
    red = c.red;
    green = c.green;
    blue = c.blue;
-   alpha = c.alpha;
 }
 
 Color::Color(Array* a) {
    red = a->at(0)->getDouble();
    green = a->at(1)->getDouble();
    blue = a->at(2)->getDouble();
-
-   if(a->size() > 3) {
-      alpha = a->at(3)->getDouble();
-   }
-   else {
-      alpha = 1.0;
-   }
 }
 
 Color::Color(const float rgb[3]) {
    red = rgb[0];
    green = rgb[1];
    blue = rgb[2];
-   alpha = 1;
 }
 
-void Color::set(float r, float g, float b, float a) {
+void Color::set(float r, float g, float b) {
    red = r;
    green = g;
    blue = b;
-   alpha = a;
 }
 
 void Color::set(Array* a) {
    red = a->at(0)->getDouble();
    green = a->at(1)->getDouble();
    blue = a->at(2)->getDouble();
-   if(a->size() > 3) {
-      alpha = a->at(3)->getDouble();
-   }
-   else {
-      alpha = 1.0;
-   }
 }
 
 Color& Color::operator= (const Color& p) {
    red = p.red;
    green = p.green;
    blue = p.blue;
-   alpha = p.alpha;
    return *this;
 }
 
@@ -117,7 +99,6 @@ Array* Color::toArray() const {
    a->push_back(new Value(red));
    a->push_back(new Value(green));
    a->push_back(new Value(blue));
-   a->push_back(new Value(alpha));
    return a;
 }
 
@@ -144,5 +125,34 @@ bool Color::isBlack() const {
 }
 
 Color operator*(const float a, const Color& c) {
-   return Color(a * c.red, a * c.green, a * c.blue, c.alpha);
+   return Color(a * c.red, a * c.green, a * c.blue);
+}
+
+RGBAColor::RGBAColor(float _r, float _g, float _b, float _a) {
+   red = _r;
+   green = _g;
+   blue = _b;
+   alpha = _a;
+}
+
+RGBAColor::RGBAColor(const RGBAColor& c) {
+   red = c.red;
+   green = c.green;
+   blue = c.blue;
+   alpha = c.alpha;
+}
+
+RGBAColor& RGBAColor::operator= (const RGBAColor& p) {
+   red = p.red;
+   green = p.green;
+   blue = p.blue;
+   alpha = p.alpha;
+   return *this;
+}
+
+void RGBAColor::set(Array* a) {
+   red = a->at(0)->getDouble();
+   green = a->at(1)->getDouble();
+   blue = a->at(2)->getDouble();
+   alpha = a->at(3)->getDouble();
 }
