@@ -1,7 +1,7 @@
 #include "SDL_Utility.h"
 
 void setPixel(SDL_Surface* s, int x, int y, const Color& color) {
-   setPixel(s, x, y, SDL_MapRGBA(s->format, color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
+   setPixel(s, x, y, SDL_MapRGBA(s->format, color.getRed(), color.getGreen(), color.getBlue(), 255));
 }
 
 void setPixel(SDL_Surface* s, int x, int y, Uint8 r, Uint8 g, Uint8 b) {
@@ -87,7 +87,7 @@ int png_colortype_from_surface(SDL_Surface *surface) {
    return colortype;
 }
 
-void setBlendColor(SDL_Surface *surf, int x, int y, const Color& c) {
+void setBlendColor(SDL_Surface *surf, int x, int y, const RGBAColor& c) {
    SDL_Rect rect = surf->clip_rect;
    if(x < 0 || x >= rect.w) {
       return;
@@ -99,7 +99,7 @@ void setBlendColor(SDL_Surface *surf, int x, int y, const Color& c) {
    setBlendColor(surf, pixel, c);
 }
 
-void setBlendColor(SDL_Surface* surf, Uint32* pixel, const Color& c) {
+void setBlendColor(SDL_Surface* surf, Uint32* pixel, const RGBAColor& c) {
    Uint8 r, g, b, a;
    SDL_GetRGBA(*pixel, surf->format, &r, &g, &b, &a);
    float dr = r / 255.f;
@@ -122,9 +122,9 @@ void setBlendColor(SDL_Surface* surf, Uint32* pixel, const Color& c) {
    *pixel = SDL_MapRGBA(surf->format, r, g, b, a);
 }
 
-void setBlendColor(SDL_Surface * surf, int x, int y, const Color& c, int weight) {
+void setBlendColor(SDL_Surface * surf, int x, int y, const RGBAColor& c, int weight) {
    int alpha = ((c.getAlpha() * weight) >> 8);
-   Color color(c.red, c.green, c.blue, alpha / 255.f);
+   RGBAColor color(c.red, c.green, c.blue, alpha / 255.f);
    setBlendColor(surf, x, y, color);
 }
 
