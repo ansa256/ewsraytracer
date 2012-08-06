@@ -24,7 +24,7 @@ Color BSDF::f(const ShadeRecord& sr, const Vector3D& wo, const Vector3D& wi) con
 
 Color BSDF::sample_f(const ShadeRecord& sr, const Vector3D& wo, Vector3D& wi, float& pdf, BxDFType flags) const {
    vector<BRDF*> matches = getMatches(flags);
-   if(matches.size() == 0) {
+   if(matches.size() == 0) { 
       return BLACK;
    }
    
@@ -32,7 +32,7 @@ Color BSDF::sample_f(const ShadeRecord& sr, const Vector3D& wo, Vector3D& wi, fl
    BRDF* brdf = matches[which];
    
    Color f = brdf->sample_f(sr, wo, wi, pdf);
-   if(pdf == 0) {
+   if(pdf == 0) { 
       return BLACK;
    }
    
@@ -47,14 +47,6 @@ Color BSDF::rho(const ShadeRecord& sr, const Vector3D& wo) const {
    return rho;
 }
 
-float BSDF::getAlpha(const ShadeRecord& sr) const {
-   float a = 1.f;
-   for(BRDFIter it = brdfs.begin(); it != brdfs.end(); ++it) {
-      a *= (*it)->getAlpha(sr);
-   }
-   return a;
-}
-
 vector<BRDF*> BSDF::getMatches(BxDFType flags) const {
    vector<BRDF*> matches;
    for(BRDFIter it = brdfs.begin(); it != brdfs.end(); ++it) {
@@ -63,4 +55,15 @@ vector<BRDF*> BSDF::getMatches(BxDFType flags) const {
       }
    }
    return matches;
+}
+
+double BSDF::sampleAlpha(const ShadeRecord& sr) const {
+   vector<BRDF*> matches = getMatches(BxDFType(TRANSPARENT));
+   if(matches.size() == 0) { 
+      return 1.0;
+   }
+   
+   int which = matches.size() > 1 ? rand_int(0, (int)matches.size()-1) : 0;
+   BRDF* brdf = matches[which];   
+   return brdf->getAlpha(sr);
 }

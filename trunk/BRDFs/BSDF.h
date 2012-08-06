@@ -16,7 +16,7 @@ public:
    Color f(const ShadeRecord& sr, const Vector3D& wo, const Vector3D& wi) const;
    Color sample_f(const ShadeRecord& sr, const Vector3D& wo, Vector3D& wi, float& pdf, BxDFType flags) const;
    Color rho(const ShadeRecord& sr, const Vector3D& wo) const;
-   float getAlpha(const ShadeRecord& sr) const;
+   double sampleAlpha(const ShadeRecord& sr) const;
 
    vector<BRDF*> getMatches(BxDFType flags) const;
 
