@@ -5,13 +5,13 @@
 #include <algorithm>
 #include <math.h>
 
-Line::Line(int _x1, int _y1, int _x2, int _y2, const Color& c1, const Color& c2) :
+Line::Line(int _x1, int _y1, int _x2, int _y2, const RGBAColor& c1, const RGBAColor& c2) :
    x1(_x1), y1(_y1), x2(_x2), y2(_y2), color1(c1), color2(c2)
 {
    swapAlpha = false;
 }
 
-Line::Line(int x, int y, int length, float angle, const Color& c1, const Color& c2) {
+Line::Line(int x, int y, int length, float angle, const RGBAColor& c1, const RGBAColor& c2) {
    x1 = x;
    y1 = y;
 
@@ -85,7 +85,7 @@ void Line::draw(SDL_Surface* surf) {
             f = 1.0 - f;
          }
          f = filter->filter(f);
-         Color c = lerp(f, color1, color2);
+         RGBAColor c = lerp(f, color1, color2);
          Uint32 wgt = (erracc >> 24) & 255;
          setBlendColor(surf, x1, y1, c, 255 - wgt);
          setBlendColor(surf, x0pxdir, y1, c, wgt);
@@ -110,7 +110,7 @@ void Line::draw(SDL_Surface* surf) {
             f = 1.0 - f;
          }
          f = filter->filter(f);
-         Color c = lerp(f, color1, color2);
+         RGBAColor c = lerp(f, color1, color2);
          Uint32 wgt = (erracc >> 24) & 255;
          setBlendColor(surf, x1, y1, c, 255 - wgt);
          setBlendColor(surf, x1, y0p1, c, wgt);
@@ -130,7 +130,7 @@ void Line::horizontal(SDL_Surface* surf, int y) {
       float f = (x - x1) / dx;
       if(swapAlpha) f = 1.0 - f;
       f = filter->filter(f);
-      Color c = lerp(f, color1, color2);
+      RGBAColor c = lerp(f, color1, color2);
       setBlendColor(surf, x, y, c);
    }
 }
@@ -147,7 +147,7 @@ void Line::vertical(SDL_Surface * surf, int x) {
       float f = (y - y1) / dy;
       if(swapAlpha) f = 1.0 - f;
       f = filter->filter(f);
-      Color c = lerp(f, color1, color2);
+      RGBAColor c = lerp(f, color1, color2);
       setBlendColor(surf, x, y, c);
    }
 }

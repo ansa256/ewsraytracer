@@ -27,26 +27,26 @@ void Sun::create() {
    
    int cx = 800, cy = spikeLength;
    
-   Color blue(0.1, 0.3, 0.8, 0);
+   RGBAColor blue(0.1, 0.3, 0.8, 0);
 
    float offset = 360.f / numSpikes;
 
    for(float a = startAngle; a < 360 + startAngle; a += offset) {
-      ThickLine line(cx, cy, spikeLength, a, radius/2-10, WHITE, color);
+      ThickLine line(cx, cy, spikeLength, a, radius/2-10, RGBA_WHITE, color);
       line.draw(surf);
    }
    
-   ThickLine blue1(cx, cy, 800, 0, radius/2, WHITE, blue);
+   ThickLine blue1(cx, cy, 800, 0, radius/2, RGBA_WHITE, blue);
    blue1.draw(surf);
-   ThickLine blue2(cx, cy, 800, 180, radius/2, WHITE, blue);
+   ThickLine blue2(cx, cy, 800, 180, radius/2, RGBA_WHITE, blue);
    blue2.draw(surf);
 
-   Ellipse center(cx, cy, radius, radius, WHITE, color);
+   Ellipse center(cx, cy, radius, radius, RGBA_WHITE, color);
    center.setFilter(new SmoothStepFilter(0.2, 1.0));
    center.draw(surf);
    
-   Color h1(0.7, 0.5, 0.1, 0.2);
-   Color h2(0.7, 0.5, 0.1, 0.0);
+   RGBAColor h1(0.7, 0.5, 0.1, 0.2);
+   RGBAColor h2(0.7, 0.5, 0.1, 0.0);
    Ellipse outer(cx, cy, 300, 300, h1, h2);
    outer.setFilter(new SmoothStepFilter(0.75, 1.0));
 //   outer.draw(surf);

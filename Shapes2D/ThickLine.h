@@ -7,7 +7,7 @@
 class ThickLine : public Shape2D {
 
 public:
-   ThickLine(int x, int y, int length, float angle, int w, const Color& c1, const Color& c2);
+   ThickLine(int x, int y, int length, float angle, int w, const RGBAColor& c1, const RGBAColor& c2);
 
    virtual void draw(SDL_Surface* surf);
 
@@ -17,7 +17,7 @@ private:
    int length;
    float angle;
    bool swapAlpha;
-   Color color1, color2;
+   RGBAColor color1, color2;
 
    void drawHorizontal(SDL_Surface* surf);
    void drawVertical(SDL_Surface* surf);

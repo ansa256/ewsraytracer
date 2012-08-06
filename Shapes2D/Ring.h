@@ -7,14 +7,14 @@
 class Ring : public Shape2D {
 
 public:
-   Ring(int x, int y, int i, int o, const Color& c1, const Color& c2);
+   Ring(int x, int y, int i, int o, const RGBAColor& c1, const RGBAColor& c2);
 
    virtual void draw(SDL_Surface* surf);
 
 private:
    int cx, cy;
    int iradius, oradius;
-   Color innerC, outerC;
+   RGBAColor innerC, outerC;
    
    double getDistance(double x, double y);
 };

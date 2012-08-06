@@ -7,7 +7,7 @@
 
 using namespace std;
 
-Ellipse::Ellipse(int x, int y, int w, int h, const Color& c1, const Color& c2) :
+Ellipse::Ellipse(int x, int y, int w, int h, const RGBAColor& c1, const RGBAColor& c2) :
    cx(x), cy(y), rx(w), ry(h), color1(c1), color2(c2)
 {
 }
@@ -18,7 +18,7 @@ void Ellipse::horizontal(SDL_Surface* surf, int x1, int x2, Uint16 y) {
 
    for (int x = x1; x <= x2; x++) {
       float f = getF(x, y);
-      Color c = lerp(f, color1, color2);
+      RGBAColor c = lerp(f, color1, color2);
       setBlendColor(surf, x, y, c);
    }
 }
