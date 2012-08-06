@@ -27,8 +27,10 @@ instance {
       outerRadius 2.3266
 
       material {
-         type  "matte"
-         kd    0.8
+         type  "alphaBlend"
+         kd    1.0
+         ka    0.3
+         alphaThreshold 0.2
 
          texture {
             type     "image"
@@ -44,7 +46,12 @@ instance {
 }
 
 starBox {
-   name     "stars"
-   count    20000
-   halfSize 1000
-} 
+   name  "stars"
+   halfSize 2000
+   yzNegX  "resources/images/star-cube-sides/stars0000.png"
+   yzPosX  "resources/images/star-cube-sides/stars0001.png"
+   xyNegZ  "resources/images/star-cube-sides/stars0002.png"
+   xyPosZ  "resources/images/star-cube-sides/stars0003.png"
+   xzNegY  "resources/images/star-cube-sides/stars0004.png"
+   xzPosY  "resources/images/star-cube-sides/stars0005.png"
+}
