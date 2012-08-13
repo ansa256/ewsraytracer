@@ -7,7 +7,7 @@
 
 using namespace std;
 
-Direction::Direction() : Light(), color(), direction(0, 0, 1), maxDistance(numeric_limits<int>::max()) {
+Direction::Direction() : Light(), color(), direction(0, 0, -1), maxDistance(numeric_limits<int>::max()) {
    samples = new float[2];
    samples[0] = samples[1] = 0.5;
 }
@@ -25,12 +25,12 @@ void Direction::setHash(Hash* hash) {
       direction.normalize();
    }
    
-   if(hash->contains("rotate")) {
-      Array* a = hash->getValue("rotate")->getArray();
+   if(hash->contains("rotation")) {
+      Array* a = hash->getValue("rotation")->getArray();
       Matrix m;
-      m.rotateX(a->at(0)->getDouble());
-      m.rotateY(a->at(1)->getDouble());
       m.rotateZ(a->at(2)->getDouble());
+      m.rotateY(a->at(1)->getDouble());
+      m.rotateX(a->at(0)->getDouble());
       
       direction = m * direction;
       direction.normalize();
@@ -49,7 +49,7 @@ bool Direction::inShadow(const Ray& ray, const ShadeRecord& sr) {
 }
 
 Color Direction::Sample_L(ShadeRecord& sr, float u1, float u2, Vector3D& lightDir, float& pdf) const {
-   lightDir = direction;
+   lightDir = -direction;
    pdf = 1.0;
    return color;
 }
