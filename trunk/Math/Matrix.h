@@ -8,7 +8,7 @@
 class Matrix {
 
 public:
-   double m[3][4];
+   double m[4][3];
 
    Matrix();
    Matrix(const Vector3D& row1, const Vector3D& row2, const Vector3D& row3);
@@ -40,7 +40,6 @@ public:
 
    Point3D operator*(const Point3D& p) const;
    Vector3D operator*(const Vector3D& p) const;
-   Vector3D transformNormal(const Vector3D& p) const;
 };
 
 #endif
