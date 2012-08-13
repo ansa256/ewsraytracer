@@ -198,9 +198,9 @@ void Camera::setRotation(double x, double y, double z) {
    m.rotateY(-y);
    m.rotateZ(-z);
 
-   u.set(m.m[0][0], m.m[0][1], m.m[0][2]);
-   v.set(m.m[1][0], m.m[1][1], m.m[1][2]);
-   w.set(m.m[2][0], m.m[2][1], m.m[2][2]);
+   m.getRow(u, 0);
+   m.getRow(v, 1);
+   m.getRow(w, 2);
 
    u.normalize();
    v.normalize();
