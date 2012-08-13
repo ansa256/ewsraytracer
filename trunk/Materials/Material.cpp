@@ -9,6 +9,7 @@
 #include "Glass.h"
 #include "Marble.h"
 #include "AlphaBlend.h"
+#include "Metal.h"
 #include "BRDFs/Lambertian.h"
 #include "Lights/LightManager.h"
 #include "Lights/Light.h"
@@ -46,6 +47,9 @@ Material* Material::createMaterial(Hash* hash) {
    }
    else if(type == "alphaBlend") {
       material = new AlphaBlend();
+   }
+   else if(type == "metal") {
+      material = new Metal();
    }
    else {
       fprintf(stderr, "Unknown material type %s\n", type.c_str());
