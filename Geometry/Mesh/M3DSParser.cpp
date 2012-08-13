@@ -4,7 +4,7 @@
 #include "Utility/3dschunk.h"
 #include "Materials/Matte.h"
 #include "Materials/Phong.h"
-//#include "Materials/Metal.h"
+#include "Materials/Metal.h"
 #include "Parser/Hash.h"
 #include "Storage/KdTree.h"
 #include "Storage/Grid.h"
@@ -281,6 +281,9 @@ void M3DSParser::processMaterialChunk(size_t nBytes) {
 
    if(shade == 1) {
       material = new Matte();
+   }
+   else if(shade == 3) {
+      material = new Metal();
    }
    else {
       material = new Phong();
