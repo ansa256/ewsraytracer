@@ -21,8 +21,7 @@ public:
 class Blinn : public MicrofacetDistribution {
   
 public:
-   Blinn() {}
-
+   Blinn(float e = 4.0) : exponent(e) {}
    float D(const Vector3D& normal, const Vector3D& wh, float m) const;
 
 private:
@@ -33,17 +32,29 @@ class Microfacet : public BRDF {
    
 public:
    Microfacet(Fresnel* f, MicrofacetDistribution* d);
-   virtual ~Microfacet();
-   
-   virtual Color f(const ShadeRecord& sr, const Vector3D& wo, const Vector3D& wi) const;
-   virtual Color rho(const ShadeRecord& sr, const Vector3D& wo) const;
+   virtual ~Microfacet() {}
    
    void setColor(const Color& c) { color = c; }
+   virtual Color f(const ShadeRecord& sr, const Vector3D& wo, const Vector3D& wi) const = 0;
    
-private:
+protected:
+   /**
+    * Geometric attenuation term. The fraction of microfacets that are masked or shadowed.
+    */
+   float G(const ShadeRecord& sr, const Vector3D& wh, const Vector3D& wo, const Vector3D& wi) const;
+
    Color color;
    Fresnel* fresnel;
    MicrofacetDistribution* distribution;
+};
+
+class CookTarrance : public Microfacet {
+   
+public:
+   CookTarrance(Fresnel* f, MicrofacetDistribution* d) : Microfacet(f, d) {}
+   virtual ~CookTarrance() {}
+   
+   virtual Color f(const ShadeRecord& sr, const Vector3D& wo, const Vector3D& wi) const;   
 };
 
 #endif
