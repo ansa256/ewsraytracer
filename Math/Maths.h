@@ -7,6 +7,7 @@
 
 const float invRAND_MAX = 1.0 / (float) RAND_MAX;
 const double INV_PI = 1.0 / M_PI;
+const double INV_TWOPI = 1.0 / (2.0 * M_PI);
 const double HUGE_VALUE = 1.0E10;
 
 /** Multiply to convert from degrees to radians */
