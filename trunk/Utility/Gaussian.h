@@ -3,7 +3,7 @@
 
 #include <SDL/SDL.h>
 
-double* CreateGaussianFilter(double piSigma, double piAlpha, int& lSize);
+double* CreateGaussianFilter(float piSigma, float piAlpha, int& lSize);
 SDL_Surface* Convolute(SDL_Surface* source, double* filter, int fSize);
 
 #endif
