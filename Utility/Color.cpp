@@ -114,14 +114,14 @@ void Color::normalize() {
       green /= f;
       blue /= f;
    }
-   
+
 //   red = pow(red, g);
 //   green = pow(green, g);
 //   blue = pow(blue, g);
 }
 
-bool Color::isBlack() const { 
-   return *this == BLACK; 
+bool Color::isBlack() const {
+   return *this == BLACK;
 }
 
 Color operator*(const float a, const Color& c) {
@@ -148,6 +148,13 @@ RGBAColor& RGBAColor::operator= (const RGBAColor& p) {
    blue = p.blue;
    alpha = p.alpha;
    return *this;
+}
+
+void RGBAColor::set(float r, float g, float b, float a) {
+   red = r;
+   green = g;
+   blue = b;
+   alpha = a;
 }
 
 void RGBAColor::set(Array* a) {

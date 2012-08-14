@@ -27,9 +27,9 @@ public:
    Color operator+(const Color& c) const;
    Color operator-(const Color& c) const;
    Color operator-(const float a) const;
-   
+
    bool isBlack() const;
-   
+
    Array* toArray() const;
 
    void normalize();
@@ -42,13 +42,14 @@ public:
 };
 
 class RGBAColor {
-   
+
 public:
    RGBAColor(float _r = 0, float _g = 0, float _b = 0, float _a = 0);
    RGBAColor(const RGBAColor& c);
-   
+
+   void set(float r, float g, float b, float a);
    void set(Array* a);
-   
+
    RGBAColor& operator=(const RGBAColor& c);
    RGBAColor operator+(const RGBAColor& c) const;
    RGBAColor operator-(const RGBAColor& c) const;
