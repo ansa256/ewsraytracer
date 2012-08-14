@@ -68,10 +68,7 @@ void Film::generateImage(SDL_Surface* surf, const Point3D& eye, float viewPlaneD
       double y = viewPlaneDist * d.y / d.z;
       y = height * 0.5 + y;
 
-      int l = (int)(x - (*it)->surface->w * 0.5);
-      int t = (int)(y - (*it)->surface->h * 0.5);
-      SDL_Rect dst = {l, t, 0, 0};
-      SDL_BlitSurface((*it)->surface, NULL, surf, &dst);
+      (*it)->render(surf, x, y, width, height);
    }
 
    SDL_UpdateRect(surf, 0, 0, 0, 0);

@@ -1,6 +1,7 @@
 #include "OverlayManager.h"
 #include "Parser/Parser.h"
 #include "Sun.h"
+#include "LensFlare.h"
 #include <fstream>
 
 auto_ptr<OverlayManager> OverlayManager::s_instance;
@@ -13,7 +14,7 @@ OverlayManager& OverlayManager::instance() {
 }
 
 OverlayManager::OverlayManager() {
-   
+
 }
 
 OverlayManager::~OverlayManager() {
@@ -27,7 +28,7 @@ void OverlayManager::loadOverlays(string fname) {
    std::ifstream fp(fname.c_str());
    Tokenizer tok(&fp);
    Parser parser(&tok);
-   
+
    while(tok.nextToken() != Tokenizer::TokenEnd) {
       if(tok.getTokenType() != Tokenizer::TokenName) {
          return ;
@@ -35,13 +36,18 @@ void OverlayManager::loadOverlays(string fname) {
 
       string type = tok.getStringValue();
       Hash* hash = parser.readValue()->getHash();
-      
+
       if(type == "sun") {
          Sun* sun = new Sun();
          sun->setHash(hash);
          overlays.push_back(sun);
       }
+      else if(type == "lensFlare") {
+         LensFlare* flare = new LensFlare();
+         flare->setHash(hash);
+         overlays.push_back(flare);
+      }
    }
-   
+
    fp.close();
 }
