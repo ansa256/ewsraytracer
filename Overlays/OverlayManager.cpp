@@ -36,16 +36,21 @@ void OverlayManager::loadOverlays(string fname) {
 
       string type = tok.getStringValue();
       Hash* hash = parser.readValue()->getHash();
+      Overlay* overlay = NULL;
 
       if(type == "sun") {
-         Sun* sun = new Sun();
-         sun->setHash(hash);
-         overlays.push_back(sun);
+         overlay = new Sun();
+      }
+      else if(type == "sunHalo") {
+         overlay = new SunHalo();
       }
       else if(type == "lensFlare") {
-         LensFlare* flare = new LensFlare();
-         flare->setHash(hash);
-         overlays.push_back(flare);
+         overlay = new LensFlare();
+      }
+
+      if(overlay != NULL) {
+         overlay->setHash(hash);
+         overlays.push_back(overlay);
       }
    }
 
