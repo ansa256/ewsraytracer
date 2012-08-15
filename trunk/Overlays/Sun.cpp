@@ -63,3 +63,51 @@ void Sun::render(SDL_Surface* dest, int cx, int cy, int width, int height) {
    SDL_Rect dst = {l, t, 0, 0};
    SDL_BlitSurface(surface, NULL, dest, &dst);
 }
+
+
+SunHalo::~SunHalo() {
+   SDL_FreeSurface(surface);
+}
+
+void SunHalo::setHash(Hash* hash) {
+   radius = hash->getInteger("radius");
+   haloRadius = hash->getInteger("haloRadius");
+   color1.set(hash->getValue("color1")->getArray());
+   color2.set(hash->getValue("color2")->getArray());
+   position.set(hash->getValue("position")->getArray());
+   sigma = hash->getDouble("sigma", 3.0);
+   alpha = hash->getDouble("alpha", 6.0);
+
+   create();
+}
+
+void SunHalo::create() {
+   int size = haloRadius * 2;
+   SDL_Surface* surf = createSurface(size, size);
+   Uint32 black = SDL_MapRGBA(surf->format, 0, 0, 0, 0);
+   SDL_FillRect(surf, NULL, black);
+
+   Ellipse haloA(haloRadius, haloRadius, haloRadius, haloRadius, RGBAColor(color2, 0.5), RGBAColor(color2, 0.0));
+   haloA.draw(surf);
+
+   Ellipse halo(haloRadius, haloRadius, haloRadius*1/3, haloRadius*1/3, RGBAColor(color1, 1.0), RGBAColor(color1, 0.0));
+   halo.draw(surf);
+
+   Ellipse center(haloRadius, haloRadius, radius, radius, RGBA_WHITE, RGBAColor(1, 1, 1, 0));
+   center.setFilter(new SmoothStepFilter(0.2, 1.0));
+   center.draw(surf);
+
+   int fSize;
+   double* filter = CreateGaussianFilter(sigma, alpha, fSize);
+   surface = Convolute(surf, filter, fSize);
+
+   delete[] filter;
+   SDL_FreeSurface(surf);
+}
+
+void SunHalo::render(SDL_Surface* dest, int cx, int cy, int width, int height) {
+   int l = (int)(cx - surface->w * 0.5);
+   int t = (int)(cy - surface->h * 0.5);
+   SDL_Rect dst = {l, t, 0, 0};
+   SDL_BlitSurface(surface, NULL, dest, &dst);
+}

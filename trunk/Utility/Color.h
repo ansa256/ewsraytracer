@@ -46,6 +46,7 @@ class RGBAColor {
 public:
    RGBAColor(float _r = 0, float _g = 0, float _b = 0, float _a = 0);
    RGBAColor(const RGBAColor& c);
+   RGBAColor(const Color& c, float a = 1);
 
    void set(float r, float g, float b, float a);
    void set(Array* a);

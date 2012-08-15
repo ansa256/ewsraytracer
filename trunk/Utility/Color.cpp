@@ -142,6 +142,13 @@ RGBAColor::RGBAColor(const RGBAColor& c) {
    alpha = c.alpha;
 }
 
+RGBAColor::RGBAColor(const Color& c, float a) {
+   red = c.red;
+   green = c.green;
+   blue = c.blue;
+   alpha = a;
+}
+
 RGBAColor& RGBAColor::operator= (const RGBAColor& p) {
    red = p.red;
    green = p.green;

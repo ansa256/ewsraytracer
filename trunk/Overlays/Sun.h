@@ -25,4 +25,23 @@ private:
    float sigma, alpha;
 };
 
+class SunHalo : public Overlay {
+
+public:
+   SunHalo() {}
+   virtual ~SunHalo();
+
+   virtual void setHash(Hash* hash);
+   virtual void render(SDL_Surface* dest, int cx, int cy, int width, int height);
+
+private:
+   void create();
+
+   int radius;
+   int haloRadius;
+   Color color1, color2;
+   float sigma, alpha;
+   SDL_Surface* surface;
+};
+
 #endif
