@@ -6,6 +6,8 @@
 #include "Utility/Gaussian.h"
 #include "Shapes2D/Ellipse.h"
 
+float a = 0.15f;
+
 void LensFlare::setHash(Hash* hash) {
    position.set(hash->getValue("position")->getArray());
    sigma = hash->getDouble("sigma", 3.0);
@@ -17,19 +19,19 @@ void LensFlare::render(SDL_Surface* dest, int cx, int cy, int width, int height)
 
    // big green
    RGBAColor color1(0, 0, 0, 0);
-   RGBAColor color2(0.20, 0.45, 0, 0.35);
+   RGBAColor color2(0.20, 0.45, 0, a);
    Ellipse circle1(width - cx, height - cy, 60, 60, color1, color2);
    circle1.draw(surface);
 
    // small green
-   color1.set(0.20, 0.45, 0.2, 0.35);
-   color2.set(0.20, 0.45, 0.2, 0.35);
+   color1.set(0.20, 0.45, 0.2, a);
+   color2.set(0.20, 0.45, 0.2, a);
    Ellipse circle2(getFarX(cx, width, 0.65), getFarY(cy, height, 0.65), 20, 20, color1, color2);
    circle2.draw(surface);
 
    // big orange
    color1.set(0, 0, 0, 0);
-   color2.set(0.47, 0.27, 0, 0.35);
+   color2.set(0.47, 0.27, 0, a);
    int x = getFarX(cx, width, 0.45);
    int y = getFarY(cy, height, 0.45);
 
@@ -37,7 +39,7 @@ void LensFlare::render(SDL_Surface* dest, int cx, int cy, int width, int height)
    circle3.draw(surface);
 
    // small orange
-   color1.set(0.47, 0.27, 0, 0.35);
+   color1.set(0.47, 0.27, 0, a);
    Ellipse circle4(x, y, 10, 10, color1, color2);
    circle4.draw(surface);
 
@@ -50,8 +52,8 @@ void LensFlare::render(SDL_Surface* dest, int cx, int cy, int width, int height)
    circle9.draw(surface);
 
    // big blue
-   color1.set(0.13, 0.22, 0.36, 0.35);
-   color2.set(0.13, 0.22, 0.36, 0.35);
+   color1.set(0.13, 0.22, 0.36, a);
+   color2.set(0.13, 0.22, 0.36, a);
    Ellipse circle6(getNearX(cx, width, 0.4), getNearY(cy, height, 0.4), 35, 35, color1, color2);
    circle6.draw(surface);
 
@@ -75,7 +77,7 @@ void LensFlare::render(SDL_Surface* dest, int cx, int cy, int width, int height)
 
    // white
    color1.set(0, 0, 0, 0);
-   color2.set(0.59, 0.52, 0.42, 0.35);
+   color2.set(0.59, 0.52, 0.42, a);
    Ellipse circle12(getNearX(cx, width, 1.5), getNearY(cy, height, 1.5), 35, 35, color1, color2);
    circle12.draw(surface);
 
@@ -145,31 +147,31 @@ int LensFlare::getNearY(int cy, int height, float percent) {
 
 void LensFlare::rainbow(SDL_Surface* surface, int x, int y, int r, int t) {
    RGBAColor black(0, 0, 0, 0);
-   RGBAColor color(0.35, 0, 0, 0.35);
+   RGBAColor color(0.35, 0, 0, a);
    Ellipse r1(x, y, r, r, black, color);
    r1.setFilter(new SmoothStepFilter(0.8, 1.0));
    r1.draw(surface);
 
    r -= t;
-   color.set(0.35, 0.35, 0, 0.35);
+   color.set(0.35, 0.35, 0, a);
    Ellipse r2(x, y, r, r, black, color);
    r2.setFilter(new SmoothStepFilter(0.8, 1.0));
    r2.draw(surface);
 
    r -= t;
-   color.set(0, 0.35, 0, 0.35);
+   color.set(0, 0.35, 0, a);
    Ellipse r3(x, y, r, r, black, color);
    r3.setFilter(new SmoothStepFilter(0.8, 1.0));
    r3.draw(surface);
 
    r -= t;
-   color.set(0, 0, 0.35, 0.35);
+   color.set(0, 0, 0.35, a);
    Ellipse r4(x, y, r, r, black, color);
    r4.setFilter(new SmoothStepFilter(0.8, 1.0));
    r4.draw(surface);
 
    r -= t;
-   color.set(0.0, 0.0, 0.0, 0.35);
+   color.set(0.0, 0.0, 0.0, a);
    Ellipse r5(x, y, r, r, black, color);
    r5.setFilter(new SmoothStepFilter(0.8, 1.0));
    r5.draw(surface);
