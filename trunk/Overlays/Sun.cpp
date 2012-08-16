@@ -94,7 +94,7 @@ void SunHalo::create() {
    halo.draw(surf);
 
    Ellipse center(haloRadius, haloRadius, radius, radius, RGBA_WHITE, RGBAColor(1, 1, 1, 0));
-   center.setFilter(new SmoothStepFilter(0.2, 1.0));
+   center.setFilter(new SmoothStepFilter(0.9, 1.0));
    center.draw(surf);
 
    int fSize;
