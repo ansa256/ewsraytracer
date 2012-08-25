@@ -4,5 +4,13 @@ sun {
    spikeLength 300
    startAngle  20.0
    color       [ 1.0 0.7 0.1 0.0 ]
-   position    [ -6.494 140.080 -2.392 ]
+   position    [ 0.0 0.0 0.0 ]
+   sigma 2.0
+   alpha 2.0
+}
+
+lensFlare {
+   position    [ 0.0 0.0 0.0 ]
+   sigma 2.0
+   alpha 2.0
 }
