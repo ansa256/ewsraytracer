@@ -38,13 +38,16 @@ Texture* Texture::createTexture(Hash* hash) {
    else if(type == "image") {
       texture = new ImageTexture();
    }
-   else if(type == "tinstance") {
-       texture = new TInstance();
-   }
    else {
-       exit(1);
+      printf("Unknown texture type %s\n", type.c_str());
+      exit(1);
    }
    texture->setHash(hash);
+   
+   if(hash->contains("transforms")) {
+      texture = new TInstance(texture);
+      texture->setHash(hash);   
+   }
 
    return texture;
 }
