@@ -2,30 +2,31 @@ sphere {
    name   "surface"
 
    transforms [
-#      "rotate"   [ 30.0 115.0 0.0 ]
+      "rotate"   [ 0.0 85.0 0.0 ]
       "scale"    [ 6.37814 6.37814 6.37814 ]
    ]
    
    material {
-      type        "matte"
+      type        "phong"
       color       [ 2.0 2.0 2.0 ]
+      specColor   [ 0.2 0.2 0.2 ]
+      exp         20.0
 
       texture {
-         transforms [
-            "rotate" [ 30.0 115.0 0.0 ]
-         ]
          type     "image"
          filename "resources/earth/world3.png"
          mapping  "sphere"
       }
 
       normalMap {
-         transforms [
-            "rotate" [ 30.0 115.0 0.0 ]
-         ]
-
          type     "image"
          filename "resources/earth/normal.png"
+         mapping  "sphere"
+      }
+
+      specularMask {
+         type     "image"
+         filename "resources/earth/8081_earthspec4k-2.jpg"
          mapping  "sphere"
       }
    }
@@ -35,7 +36,7 @@ sphere {
    name   "clouds"
 
    transforms [
-#      "rotate"   [ 0.0 115.0 20.0 ]   
+      "rotate"   [ 0.0 90.0 0.0 ]
       "scale"    [ 6.38 6.38 6.38 ]
    ]
    
@@ -53,13 +54,3 @@ sphere {
    }
 }
 
-starBox {
-   name  "stars"
-   halfSize 2000
-   yzNegX  "resources/images/star-cube-sides/stars0000.png"
-   yzPosX  "resources/images/star-cube-sides/stars0001.png"
-   xyNegZ  "resources/images/star-cube-sides/stars0002.png"
-   xyPosZ  "resources/images/star-cube-sides/stars0003.png"
-   xzNegY  "resources/images/star-cube-sides/stars0004.png"
-   xzPosY  "resources/images/star-cube-sides/stars0005.png"
-}
