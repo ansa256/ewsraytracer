@@ -5,9 +5,6 @@
 
 const double kHugeValue = 1.0E10;
 
-Instance::Instance() : object(NULL), invMatrix(), fwdMatrix() {
-}
-
 Instance::Instance(GeometryObject* obj) : object(obj), invMatrix(), fwdMatrix() {
 }
 
@@ -18,19 +15,8 @@ Instance::~Instance() {
 }
 
 void Instance::setHash(Hash* hash) {
-   if(object == NULL) {
-      Hash* objHash = hash->getValue("object")->getHash();
-      string type = objHash->getString("type");
-
-      object = GeometryManager::instance().createObject(type, objHash, false);
-   }
-
-   if(hash->contains("material")) {
-      setMaterial(Material::createMaterial(hash->getValue("material")->getHash()));
-   }
-   else {
-      material = object->getMaterial();
-   }
+   material = object->getMaterial();
+   name = object->getName();
 
    if(hash->contains("transforms")) {
       Array* transforms = hash->getValue("transforms")->getArray();
@@ -58,7 +44,6 @@ void Instance::setHash(Hash* hash) {
    if(hash->contains("ignoreShadow")) {
       ignoreShadow = true;
    }
-   name = hash->getString("name");
 
    computeBBox();
 }
@@ -97,7 +82,7 @@ bool Instance::hit(const Ray& ray, ShadeRecord& sr) const {
    invRay.tHit = ray.tHit;
 
    if(object->hit(invRay, sr)) {
-      sr.normal = invMatrix * sr.normal;
+      sr.normal = fwdMatrix * sr.normal;
       sr.normal.normalize();
       ray.tHit = invRay.tHit;
       sr.hitPoint = ray(ray.tHit);
