@@ -26,6 +26,7 @@ public:
 
 private:
    bool partCheck(const Ray& ray, double t) const;
+   void setTangents(ShadeRecord& sr) const;
 
    bool thetaRange, phiRange;
    double cosThetaMin, cosThetaMax;

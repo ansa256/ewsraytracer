@@ -40,7 +40,7 @@ void Instance::setHash(Hash* hash) {
          idx++;
       }
    }
-   
+
    if(hash->contains("ignoreShadow")) {
       ignoreShadow = true;
    }
@@ -84,6 +84,10 @@ bool Instance::hit(const Ray& ray, ShadeRecord& sr) const {
    if(object->hit(invRay, sr)) {
       sr.normal = fwdMatrix * sr.normal;
       sr.normal.normalize();
+      sr.tangent = fwdMatrix * sr.tangent;
+      sr.tangent.normalize();
+      sr.binormal = fwdMatrix * sr.binormal;
+      sr.binormal.normalize();
       ray.tHit = invRay.tHit;
       sr.hitPoint = ray(ray.tHit);
       return true;

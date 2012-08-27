@@ -13,6 +13,8 @@ public:
    ShadeRecord(const ShadeRecord& other);
 
    Vector3D normal;
+   Vector3D tangent;
+   Vector3D binormal;
    Point3D hitPoint;
    Point3D localHitPoint;
    Material* material;
