@@ -18,7 +18,6 @@
 class TInstance : public Texture {
 
 public:
-   TInstance();
    TInstance(Texture* texture);
    virtual ~TInstance();
 
