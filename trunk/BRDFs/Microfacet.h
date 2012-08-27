@@ -48,11 +48,11 @@ protected:
    MicrofacetDistribution* distribution;
 };
 
-class CookTarrance : public Microfacet {
+class CookTorrance : public Microfacet {
    
 public:
-   CookTarrance(Fresnel* f, MicrofacetDistribution* d) : Microfacet(f, d) {}
-   virtual ~CookTarrance() {}
+   CookTorrance(Fresnel* f, MicrofacetDistribution* d) : Microfacet(f, d) {}
+   virtual ~CookTorrance() {}
    
    virtual Color f(const ShadeRecord& sr, const Vector3D& wo, const Vector3D& wi) const;   
 };
