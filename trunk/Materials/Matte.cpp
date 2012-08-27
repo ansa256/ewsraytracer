@@ -33,19 +33,12 @@ void Matte::setHash(Hash* hash) {
    }
 
    if(hash->contains("color")) {
-      Array* a = hash->getValue("color")->getArray();
-      diffuseBRDF->setColor(Color(a));
+      diffuseBRDF->setColor(hash->getValue("color")->getArray());
    }
 
    if(hash->contains("ambientColor")) {
       ambientBRDF->setColor(Color(hash->getValue("ambientColor")->getArray()));
    }
-   
-   if(hash->contains("kd")) {
-      double kd = hash->getDouble("kd");
-      diffuseBRDF->setColor(kd, kd, kd);
-      ambientBRDF->setColor(1.0 - kd, 1.0 - kd, 1.0 - kd);
-   }
-   
+
    bsdf.addBRDF(diffuseBRDF);
 }
