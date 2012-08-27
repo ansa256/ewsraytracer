@@ -35,7 +35,7 @@ float Microfacet::G(const ShadeRecord& sr, const Vector3D& wh, const Vector3D& w
    return min(1.f, min((2.f * ndoth * ndoto / odoth), (2.f * ndoth * ndoti / odoth)));
 }
 
-Color CookTarrance::f(const ShadeRecord& sr, const Vector3D& wo, const Vector3D& wi) const {
+Color CookTorrance::f(const ShadeRecord& sr, const Vector3D& wo, const Vector3D& wi) const {
    float ndoto = fabs(sr.normal.dot(wo));
    float ndoti = fabs(sr.normal.dot(wi));
 
