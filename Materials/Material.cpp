@@ -60,7 +60,7 @@ Material* Material::createMaterial(Hash* hash) {
    if(hash->contains("normalMap")) {
       material->normalMap = Texture::createTexture(hash->getValue("normalMap")->getHash());
    }
-   
+
    if(hash->contains("normalMapFile")) {
       ImageTexture* tex = new ImageTexture();
       tex->setTextureFile(hash->getString("normalMapFile"));
@@ -72,23 +72,13 @@ Material* Material::createMaterial(Hash* hash) {
 
 void Material::applyNormalMap(ShadeRecord& sr) {
    if(normalMap == NULL) return;
-   Vector3D tangent(sr.normal.z, 0, -sr.normal.x);
-   Vector3D binormal(sr.normal.cross(tangent));
 
-   if(sr.normal.x == 0 && sr.normal.y == 1 && sr.normal.z == 0) {
-      tangent.set(1, 0, 0);
-      binormal.set(0, 0, -1);
-   }
-   else if(sr.normal.x == 0 && sr.normal.y == -1 && sr.normal.z == 0) {
-      tangent.set(-1, 0, 0);
-      binormal.set(0, 0, 1);
-   }
-
-   Matrix tangentMatrix(tangent, binormal, sr.normal);
+   Matrix tangentMatrix(sr.tangent, sr.binormal, sr.normal);
    tangentMatrix.invert();
 
    Color color = normalMap->getColor(sr);
    Vector3D mapNormal(2.0 * color.red - 1.0, 2.0 * color.green - 1.0, 2.0 * color.blue - 1.0);
+   mapNormal.normalize();
    sr.normal = tangentMatrix * mapNormal;
+   sr.normal.normalize();
 }
-

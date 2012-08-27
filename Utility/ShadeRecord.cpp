@@ -2,6 +2,8 @@
 
 ShadeRecord::ShadeRecord() :
    normal(),
+   tangent(),
+   binormal(),
    hitPoint(),
    localHitPoint(),
    material(NULL),
@@ -13,6 +15,8 @@ ShadeRecord::ShadeRecord() :
 
 ShadeRecord::ShadeRecord(const ShadeRecord& other) {
    normal = other.normal;
+   tangent = other.tangent;
+   binormal = other.binormal;
    hitPoint = other.hitPoint;
    localHitPoint = other.localHitPoint;
    material = other.material;

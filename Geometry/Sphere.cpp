@@ -53,6 +53,7 @@ bool Sphere::hit(const Ray& ray, ShadeRecord& sr) const {
       if((-ray.direction).dot(sr.normal) < 0.0) {
          sr.normal *= -1.0;
       }
+      setTangents(sr);
 
       sr.localHitPoint = sr.hitPoint = ray(t);
       sr.material = material;
@@ -67,6 +68,7 @@ bool Sphere::hit(const Ray& ray, ShadeRecord& sr) const {
       if((-ray.direction).dot(sr.normal) < 0.0) {
          sr.normal *= -1;
       }
+      setTangents(sr);
 
       sr.localHitPoint = sr.hitPoint = ray(t);
       sr.material = material;
@@ -74,6 +76,24 @@ bool Sphere::hit(const Ray& ray, ShadeRecord& sr) const {
    }
 
    return false;
+}
+
+void Sphere::setTangents(ShadeRecord& sr) const {
+   if(sr.normal.x == 0 && sr.normal.y == 1 && sr.normal.z == 0) {
+      sr.tangent.set(1, 0, 0);
+      sr.binormal.set(0, 0, -1);
+   }
+   else if(sr.normal.x == 0 && sr.normal.y == -1 && sr.normal.z == 0) {
+      sr.tangent.set(-1, 0, 0);
+      sr.binormal.set(0, 0, 1);
+   }
+   else {
+      sr.tangent.set(sr.normal.z, 0, -sr.normal.x);
+      sr.binormal = sr.normal.cross(sr.tangent);
+   }
+
+   sr.tangent.normalize();
+   sr.binormal.normalize();
 }
 
 bool Sphere::shadowHit(const Ray& ray) const {
@@ -96,7 +116,7 @@ bool Sphere::shadowHit(const Ray& ray) const {
    if(t > epsilon && partCheck(ray, t)) {
       ShadeRecord sr;
       sr.localHitPoint = ray(t);
-      
+
       if(material->shadowHit(sr)) {
          ray.tHit = t;
          return true;
@@ -107,7 +127,7 @@ bool Sphere::shadowHit(const Ray& ray) const {
    if(t > epsilon && partCheck(ray, t)) {
       ShadeRecord sr;
       sr.localHitPoint = ray(t);
-      
+
       if(material->shadowHit(sr)) {
          ray.tHit = t;
          return true;
@@ -159,7 +179,7 @@ void Sphere::setHash(Hash* hash) {
       phiMin = a->at(0)->getDouble() * DEG_TO_RAD;
       phiMax = a->at(1)->getDouble() * DEG_TO_RAD;
    }
-   
+
    if(hash->contains("ignoreShadow")) {
       ignoreShadow = true;
    }
