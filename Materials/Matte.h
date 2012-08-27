@@ -8,9 +8,8 @@ class Texture;
 /**
  * Hash values:
  * <ul>
- * <li>ka <i>val</i> - Ambient contibution
- * <li>kd <i>val</i> - Diffuse contribution
  * <li>color [ r g b ] - Optional material color
+ * <li>ambientColor [ r g b ] - Optional material ambient color
  * <li>texture {} - Optional texture hash. See Texture.
  * </ul>
  * If neither color or texture is specified, material defaults to black.

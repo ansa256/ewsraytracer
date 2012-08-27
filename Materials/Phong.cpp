@@ -35,9 +35,7 @@ void Phong::setHash(Hash* hash) {
    }
 
    if(hash->contains("color")) {
-      Array* a = hash->getValue("color")->getArray();
-      ambientBRDF->setColor(Color(a));
-      diffuseBRDF->setColor(Color(a));
+      diffuseBRDF->setColor(hash->getValue("color")->getArray());
    }
 
    if(hash->contains("ambientColor")) {
@@ -47,10 +45,7 @@ void Phong::setHash(Hash* hash) {
    if(hash->contains("specColor")) {
       specularBRDF->setColor(Color(hash->getValue("specColor")->getArray()));
    }
-   else {
-      float ks = hash->getDouble("ks", 0.1);
-      specularBRDF->setColor(Color(ks, ks, ks));
-   }
+
    specularBRDF->setExp(hash->getDouble("exp"));
 
    if(hash->contains("specularMask")) {
