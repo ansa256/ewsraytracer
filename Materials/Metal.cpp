@@ -19,13 +19,13 @@ Metal::~Metal() {
 void Metal::setHash(Hash* hash) {
 //   double kd = hash->getDouble("kd", 1.0);
    
-   float eta = hash->getDouble("eta", 0.352);
-   float k = hash->getDouble("k", 6.967);
+   float eta = hash->getDouble("eta", 1.9);
+   float k = hash->getDouble("k", 4.5);
 
    Lambertian* diffuseBRDF = new Lambertian();
    MicrofacetDistribution *md = new Blinn();
    Fresnel *frMf = new FresnelConductor(eta, k);
-   Microfacet* microfacet = new CookTarrance(frMf, md);
+   Microfacet* microfacet = new CookTorrance(frMf, md);
    
    if(hash->contains("texture")) {
       texture = Texture::createTexture(hash->getValue("texture")->getHash());
