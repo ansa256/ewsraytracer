@@ -96,7 +96,7 @@ void GeoSphere::subdivide(int pidx1, int pidx2, int pidx3) {
       span[i] = new int[divs];
    }
 
-   int pidx = getPointCount();
+   int pidx = (int) getPointCount();
 
    for(int i = 1; i < (divs - 1); i++) {
       Point3D* p1 = getPointAt(side12->at(divs - i));
@@ -162,7 +162,7 @@ void GeoSphere::subdivide(int pidx1, int pidx2, int pidx3) {
 }
 
 vector<int>* GeoSphere::getEdgePoints(const Edge& e) {
-   int pidx = getPointCount();
+   int pidx = (int) getPointCount();
 
    Point3D* p1 = getPointAt(e.pidx1);
    Point3D* p2 = getPointAt(e.pidx2);
