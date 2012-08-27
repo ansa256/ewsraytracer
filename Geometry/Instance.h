@@ -16,7 +16,6 @@
 class Instance : public GeometryObject {
 
 public:
-   Instance();
    Instance(GeometryObject* obj);
    virtual ~Instance();
 

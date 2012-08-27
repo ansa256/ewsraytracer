@@ -96,9 +96,6 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addT
    else if(type == "marbleCheckerBoard") {
       obj = new MarbleCheckerBoard();
    }
-   else if(type == "instance") {
-      obj = new Instance();
-   }
    else if(type == "geo") {
       obj = new GeoSphere();
    }
@@ -121,6 +118,11 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addT
    }
 
    obj->setHash(hash);
+
+   if(hash->contains("transforms")) {
+      obj = new Instance(obj);
+      obj->setHash(hash);
+   }
 
    if(addToList) {
       storage->addObject(obj);
