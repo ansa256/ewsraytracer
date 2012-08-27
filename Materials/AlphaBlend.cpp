@@ -19,14 +19,12 @@ void AlphaBlend::setHash(Hash* hash) {
    diffuseBRDF->setTexture(texture, false);
    transparentBRDF->setTexture(texture, false);
    
-   if(hash->contains("kd")) {
-      double kd = hash->getDouble("kd");
-      diffuseBRDF->setColor(kd, kd, kd);
+   if(hash->contains("color")) {
+      diffuseBRDF->setColor(hash->getValue("color")->getArray());
    }
-   
-   if(hash->contains("ka")) {
-      double ka = hash->getDouble("ka");
-      ambientBRDF->setColor(ka, ka, ka);
+
+   if(hash->contains("ambientColor")) {
+      ambientBRDF->setColor(hash->getValue("color")->getArray());
    }
    
    bsdf.addBRDF(diffuseBRDF);
