@@ -70,8 +70,9 @@ SunHalo::~SunHalo() {
 }
 
 void SunHalo::setHash(Hash* hash) {
-   radius = hash->getInteger("radius");
+   radius = hash->getInteger("radius", 0);
    haloRadius = hash->getInteger("haloRadius");
+   haloRadius2 = hash->getInteger("haloRadius2", haloRadius * 1/3);
    color1.set(hash->getValue("color1")->getArray());
    color2.set(hash->getValue("color2")->getArray());
    position.set(hash->getValue("position")->getArray());
@@ -90,12 +91,14 @@ void SunHalo::create() {
    Ellipse haloA(haloRadius, haloRadius, haloRadius, haloRadius, RGBAColor(color2, 0.5), RGBAColor(color2, 0.0));
    haloA.draw(surf);
 
-   Ellipse halo(haloRadius, haloRadius, haloRadius*1/3, haloRadius*1/3, RGBAColor(color1, 1.0), RGBAColor(color1, 0.0));
+   Ellipse halo(haloRadius, haloRadius, haloRadius2, haloRadius2, RGBAColor(color1, 1.0), RGBAColor(color1, 0.0));
    halo.draw(surf);
 
-   Ellipse center(haloRadius, haloRadius, radius, radius, RGBA_WHITE, RGBAColor(1, 1, 1, 0));
-   center.setFilter(new SmoothStepFilter(0.9, 1.0));
-   center.draw(surf);
+   if(radius > 0) {
+      Ellipse center(haloRadius, haloRadius, radius, radius, RGBA_WHITE, RGBAColor(1, 1, 1, 0));
+      center.setFilter(new SmoothStepFilter(0.9, 1.0));
+      center.draw(surf);
+   }
 
    int fSize;
    double* filter = CreateGaussianFilter(sigma, alpha, fSize);
