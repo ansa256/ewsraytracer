@@ -2,7 +2,6 @@ sphere {
    name   "surface"
 
    transforms [
-#      "rotate"       [ -45.0 0.0 0.0 ]
       "scale"        [ 5000.0 5000.0 5000.0 ]
       "translate"    [ -4385.730 4999.205 -293.284 ]
    ]
@@ -37,17 +36,21 @@ sphere {
 mesh {
    name  "voyager"
    transforms [
-#      "rotate" [ 180.0 90.0 10.0 ]
+      "rotate" [ 0.0 0.0 -120.0 ]
    ]
 }
 
 starBox {
    name  "stars"
    halfSize 10000
-   yzNegX  "resources/images/star-cube-sides/stars0000.png"
-   yzPosX  "resources/images/star-cube-sides/stars0001.png"
-   xyNegZ  "resources/images/star-cube-sides/stars0002.png"
-   xyPosZ  "resources/images/star-cube-sides/stars0003.png"
-   xzNegY  "resources/images/star-cube-sides/stars0004.png"
-   xzPosY  "resources/images/star-cube-sides/stars0005.png"
+   xzPosY  {
+      type        "image"
+      filename    "resources/images/star-cube-sides/stars0005.png"
+      mapping     "uv"
+      
+      transforms [
+         "scaleU"  5.0
+         "scaleV"  5.0
+      ]
+   }
 }
