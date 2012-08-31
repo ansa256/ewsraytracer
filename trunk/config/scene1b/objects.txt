@@ -66,10 +66,13 @@ mesh {
 starBox {
    name  "stars"
    halfSize 10000
-#   yzNegX  "resources/images/star-cube-sides/stars0000.png"
-#   yzPosX  "resources/images/star-cube-sides/stars0001.png"
-#   xyNegZ  "resources/images/star-cube-sides/stars0002.png"
-#   xyPosZ  "resources/images/star-cube-sides/stars0003.png"
-   xzNegY  "resources/images/star-cube-sides/stars0004.png"
-#   xzPosY  "resources/images/star-cube-sides/stars0005.png"
+   xzNegY {
+      type  "image"
+      filename "resources/images/star-cube-sides/stars0004.png"
+      mapping  "uv"
+      transforms [
+         "scaleU"   3.0
+         "scaleV"   3.0
+      ]
+   }
 }
