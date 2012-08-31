@@ -18,12 +18,12 @@ void StarBox::setHash(Hash* h) {
 }
 
 void StarBox::createStars() {
-   createBoxSide(yzNegX, Vector3D(-halfSize, 0, 0), Vector3D(0, 90, 0));
-   createBoxSide(yzPosX, Vector3D(halfSize, 0, 0), Vector3D(0, -90, 0));
-   createBoxSide(xyNegZ, Vector3D(0, 0, -halfSize), Vector3D(0, 0, 0));
-   createBoxSide(xyPosZ, Vector3D(0, 0, halfSize), Vector3D(0, 180, 0));
-   createBoxSide(xzNegY, Vector3D(0, -halfSize, 0), Vector3D(-90, 0, 0));   
-   createBoxSide(xzPosY, Vector3D(0, halfSize, 0), Vector3D(90, 0, 0));
+   if(yzNegX != "") createBoxSide(yzNegX, Vector3D(-halfSize, 0, 0), Vector3D(0, 90, 0));
+   if(yzPosX != "") createBoxSide(yzPosX, Vector3D(halfSize, 0, 0), Vector3D(0, -90, 0));
+   if(xyNegZ != "") createBoxSide(xyNegZ, Vector3D(0, 0, -halfSize), Vector3D(0, 0, 0));
+   if(xyPosZ != "") createBoxSide(xyPosZ, Vector3D(0, 0, halfSize), Vector3D(0, 180, 0));
+   if(xzNegY != "") createBoxSide(xzNegY, Vector3D(0, -halfSize, 0), Vector3D(-90, 0, 0));   
+   if(xzPosY != "") createBoxSide(xzPosY, Vector3D(0, halfSize, 0), Vector3D(90, 0, 0));
 }
 
 void StarBox::createBoxSide(string name, const Vector3D& translate, const Vector3D& rotate) {
