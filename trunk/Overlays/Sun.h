@@ -39,6 +39,7 @@ private:
 
    int radius;
    int haloRadius;
+   int haloRadius2;
    Color color1, color2;
    float sigma, alpha;
    SDL_Surface* surface;
