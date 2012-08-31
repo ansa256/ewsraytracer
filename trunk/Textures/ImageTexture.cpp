@@ -52,8 +52,8 @@ Uint32 ImageTexture::getPixel(const ShadeRecord& sr) const {
          break;
 
       case UV:
-         u = sr.tu; // (p.x + surf->w/2.0) / surf->w;
-         v = sr.tv; // (p.y + surf->h/2.0) / surf->h;
+         u = sr.tu - (int)sr.tu;
+         v = sr.tv - (int)sr.tv;
          break;
    }
 

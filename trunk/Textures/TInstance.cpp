@@ -1,7 +1,7 @@
 #include "TInstance.h"
 #include "Parser/Hash.h"
 
-TInstance::TInstance(Texture* tex) : texture(tex), invMatrix() {
+TInstance::TInstance(Texture* tex) : texture(tex), invMatrix(), scaleU(1.f), scaleV(1.f) {
 }
 
 TInstance::~TInstance() {
@@ -13,7 +13,7 @@ void TInstance::setHash(Hash* hash) {
    while(idx < transforms->size()) {
       string type = transforms->at(idx)->getString();
       idx++;
-         
+
       if(type == "translate") {
          Array* a = transforms->at(idx)->getArray();
          invMatrix.invTranslate(a->at(0)->getDouble(), a->at(1)->getDouble(), a->at(2)->getDouble());
@@ -28,6 +28,13 @@ void TInstance::setHash(Hash* hash) {
          invMatrix.invRotateY(a->at(1)->getDouble());
          invMatrix.invRotateZ(a->at(2)->getDouble());
       }
+      else if(type == "scaleU") {
+         scaleU = transforms->at(idx)->getDouble();
+      }
+      else if(type == "scaleV") {
+         scaleV = transforms->at(idx)->getDouble();
+      }
+
       idx++;
    }
 }
@@ -35,11 +42,15 @@ void TInstance::setHash(Hash* hash) {
 Color TInstance::getColor(const ShadeRecord& sr) const {
    ShadeRecord lsr(sr);
    lsr.localHitPoint = invMatrix * sr.localHitPoint;
+   lsr.tu = sr.tu * scaleU;
+   lsr.tv = sr.tv * scaleV;
    return texture->getColor(lsr);
 }
 
 float TInstance::getAlpha(const ShadeRecord& sr) const {
    ShadeRecord lsr(sr);
    lsr.localHitPoint = invMatrix * sr.localHitPoint;
+   lsr.tu = sr.tu * scaleU;
+   lsr.tv = sr.tv * scaleV;
    return texture->getAlpha(lsr);
 }
