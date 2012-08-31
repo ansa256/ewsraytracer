@@ -7,24 +7,25 @@
 using namespace std;
 
 class Hash;
+class Texture;
 
 class StarBox {
-   
+
 public:
    StarBox();
-   
+
    void setHash(Hash* h);
    void createStars();
-   
-private:
-   void createBoxSide(string name, const Vector3D& translate, const Vector3D& rotate);
 
-   string yzNegX;
-   string yzPosX;
-   string xyNegZ;
-   string xyPosZ;
-   string xzNegY;
-   string xzPosY;
+private:
+   void createBoxSide(Texture* texture, const Vector3D& translate, const Vector3D& rotate);
+
+   Texture* yzNegX;
+   Texture* yzPosX;
+   Texture* xyNegZ;
+   Texture* xyPosZ;
+   Texture* xzNegY;
+   Texture* xzPosY;
    int halfSize;
 };
 
