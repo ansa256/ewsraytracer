@@ -41,6 +41,7 @@ public:
 private:
    Texture* texture;
    Matrix invMatrix;
+   float scaleU, scaleV;
 };
 
 inline void TInstance::translate(double x, double y, double z) {
