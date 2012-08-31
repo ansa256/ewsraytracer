@@ -1,0 +1,10 @@
+m3ds {
+   name     	"voyager"
+   filename 	"resources/voyager/voyager.3ds"
+   textureDir	"resources/voyager/"
+   scale       0.05
+   
+   storage {
+      type  "kdtree"
+   }
+}
