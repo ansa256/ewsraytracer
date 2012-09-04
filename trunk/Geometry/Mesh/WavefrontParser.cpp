@@ -4,7 +4,7 @@
 #include "Storage/Grid.h"
 #include "Storage/ObjectList.h"
 #include "Mesh.h"
-#include "Materials/Phong.h"
+#include "Materials/Metal.h"
 #include <sstream>
 
 WavefrontParser::WavefrontParser() : scale(1.0), textureDir(""), storage(NULL), materials(), includes(), excludes(), useMaterials(false)
@@ -98,10 +98,6 @@ bool WavefrontParser::load(const string& filename) {
             }
 
             mesh->calculateNormals();
-            if(useMaterials && !matName.empty()) {
-               mesh->setMaterial(materials[matName]);
-            }
-            matName = "";
             storage->addObject(mesh);
             mesh = NULL;
             group = -1;
@@ -132,12 +128,15 @@ bool WavefrontParser::load(const string& filename) {
       }
       else if(line[0] == 'f') {
          if(mesh != NULL) {
-            handleFace(line, mesh, vertexOffset, textureOffset);
+            handleFace(line, mesh, vertexOffset, textureOffset, matName);
          }
       }
       else if(line[0] == 's') {
          if(line != "s off") {
             strstr >> s >> group;
+         }
+         else {
+//            group = -1;
          }
       }
       else if(strncmp(line.c_str(), "usemtl", 6) == 0) {
@@ -148,9 +147,11 @@ bool WavefrontParser::load(const string& filename) {
    }
 
    if(mesh != NULL) {
-      if(useMaterials && !matName.empty()) {
-         mesh->setMaterial(materials[matName]);
+      if(group != -1) {
+         mesh->setSmoothingGroup(group);
       }
+
+      mesh->calculateNormals();
       storage->addObject(mesh);
    }
 
@@ -163,7 +164,7 @@ bool WavefrontParser::load(const string& filename) {
    return true;
 }
 
-void WavefrontParser::handleFace(string line, Mesh* mesh, int vertexOffset, int textureOffset) {
+void WavefrontParser::handleFace(string line, Mesh* mesh, int vertexOffset, int textureOffset, string matName) {
    vector<string> verticies = faceSplit(line);
    vector<int> vertex1 = vertexSplit(verticies[1]);
    vector<int> vertex2 = vertexSplit(verticies[2]);
@@ -171,11 +172,12 @@ void WavefrontParser::handleFace(string line, Mesh* mesh, int vertexOffset, int 
    for(unsigned i = 3; i < verticies.size(); i++) {
       vector<int> vertex3 = vertexSplit(verticies[i]);
 
-      Face* face = mesh->addFace(vertex1[0] - vertexOffset - 1, vertex2[0] - vertexOffset - 1, vertex3[0] - vertexOffset - 1);
+      Face* face = mesh->addFace(vertex1[0] - vertexOffset - 1, vertex3[0] - vertexOffset - 1, vertex2[0] - vertexOffset - 1);
       if(vertex1.size() > 1) {
          face->setTextureIdxs(vertex1[1] - textureOffset - 1, vertex2[1] - textureOffset - 1, vertex3[1] - textureOffset - 1);
       }
       vertex2 = vertex3;
+      if(matName != "") face->setMaterial(materials[matName]);
    }
 }
 
@@ -227,7 +229,7 @@ void WavefrontParser::loadMaterials(string fname) {
    string line;
    string s;
    bool done = false;
-   Phong* material = NULL;
+   Metal* material = NULL;
    Hash* props = new Hash();
 
    while(!done) {
@@ -235,7 +237,11 @@ void WavefrontParser::loadMaterials(string fname) {
       stringstream strstr(line);
 
       if(strncmp(line.c_str(), "newmtl", 6) == 0) {
-         material = new Phong();
+         if(material != NULL) {
+            material->setHash(props);
+            props = new Hash();
+         }
+         material = new Metal();
          string name = line.substr(7);
          materials[name] = material;
       }
