@@ -26,7 +26,7 @@ public:
 
 private:
    void getNextLine(ifstream& in, string& line);
-   void handleFace(string line, Mesh* mesh, int vertexOffset, int textureOffset);
+   void handleFace(string line, Mesh* mesh, int vertexOffset, int textureOffset, string matName);
    vector<string> faceSplit(string str) const;
    vector<int> vertexSplit(string str) const;
    void loadMaterials(string fname);
