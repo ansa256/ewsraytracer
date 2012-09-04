@@ -172,7 +172,7 @@ void WavefrontParser::handleFace(string line, Mesh* mesh, int vertexOffset, int 
    for(unsigned i = 3; i < verticies.size(); i++) {
       vector<int> vertex3 = vertexSplit(verticies[i]);
 
-      Face* face = mesh->addFace(vertex1[0] - vertexOffset - 1, vertex3[0] - vertexOffset - 1, vertex2[0] - vertexOffset - 1);
+      Face* face = mesh->addFace(vertex1[0] - vertexOffset - 1, vertex2[0] - vertexOffset - 1, vertex3[0] - vertexOffset - 1);
       if(vertex1.size() > 1) {
          face->setTextureIdxs(vertex1[1] - textureOffset - 1, vertex2[1] - textureOffset - 1, vertex3[1] - textureOffset - 1);
       }
