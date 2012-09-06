@@ -1,13 +1,13 @@
 #ifndef _DISK_H_
 #define _DISK_H_
 
-#include "LightObject.h"
+#include "GeometryObject.h"
 
 /**
  * Hash values:
  *    - material {} Material hash
  */
-class Disk : public LightObject {
+class Disk : public GeometryObject {
 
 public:
    Disk();

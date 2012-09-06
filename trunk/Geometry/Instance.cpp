@@ -152,3 +152,14 @@ void Instance::computeBBox() {
       bbox.z1 = max(bbox.z1, v[j].z);
    }
 }
+
+Point3D Instance::sample(const Point3D& hitPoint, float u1, float u2, Vector3D& normal) {
+   Point3D p = object->sample(hitPoint, u1, u2, normal);
+   normal = fwdMatrix * normal;
+   normal.normalize();
+   return fwdMatrix * p;
+}
+
+double Instance::pdf(const ShadeRecord& sr) const {
+   return object->pdf(sr);
+}

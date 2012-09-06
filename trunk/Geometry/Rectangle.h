@@ -1,13 +1,13 @@
 #ifndef _RECTANGLE_H_
 #define _RECTANGLE_H_
 
-#include "LightObject.h"
+#include "GeometryObject.h"
 #include "Math/Point3D.h"
 #include "Math/Vector3D.h"
 
 class Sampler;
 
-class Rectangle : public LightObject {
+class Rectangle : public GeometryObject {
 
 public:
    Rectangle();

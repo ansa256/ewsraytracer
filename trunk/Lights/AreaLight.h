@@ -5,7 +5,7 @@
 #include "Math/Point3D.h"
 #include "Math/Vector3D.h"
 
-class LightObject;
+class GeometryObject;
 
 class AreaLight : public Light {
 
@@ -23,7 +23,7 @@ public:
 
 private:
    Material* material;
-   LightObject* object;
+   GeometryObject* object;
    float* samples;
 };
 

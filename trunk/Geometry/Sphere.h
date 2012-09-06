@@ -1,7 +1,7 @@
 #ifndef _SPHERE_H_
 #define _SPHERE_H_
 
-#include "LightObject.h"
+#include "GeometryObject.h"
 #include "Math/Point3D.h"
 
 /**
@@ -11,7 +11,7 @@
  *    - thetaRange [ min max ] - Optional Latitude range to include. Array of 2 daubles from 0 to 180. 0 is at the top of the sphere.
  *    - phiRange [ min max ] - Optional Longitude range to include. Array of 2 doubles from 0 to 360. 0 is in the positive Z axis.
  */
-class Sphere : public LightObject {
+class Sphere : public GeometryObject {
 
 public:
    Sphere();
