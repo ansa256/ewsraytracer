@@ -3,7 +3,7 @@
 #include "Samplers/Sampler.h"
 #include "Materials/Material.h"
 
-Rectangle::Rectangle() : LightObject() {
+Rectangle::Rectangle() : GeometryObject() {
    bbox.expand(Point3D(-1, -1, 0));
    bbox.expand(Point3D(1, 1, 0));
 }
@@ -73,9 +73,8 @@ bool Rectangle::shadowHit(const Ray& ray) const {
 }
 
 Point3D Rectangle::sample(const Point3D& hitPoint, float u1, float u2, Vector3D& normal) {
-   normal = normal;
-//   return (Point3D(-1, -1, 0) + a * u1 + b * u2);
-   return Point3D();
+   normal.set(0, 0, 1);
+   return Point3D(u1 * 2.0 - 1.0, u2 * 2.0 - 1.0, 0.0);
 }
 
 double Rectangle::pdf(const ShadeRecord& sr) const {

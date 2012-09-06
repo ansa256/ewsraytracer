@@ -36,8 +36,11 @@ public:
    virtual void setHash(Hash* hash);
    virtual bool hit(const Ray& ray, ShadeRecord& sr) const;
    virtual bool shadowHit(const Ray& ray) const;
-   
+
    virtual void setMaterial(Material* m);
+
+   virtual Point3D sample(const Point3D& hitPoint, float u1, float u2, Vector3D& normal);
+   virtual double pdf(const ShadeRecord& sr) const;
 
 private:
    GeometryObject* object;

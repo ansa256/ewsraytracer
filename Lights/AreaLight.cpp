@@ -1,5 +1,5 @@
 #include "AreaLight.h"
-#include "Geometry/LightObject.h"
+#include "Geometry/GeometryObject.h"
 #include "Geometry/GeometryManager.h"
 #include "Materials/Material.h"
 #include "Materials/Emissive.h"
@@ -21,17 +21,17 @@ void AreaLight::setHash(Hash* hash) {
 
    if(hash->contains("rectangle")) {
       Hash* rect = hash->getValue("rectangle")->getHash();
-      object = (LightObject*) GeometryManager::instance().createObject("rectangle", rect, false);
+      object = GeometryManager::instance().createObject("rectangle", rect, false);
       object->ignoreShadow = true;
    }
    else if(hash->contains("disk")) {
       Hash* disk = hash->getValue("disk")->getHash();
-      object = (LightObject*) GeometryManager::instance().createObject("disk", disk, false);
+      object = GeometryManager::instance().createObject("disk", disk, false);
       object->ignoreShadow = true;
    }
    else if(hash->contains("sphere")) {
       Hash* sphere = hash->getValue("sphere")->getHash();
-      object = (LightObject*) GeometryManager::instance().createObject("sphere", sphere);
+      object = GeometryManager::instance().createObject("sphere", sphere);
       object->ignoreShadow = true;
    }
 

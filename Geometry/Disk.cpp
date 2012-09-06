@@ -4,7 +4,7 @@
 #include "Materials/Material.h"
 #include <math.h>
 
-Disk::Disk() : LightObject() {
+Disk::Disk() : GeometryObject() {
 }
 
 Disk::~Disk() {
@@ -48,10 +48,10 @@ bool Disk::shadowHit(const Ray& ray) const {
 }
 
 Point3D Disk::sample(const Point3D& hitPoint, float u1, float u2, Vector3D& normal) {
-   Point3D p;   
-   Sampler::mapToDisk(u1, u2, (float*) &p.x, (float*) &p.y);
+   float x, y;
+   Sampler::mapToDisk(u1, u2, &x, &y);
    normal.set(0, 0, 1);
-   return p;
+   return Point3D(x, y, 0);
 }
 
 double Disk::pdf(const ShadeRecord& sr) const {

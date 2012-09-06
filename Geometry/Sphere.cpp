@@ -9,6 +9,7 @@
 #include "Samplers/Sampler.h"
 
 Sphere::Sphere() :
+   GeometryObject(),
    thetaRange(false),
    phiRange(false),
    cosThetaMin(0),

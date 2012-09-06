@@ -27,6 +27,9 @@ public:
    string getName() const { return name; }
    void setName(string n) { name = n; }
 
+   virtual Point3D sample(const Point3D& hitPoint, float u1, float u2, Vector3D& normal);
+   virtual double pdf(const ShadeRecord& sr) const;
+
    static const double epsilon;
    bool doDelete;
    bool ignoreShadow;
