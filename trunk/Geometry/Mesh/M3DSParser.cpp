@@ -10,6 +10,7 @@
 #include "Storage/Grid.h"
 #include "Storage/ObjectList.h"
 #include <sstream>
+#include <algorithm>
 
 // Include this line to see output of unprocessed chunks
 //#define PRINT_UNPROCESSED
@@ -57,7 +58,7 @@ void M3DSParser::setHash(Hash* h) {
          applyNormalMap = true;
       }
    }
-   
+
    if(h->contains("excludes")) {
       stringstream strstr(h->getString("excludes"));
       string s;
@@ -259,7 +260,7 @@ void M3DSParser::processMaterialChunk(size_t nBytes) {
       else if (chunkType == M3DCHUNK_MATERIAL_TEXMAP) {
          string texture = processTexmapChunk(contentSize);
          props->addValue("textureFile", new Value(texture));
-         
+
          checkForNormalMap(props, texture);
       }
 //      else if (chunkType == M3DCHUNK_MATERIAL_TRANSPARENCY) {
@@ -273,10 +274,10 @@ void M3DSParser::processMaterialChunk(size_t nBytes) {
          skipBytes(contentSize);
       }
    }
-   
+
    specColor *= highlightPercent;
    props->addValue("specColor", new Value(specColor.toArray()));
-   
+
    Material* material;
 
    if(shade == 1) {
@@ -301,7 +302,7 @@ void M3DSParser::checkForNormalMap(Hash* props, string texMap) const {
    if(applyNormalMap) {
       // Generate nornal map file name
       string normalMap = texMap.substr(0, texMap.length() - 4) + "Normal.bmp";
-      
+
       // Check if normal map file exists
       ifstream inp;
       inp.open(normalMap.c_str(), ifstream::in);
@@ -316,13 +317,13 @@ void M3DSParser::checkForNormalMap(Hash* props, string texMap) const {
 Color M3DSParser::processColorChunk(int nBytes) {
    int bytesRead = 0;
    Color color;
-   
+
    while (bytesRead < nBytes) {
       uint16 chunkType = readUshortLE(in);
       int chunkSize = readIntLE(in);
       int contentSize = chunkSize - 6;
       bytesRead += chunkSize;
-      
+
       if (chunkType == M3DCHUNK_COLOR_24) {
          readColor(&color);
       }
@@ -336,11 +337,11 @@ Color M3DSParser::processColorChunk(int nBytes) {
          skipBytes(contentSize);
       }
    }
-   
+
    if(bytesRead != nBytes) {
       fprintf(stderr, "In processColorChunk expected %d bytes but read %d\n", nBytes, bytesRead);
    }
-   
+
    return color;
 }
 
@@ -483,7 +484,7 @@ void M3DSParser::readColor(Color* color) {
    unsigned char r = readChar(in);
    unsigned char g = readChar(in);
    unsigned char b = readChar(in);
-   
+
    color->set((float) r / 255.0f, (float) g / 255.0f, (float) b / 255.0f);
 }
 

@@ -2,7 +2,6 @@
 #define KDTREE_H
 
 #include "Storage.h"
-#include <boost/dynamic_bitset.hpp>
 
 typedef unsigned int uint32_t;
 
