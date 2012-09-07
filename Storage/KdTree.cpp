@@ -3,6 +3,8 @@
 #include "Parser/Hash.h"
 #include <stack>
 #include <limits>
+#include <algorithm>
+#include <assert.h>
 
 struct NodeS {
    int node;
@@ -200,7 +202,6 @@ void KdTree::buildTree(int nodeNum, unsigned depth, uint32_t* idxs, size_t nPrim
    buildTree(nodeNum+1, depth+1, lidxs, n0, left, lidxs, ridxs + nPrimitives);
    nodes[nodeNum].initInterior(axis, nextFreeNode, split);
    buildTree(nextFreeNode, depth+1, ridxs, n1, right, lidxs, ridxs + nPrimitives);
-//   return new KdNode(buildTree(depth+1, lidxs, left), buildTree(depth+1, ridxs, right), axis, split);
 }
 
 void KdTree::setHash(Hash* hash) {
@@ -216,8 +217,6 @@ void KdTree::setHash(Hash* hash) {
 }
 
 bool KdTree::hit(const Ray& ray, ShadeRecord& sr) const {
-   boost::dynamic_bitset<> checked(objs.size());
-
    stack<NodeS> nodeStack;
    nodeStack.push(NodeS(0, 0, ray.tHit));
    bool hit = false;
@@ -254,11 +253,7 @@ bool KdTree::hit(const Ray& ray, ShadeRecord& sr) const {
 
       // Check the node
       for(uint32_t i = 0; i < nodes[node].nPrimitives(); i++) {
-         int idx = nodes[node].idxs[i];
-         if(!checked[idx]) {
-            hit = objs[idx]->hit(ray, sr);
-            checked[idx] = 1;
-         }
+         hit = objs[nodes[node].idxs[i]]->hit(ray, sr);
       }
 
       if(ray.tHit < max) {
@@ -266,30 +261,7 @@ bool KdTree::hit(const Ray& ray, ShadeRecord& sr) const {
       }
    }
 
-   return hit; // ray.tHit < HUGE_VALUE;
-/*
-stack.push(root,sceneMin,sceneMax)
-tHit=infinity
-while (not stack.empty()):
-   (node,tMin,tMax)=stack.pop()
-   while (not node.isLeaf()):
-      a = node.axis
-      tSplit = ( node.value - ray.origin[a] ) / ray.direction[a]
-      (first, sec) = order(ray.direction[a], node.left, node.right)
-      if( tSplit >= tMax or tSplit < 0)
-         node=first
-      else if( tSplit <= tMin)
-         node=second
-      else
-         stack.push( sec, tSplit, tMax)
-         node=first
-         tMax=tSplit
-   for tri in node.triangles():
-      tHit=min(tHit,tri.Intersect(ray))
-      if tHit<tMax:
-         return tHit //early exit
-return tHitt
-*/
+   return hit;
 }
 
 bool KdTree::shadowHit(const Ray& ray) const {

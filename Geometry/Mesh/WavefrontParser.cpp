@@ -6,6 +6,7 @@
 #include "Mesh.h"
 #include "Materials/Metal.h"
 #include <sstream>
+#include <algorithm>
 
 WavefrontParser::WavefrontParser() : scale(1.0), textureDir(""), storage(NULL), materials(), includes(), excludes(), useMaterials(false)
 {
