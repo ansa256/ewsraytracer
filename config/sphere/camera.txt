@@ -1,7 +1,7 @@
 camera {
    angle                49.134
-   eye                  [ 7.5 0.0 1.874 ]
-   rotate               [ 80.218 0.0 90.0 ]
+   eye                  [ 0.0 0.0 10.0 ]
+   rotate               [ 0.0 0.0 0.0 ]
 #   lensRadius           0.02
 #   focusPlaneDistance   6.0
 
@@ -11,5 +11,5 @@ camera {
       strataY 2
    }
    
-   bgColor		[ 0.5 0.5 0.5 ]
+   bgColor		[ 0.2 0.2 0.2 ]
 }
