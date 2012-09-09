@@ -9,9 +9,12 @@ float MitchellFilter::evaluate(float x, float y) const {
 }
 
 float MitchellFilter::mitchell1D(float x) const {
-   x = fabs(2.f * x);
-   if(x > 1.f) {
+   x = fabs(x);
+   if(x < 1.f) {
+      return ((12 - 9*B - 6*C) * x*x*x + (-18 + 12*B + 6*C) * x*x + (6 - 2*B)) * factor;      
+   }
+   if(x < 2) {
       return ((-B - 6*C) * x*x*x + (6*B + 30*C) * x*x + (-12*B -48*C) * x + (8*B + 24*C)) * factor;
    }
-   return ((12 - 9*B - 6*C) * x*x*x + (-18 + 12*B + 6*C) * x*x + (6 - 2*B)) * factor;
+   return 0;
 }
