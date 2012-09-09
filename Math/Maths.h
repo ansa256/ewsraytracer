@@ -93,6 +93,14 @@ T mix(const T& a, const T& b, const double f) {
    return a * (1.0 - f) + b * f;
 }
 
+inline uint32_t roundUpPowTwo(uint32_t v) {
+   v--;
+   v |= v >> 1;    v |= v >> 2;
+   v |= v >> 4;    v |= v >> 8;
+   v |= v >> 16;
+   return v+1;
+}
+
 int SolveQuadric(double c[3], double s[2]);
 int SolveCubic(double c[4], double s[3]);
 int SolveQuartic(double c[5], double s[4]);
