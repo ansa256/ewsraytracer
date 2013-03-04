@@ -4,12 +4,14 @@
 #include "Shapes2D/FilledEllipse.h"
 #include "Shapes2D/Ring.h"
 #include "Falloff/FalloffFilter.h"
+#include "convoluteCL.h"
 #include <string>
+#include <time.h>
 
-const int width = 960;
-const int height = 540;
-const int cx = 200;
-const int cy = 150;
+const int width = 1920;
+const int height = 1080;
+const int cx = 400;
+const int cy = 250;
 
 const int COUNT = 6;
 const float START = 20;
@@ -20,8 +22,8 @@ Color white(1, 1, 1, 1);
 
 void run();
 void star(SDL_Surface* surface, int numSpikes, float startAngle);
-double* CreateGaussianFilter(double piSigma, double piAlpha, int& lSize);
-SDL_Surface* Convolute(SDL_Surface* source, double* filter, int fSize);
+float* CreateGaussianFilter(float piSigma, float piAlpha, int& lSize);
+SDL_Surface* Convolute(SDL_Surface* source, float* filter, int fSize);
 
 void run() {
    SDL_Event event;
@@ -216,16 +218,16 @@ void flare(SDL_Surface* surface) {
    rainbow(surface, getFarX(1.4), getFarY(1.4), 200, 3);
 }
 
-double* CreateGaussianFilter(double piSigma, double piAlpha, int& lSize) {
+float* CreateGaussianFilter(float piSigma, float piAlpha, int& lSize) {
    lSize = ((int)(piAlpha * piSigma) / 2)*2 + 1; //force odd-size filters
 
-   double* filter = new double[lSize * lSize];
+   float* filter = new float[lSize * lSize];
 
    for (int x = 0; x < lSize ; x++) {
       long FakeX = x - long(floor(lSize / 2.0));
       for (int y = 0 ; y < lSize ; y++) {
          long FakeY = y - long(floor(lSize / 2.0));
-         double k = 1.0 / (2.0 * M_PI * piSigma * piSigma);
+         float k = 1.0 / (2.0 * M_PI * piSigma * piSigma);
          filter[y * lSize + x] = k * exp( (-1 * ((FakeX * FakeX) + (FakeY *FakeY))) / (2 * piSigma * piSigma));
       }
    }
@@ -250,7 +252,7 @@ struct RGBA {
    Uint8 r, g, b, a;
 };
 
-SDL_Surface* Convolute(SDL_Surface* source, double* filter, int fSize) {
+SDL_Surface* Convolute(SDL_Surface* source, float* filter, int fSize) {
    SDL_Surface* dest = createSurface(width, height);
    const int halfSize = (int)floor(fSize / 2.0);
    const double cf = 1.0 / 255.0;
@@ -265,7 +267,7 @@ SDL_Surface* Convolute(SDL_Surface* source, double* filter, int fSize) {
          idx++;
       }
    }
-
+   
    //for each pixel
    for (int x = 0; x < width; x++) {
       for (int y = 0; y < height; y++) {
@@ -320,8 +322,26 @@ int main(int argc, char **argv) {
    star(surface, COUNT, START);
 
    int fSize;
-   double* filter = CreateGaussianFilter(3, 6, fSize);
+   float* filter = CreateGaussianFilter(3, 6, fSize);
+   
+   time_t time1 = time(NULL);
+   
    SDL_Surface* dest = Convolute(surface, filter, fSize);
+
+   time_t time2 = time(NULL);
+   double secs = difftime(time2, time1);
+   printf("CPU Run Time : %f secs\n", secs);
+
+   SDL_FreeSurface(dest);
+   
+   time1 = time(NULL);
+
+   dest = convoluteCL(surface, filter, fSize);
+
+   time2 = time(NULL);
+   secs = difftime(time2, time1);
+   printf("OpenCL Run Time : %f secs\n", secs);
+
    delete[] filter;
 
    SDL_BlitSurface(dest, NULL, screen, NULL);
